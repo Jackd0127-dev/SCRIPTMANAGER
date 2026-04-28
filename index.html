@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Director</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f5f4f1;
+  --surface: #ffffff;
+  --border: #e5e3de;
+  --border2: #d0cdc6;
+  --text: #1a1916;
+  --text2: #6b6860;
+  --text3: #a8a59f;
+  --green: #3a7d44;
+  --green-bg: #edf5ef;
+  --red: #c0392b;
+  --red-bg: #fdf0ee;
+  --blue: #2563eb;
+  --blue-bg: #eff4ff;
+  --amber: #b45309;
+  --amber-bg: #fef3c7;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; line-height: 1.5; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ── AUTH ── */
+.auth-wrap { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg); }
+.auth-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 36px; width: 400px; max-width: 92vw; }
+.auth-logo { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+.auth-sub { font-size: 13px; color: var(--text2); margin-bottom: 24px; line-height: 1.6; }
+
+/* SOCIAL BUTTONS */
+.social-btns { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.social-btn {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 14px;
+  font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text); cursor: pointer; transition: all 0.15s; width: 100%;
+  text-align: left;
+}
+.social-btn:hover { background: var(--bg); border-color: var(--border2); }
+.social-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+.social-btn.apple { background: #000; color: #fff; border-color: #000; }
+.social-btn.apple:hover { background: #222; }
+
+/* DIVIDER */
+.or-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+.or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.or-divider span { font-size: 11px; color: var(--text3); font-weight: 500; }
+
+/* EMAIL FORM */
+.auth-tabs { display: flex; gap: 4px; background: var(--bg); border-radius: var(--radius-sm); padding: 3px; margin-bottom: 16px; }
+.auth-tab { flex: 1; text-align: center; padding: 7px; font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; border-radius: 4px; transition: all 0.15s; }
+.auth-tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.form-group { margin-bottom: 12px; }
+.form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 5px; }
+.form-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 11px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text); outline: none; transition: border-color 0.15s; }
+.form-input:focus { border-color: var(--border2); }
+.form-input::placeholder { color: var(--text3); }
+.auth-btn { width: 100%; background: var(--text); color: #fff; border: none; border-radius: var(--radius-sm); padding: 10px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 6px; transition: opacity 0.15s; }
+.auth-btn:hover { opacity: 0.82; }
+.auth-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.auth-err { font-size: 12px; color: var(--red); margin-top: 10px; min-height: 16px; }
+.icloud-warning { font-size: 11px; color: var(--amber); background: var(--amber-bg); border: 1px solid #fde68a; border-radius: var(--radius-sm); padding: 8px 10px; margin-bottom: 12px; line-height: 1.5; }
+
+/* VERIFY SCREEN */
+.verify-icon { font-size: 40px; margin-bottom: 16px; }
+.verify-email-display { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 13px; font-weight: 500; margin-bottom: 16px; word-break: break-all; }
+.verify-status { font-size: 12px; padding: 8px 12px; border-radius: var(--radius-sm); margin-top: 10px; }
+.verify-status.checking { background: var(--blue-bg); color: var(--blue); }
+.verify-status.success { background: var(--green-bg); color: var(--green); }
+.auth-link { font-size: 12px; color: var(--text3); margin-top: 10px; cursor: pointer; text-decoration: underline; display: block; }
+.auth-link:hover { color: var(--text2); }
+
+/* ── APP ── */
+#appScreen { display: none; }
+.app { display: flex; height: 100vh; overflow: hidden; }
+.sidebar { width: 240px; min-width: 240px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.sidebar-top { padding: 16px 16px 12px; border-bottom: 1px solid var(--border); }
+.wordmark { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 10px; }
+.user-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.user-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--text); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+.user-email { font-size: 11px; color: var(--text3); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.signout-btn { font-size: 11px; color: var(--text3); background: none; border: none; cursor: pointer; padding: 2px 4px; border-radius: 3px; transition: color 0.1s; }
+.signout-btn:hover { color: var(--red); }
+.search { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 10px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text); outline: none; }
+.search:focus { border-color: var(--border2); }
+.search::placeholder { color: var(--text3); }
+.sidebar-body { flex: 1; overflow-y: auto; padding: 8px 0; }
+.nav-project { display: flex; align-items: center; gap: 8px; padding: 7px 16px; cursor: pointer; border-left: 2px solid transparent; transition: background 0.1s; }
+.nav-project:hover { background: var(--bg); }
+.nav-project.active { background: var(--bg); border-left-color: var(--text); }
+.proj-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.proj-name { font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.proj-count { font-size: 11px; color: var(--text3); }
+.nav-script { display: flex; align-items: center; gap: 8px; padding: 5px 16px 5px 32px; cursor: pointer; border-left: 2px solid transparent; transition: background 0.1s; }
+.nav-script:hover { background: var(--bg); }
+.nav-script.active { background: var(--bg); border-left-color: var(--text); }
+.script-pip { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.script-nav-name { font-size: 12px; color: var(--text2); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-script.active .script-nav-name { color: var(--text); font-weight: 500; }
+.sidebar-bottom { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+.sb-btn { display: flex; align-items: center; gap: 8px; background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 10px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text2); cursor: pointer; text-align: left; transition: all 0.1s; }
+.sb-btn:hover { background: var(--bg); color: var(--text); border-color: var(--border2); }
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+.topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.topbar-left { flex: 1; min-width: 0; }
+.topbar-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; letter-spacing: -0.3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.topbar-sub { display: flex; align-items: center; gap: 8px; margin-top: 3px; flex-wrap: wrap; }
+.topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; flex-shrink: 0; gap: 2px; overflow-x: auto; }
+.tab { padding: 10px 14px; font-size: 12px; font-weight: 500; color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.1s; white-space: nowrap; }
+.tab:hover { color: var(--text2); }
+.tab.active { color: var(--text); border-bottom-color: var(--text); }
+.content { flex: 1; overflow-y: auto; padding: 24px; }
+.badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 4px; }
+.badge-draft { background: var(--amber-bg); color: var(--amber); }
+.badge-ready { background: var(--green-bg); color: var(--green); }
+.badge-shot { background: var(--red-bg); color: var(--red); }
+.badge-posted { background: var(--blue-bg); color: var(--blue); }
+.plat { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 3px; letter-spacing: 0.5px; text-transform: uppercase; }
+.plat-tiktok { background: #fff0f3; color: #cc0040; }
+.plat-instagram { background: #fff0f7; color: #c13584; }
+.plat-youtube { background: #fff0f0; color: #cc0000; }
+.plat-x { background: #f0f0f0; color: #444; }
+.due { font-size: 11px; color: var(--text3); }
+.due.overdue { color: var(--red); }
+.due.soon { color: var(--amber); }
+.btn { background: var(--text); color: #fff; border: none; border-radius: var(--radius-sm); padding: 7px 14px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; white-space: nowrap; }
+.btn:hover { opacity: 0.8; }
+.btn-ghost { background: none; color: var(--text2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 12px; font-family: 'Inter', sans-serif; font-size: 12px; cursor: pointer; transition: all 0.1s; white-space: nowrap; }
+.btn-ghost:hover { background: var(--bg); color: var(--text); border-color: var(--border2); }
+.btn-danger { border-color: var(--red); color: var(--red); }
+.btn-danger:hover { background: var(--red-bg); }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.block-row { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 6px; transition: border-color 0.1s; }
+.block-row:hover { border-color: var(--border2); }
+.block-row.done { opacity: 0.35; }
+.block-row.cut { opacity: 0.22; text-decoration: line-through; }
+.type-pill { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; flex-shrink: 0; white-space: nowrap; }
+.pill-shot { background: #fff4f0; color: #c2410c; }
+.pill-transition { background: #eff6ff; color: #1d4ed8; }
+.pill-subtitle { background: #f0fdf4; color: #166534; }
+.pill-voiceover { background: #faf5ff; color: #7e22ce; }
+.pill-direction { background: #fffbeb; color: #92400e; }
+.block-main { flex: 1; font-size: 13px; line-height: 1.5; min-width: 0; }
+.block-spoken { color: var(--text); font-weight: 500; }
+.block-desc { color: var(--text2); font-style: italic; }
+.pause { display: inline-block; background: #fffbeb; color: #92400e; border: 1px solid #fde68a; border-radius: 3px; font-size: 10px; font-weight: 600; padding: 0 4px; margin: 0 2px; vertical-align: middle; letter-spacing: 0.5px; }
+.emph { font-weight: 700; }
+.block-tick, .block-x { width: 26px; height: 26px; border-radius: 5px; border: 1px solid var(--border); background: none; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.1s; color: var(--text3); }
+.block-tick:hover, .block-tick.on { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+.block-x:hover, .block-x.on { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+.prog-wrap { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+.prog-fill { height: 100%; background: var(--text); border-radius: 2px; transition: width 0.3s; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+.stat-label { font-size: 11px; color: var(--text3); font-weight: 500; margin-bottom: 4px; }
+.stat-val { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -1px; line-height: 1; }
+.shots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+.shot-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+.shot-card.done { opacity: 0.35; }
+.shot-card.cut { opacity: 0.22; }
+.shot-num { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: var(--text3); margin-bottom: 6px; }
+.shot-spoken-box { background: var(--bg); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 12px; margin: 8px 0; border-left: 2px solid var(--border2); color: var(--text2); line-height: 1.5; }
+.shot-btns { display: flex; gap: 6px; margin-top: 10px; }
+.shot-btns button { flex: 1; padding: 6px; font-size: 12px; font-family: 'Inter', sans-serif; cursor: pointer; border-radius: var(--radius-sm); border: 1px solid var(--border); background: none; color: var(--text2); transition: all 0.1s; }
+.shot-btns .tb:hover, .shot-btns .tb.on { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+.shot-btns .xb:hover, .shot-btns .xb.on { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+.timeline { padding-left: 20px; position: relative; }
+.timeline::before { content: ''; position: absolute; left: 6px; top: 6px; bottom: 6px; width: 1px; background: var(--border); }
+.tl-item { position: relative; margin-bottom: 8px; }
+.tl-dot { position: absolute; left: -17px; top: 8px; width: 8px; height: 8px; border-radius: 50%; border: 2px solid var(--bg); }
+.tl-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; }
+.tl-meta { font-size: 10px; color: var(--text3); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 3px; }
+.tl-text { font-size: 13px; line-height: 1.5; }
+.sub-line { display: flex; align-items: flex-start; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 6px; }
+.sub-idx { font-size: 11px; color: var(--text3); font-weight: 600; min-width: 22px; margin-top: 1px; }
+.sub-text { font-size: 14px; line-height: 1.6; flex: 1; }
+.notes-ta { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; font-family: 'Inter', sans-serif; font-size: 13px; line-height: 1.7; color: var(--text); resize: none; outline: none; min-height: 120px; }
+.notes-ta:focus { border-color: var(--border2); }
+.notes-ta::placeholder { color: var(--text3); }
+.sec-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.sec-title { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text2); }
+.legend-pip { width: 8px; height: 8px; border-radius: 2px; }
+.welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px; text-align: center; }
+.welcome-title { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -1px; }
+.welcome-sub { font-size: 13px; color: var(--text2); max-width: 280px; line-height: 1.7; }
+.empty { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; color: var(--text3); gap: 8px; text-align: center; }
+.empty-title { font-size: 14px; font-weight: 500; color: var(--text2); }
+.empty-sub { font-size: 12px; line-height: 1.6; max-width: 220px; }
+.osc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s; }
+.osc:hover { border-color: var(--border2); }
+.osc-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.osc-name { font-size: 14px; font-weight: 600; flex: 1; }
+.osc-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.divider { height: 1px; background: var(--border); margin: 18px 0; }
+.saving { font-size: 11px; color: var(--text3); position: fixed; bottom: 16px; right: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.saving.show { opacity: 1; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(26,25,22,0.45); z-index: 100; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; width: 440px; max-width: 92vw; max-height: 85vh; overflow-y: auto; }
+.modal-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 18px; }
+.form-select { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text); outline: none; }
+.color-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.color-dot { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.1s; }
+.color-dot:hover { transform: scale(1.1); }
+.color-dot.sel { border-color: var(--text); }
+.status-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.status-chip { padding: 5px 12px; border-radius: 5px; font-size: 12px; font-weight: 500; cursor: pointer; opacity: 0.55; transition: opacity 0.1s; }
+.status-chip.sel { opacity: 1; outline: 2px solid var(--text); outline-offset: 1px; }
+.plats-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.plats-row label { display: flex; align-items: center; gap: 5px; font-size: 12px; cursor: pointer; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="auth-wrap">
+  <div class="auth-box">
+    <div class="auth-logo">Director</div>
+    <div class="auth-sub">Your script command centre</div>
+
+    <div class="social-btns">
+      <!-- Google -->
+      <button class="social-btn" onclick="doGoogle()">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Continue with Google
+      </button>
+
+      <!-- Apple -->
+      <button class="social-btn apple" onclick="doApple()">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        Continue with Apple
+      </button>
+
+      <!-- GitHub -->
+      <button class="social-btn" onclick="doGitHub()">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        Continue with GitHub
+      </button>
+    </div>
+
+    <div class="or-divider"><span>or sign in with email</span></div>
+
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Sign in</div>
+      <div class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Create account</div>
+    </div>
+
+    <div id="loginForm">
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="loginEmail" type="email" placeholder="you@example.com"></div>
+      <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="loginPassword" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="auth-btn" id="loginBtn" onclick="doLogin()">Sign in</button>
+      <div class="auth-err" id="loginErr"></div>
+    </div>
+
+    <div id="signupForm" style="display:none">
+      <div class="icloud-warning">Use a Gmail address — iCloud emails may not receive the verification email.</div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="signupEmail" type="email" placeholder="you@gmail.com"></div>
+      <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="signupPassword" type="password" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')doSignup()"></div>
+      <button class="auth-btn" id="signupBtn" onclick="doSignup()">Create account</button>
+      <div class="auth-err" id="signupErr"></div>
+    </div>
+  </div>
+</div>
+
+<!-- VERIFY SCREEN -->
+<div id="verifyScreen" class="auth-wrap" style="display:none">
+  <div class="auth-box">
+    <div class="verify-icon">✉️</div>
+    <div class="auth-logo">Check your email</div>
+    <div class="auth-sub">We've sent a verification link to:</div>
+    <div class="verify-email-display" id="verifyEmailDisplay"></div>
+    <div class="auth-sub" style="margin-bottom:16px">Click the link in the email then press the button below.</div>
+    <button class="auth-btn" id="checkVerifyBtn" onclick="checkVerification()">I've verified my email</button>
+    <div class="verify-status" id="verifyStatus" style="display:none"></div>
+    <a class="auth-link" onclick="resendVerification()">Resend verification email</a>
+    <a class="auth-link" onclick="doSignout()">Sign out and use a different account</a>
+    <div class="auth-err" id="verifyErr"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appScreen" style="display:none">
+  <div class="app">
+    <div class="sidebar">
+      <div class="sidebar-top">
+        <div class="wordmark">Director</div>
+        <div class="user-row">
+          <div class="user-avatar" id="userAvatar">?</div>
+          <div class="user-email" id="userEmail"></div>
+          <button class="signout-btn" onclick="doSignout()">Sign out</button>
+        </div>
+        <input class="search" type="text" placeholder="Search scripts…" oninput="filterSb(this.value)">
+      </div>
+      <div class="sidebar-body" id="sidebarBody"><div style="padding:20px 16px;font-size:12px;color:var(--text3)">Loading…</div></div>
+      <div class="sidebar-bottom">
+        <button class="sb-btn" onclick="openNewProjectModal()">+ New project</button>
+        <button class="sb-btn" onclick="openNewScriptModal()">+ New script</button>
+      </div>
+    </div>
+    <div class="main">
+      <div id="welcomeScreen" class="content welcome">
+        <div class="welcome-title">Director</div>
+        <div class="welcome-sub">Select a project or script from the sidebar, or create a new one.</div>
+        <button class="btn" style="margin-top:8px" onclick="openNewProjectModal()">Create first project</button>
+      </div>
+      <div id="mainView" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+        <div class="topbar">
+          <div class="topbar-left">
+            <div class="topbar-title" id="topbarTitle"></div>
+            <div class="topbar-sub" id="topbarSub"></div>
+          </div>
+          <div class="topbar-right" id="topbarRight"></div>
+        </div>
+        <div class="tabs" id="tabsRow"></div>
+        <div class="content" id="mainContent"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="saving" id="savingIndicator">Saving…</div>
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)"><div class="modal" id="modalBox"></div></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, reload, GoogleAuthProvider, OAuthProvider, GithubAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCaq7I65QuHhhrK3QfoaR5dbJ_M98kA6U4",
+  authDomain: "social-media-script.firebaseapp.com",
+  projectId: "social-media-script",
+  storageBucket: "social-media-script.firebasestorage.app",
+  messagingSenderId: "410934655457",
+  appId: "1:410934655457:web:a5da63291a623ddf563aa0"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+let saveTimeout = null;
+let unsubscribe = null;
+
+function showScreen(name) {
+  document.getElementById('loginScreen').style.display = name==='login' ? 'flex' : 'none';
+  document.getElementById('verifyScreen').style.display = name==='verify' ? 'flex' : 'none';
+  document.getElementById('appScreen').style.display = name==='app' ? 'block' : 'none';
+}
+
+function friendlyError(code) {
+  const map = {
+    'auth/invalid-email': 'Invalid email address.',
+    'auth/user-not-found': 'No account found with that email.',
+    'auth/wrong-password': 'Incorrect password.',
+    'auth/email-already-in-use': 'An account with this email already exists.',
+    'auth/weak-password': 'Password must be at least 6 characters.',
+    'auth/invalid-credential': 'Email or password is incorrect.',
+    'auth/too-many-requests': 'Too many attempts. Please try again later.',
+    'auth/popup-closed-by-user': 'Sign-in cancelled.',
+    'auth/popup-blocked': 'Popup was blocked. Please allow popups for this site.',
+    'auth/account-exists-with-different-credential': 'An account already exists with this email using a different sign-in method.',
+  };
+  return map[code] || 'Something went wrong. Please try again.';
+}
+
+async function handleSocialSignIn(provider) {
+  try {
+    await signInWithPopup(auth, provider);
+  } catch(e) {
+    document.getElementById('loginErr') && (document.getElementById('loginErr').textContent = friendlyError(e.code));
+    console.error(e);
+  }
+}
+
+window.doGoogle = () => handleSocialSignIn(new GoogleAuthProvider());
+window.doGitHub = () => handleSocialSignIn(new GithubAuthProvider());
+window.doApple = () => {
+  const provider = new OAuthProvider('apple.com');
+  provider.addScope('email');
+  provider.addScope('name');
+  handleSocialSignIn(provider);
+};
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    currentUser = null;
+    if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+    showScreen('login');
+    return;
+  }
+
+  currentUser = user;
+
+  // Social sign-ins are auto-verified, only email/password needs verification
+  const needsVerify = user.providerData.length === 1 && user.providerData[0].providerId === 'password' && !user.emailVerified;
+
+  if (needsVerify) {
+    document.getElementById('verifyEmailDisplay').textContent = user.email;
+    showScreen('verify');
+    return;
+  }
+
+  document.getElementById('userEmail').textContent = user.email || user.displayName || 'User';
+  document.getElementById('userAvatar').textContent = (user.email || user.displayName || 'U')[0].toUpperCase();
+  showScreen('app');
+
+  const userRef = doc(db, 'users', user.uid);
+  unsubscribe = onSnapshot(userRef, (snap) => {
+    window.S = snap.exists() ? snap.data() : { projects: [], scripts: [] };
+    window.renderSb();
+    if (!window.S.asid && !window.S.apid) {
+      if (window.S.scripts && window.S.scripts.length > 0) window.selScript(window.S.scripts[0].id);
+      else if (window.S.projects && window.S.projects.length > 0) window.selProject(window.S.projects[0].id);
+    }
+  });
+});
+
+window.doLogin = async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPassword').value;
+  const err = document.getElementById('loginErr');
+  const btn = document.getElementById('loginBtn');
+  err.textContent = ''; btn.disabled = true; btn.textContent = 'Signing in…';
+  try { await signInWithEmailAndPassword(auth, email, pass); }
+  catch(e) { err.textContent = friendlyError(e.code); btn.disabled = false; btn.textContent = 'Sign in'; }
+};
+
+window.doSignup = async () => {
+  const email = document.getElementById('signupEmail').value.trim();
+  const pass = document.getElementById('signupPassword').value;
+  const err = document.getElementById('signupErr');
+  const btn = document.getElementById('signupBtn');
+  err.textContent = ''; btn.disabled = true; btn.textContent = 'Creating account…';
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await sendEmailVerification(cred.user);
+  } catch(e) { err.textContent = friendlyError(e.code); btn.disabled = false; btn.textContent = 'Create account'; }
+};
+
+window.doSignout = async () => {
+  if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+  await signOut(auth);
+};
+
+window.checkVerification = async () => {
+  const btn = document.getElementById('checkVerifyBtn');
+  const status = document.getElementById('verifyStatus');
+  btn.disabled = true; btn.textContent = 'Checking…';
+  status.style.display = 'block'; status.className = 'verify-status checking'; status.textContent = 'Checking…';
+  try {
+    await reload(auth.currentUser);
+    if (auth.currentUser.emailVerified) {
+      status.className = 'verify-status success'; status.textContent = 'Verified! Loading…';
+    } else {
+      status.style.display = 'none';
+      document.getElementById('verifyErr').textContent = 'Not verified yet. Check your inbox and click the link first.';
+      btn.disabled = false; btn.textContent = "I've verified my email";
+    }
+  } catch(e) {
+    status.style.display = 'none';
+    document.getElementById('verifyErr').textContent = 'Something went wrong. Try again.';
+    btn.disabled = false; btn.textContent = "I've verified my email";
+  }
+};
+
+window.resendVerification = async () => {
+  try {
+    await sendEmailVerification(auth.currentUser);
+    const status = document.getElementById('verifyStatus');
+    status.style.display = 'block'; status.className = 'verify-status success'; status.textContent = 'Verification email resent — check your inbox.';
+  } catch(e) { document.getElementById('verifyErr').textContent = 'Could not resend. Try again in a minute.'; }
+};
+
+window.switchAuthTab = (tab) => {
+  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+  document.getElementById('tabSignup').classList.toggle('active', tab==='signup');
+  document.getElementById('loginForm').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('signupForm').style.display = tab==='signup' ? 'block' : 'none';
+};
+
+window.save = () => {
+  if (!currentUser) return;
+  const ind = document.getElementById('savingIndicator');
+  ind.classList.add('show');
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(async () => {
+    try { await setDoc(doc(db, 'users', currentUser.uid), window.S); } catch(e) { console.error(e); }
+    ind.classList.remove('show');
+  }, 800);
+};
+</script>
+
+<script>
+window.S = { projects: [], scripts: [], apid: null, asid: null, view: 'full' };
+const COLORS = ['#1a1916','#e63946','#2a9d8f','#e9c46a','#457b9d','#f4a261','#6a4c93','#52b788','#ff6b6b','#4ecdc4'];
+const STATUSES = ['draft','ready','shot','posted'];
+const PLATFORMS = ['TikTok','Instagram','YouTube','X'];
+const TC = { shot:'#c2410c', transition:'#1d4ed8', subtitle:'#166534', voiceover:'#7e22ce', direction:'#92400e' };
+const SC = { draft:'#b45309', ready:'#3a7d44', shot:'#c0392b', posted:'#2563eb' };
+const uid = () => Math.random().toString(36).substr(2,9);
+const proj = id => S.projects.find(p=>p.id===id);
+const scr = id => S.scripts.find(s=>s.id===id);
+const pscripts = pid => S.scripts.filter(s=>s.projectId===pid);
+const dueSt = d => { if(!d)return null; const diff=(new Date(d)-new Date())/86400000; return diff<0?'overdue':diff<3?'soon':'ok'; };
+const fmtDate = d => { if(!d)return''; return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); };
+const fp = t => t.replace(/;;;/g,'<span class="pause">PAUSE</span>').replace(/\b(THOUSANDS|DO|Xcode)\b/g,'<span class="emph">$1</span>');
+
+window.renderSb = function(filter='') {
+  let h='';
+  (S.projects||[]).forEach(p=>{
+    const scripts=pscripts(p.id).filter(s=>!filter||s.name.toLowerCase().includes(filter.toLowerCase()));
+    h+=`<div class="nav-project${S.apid===p.id&&!S.asid?' active':''}" onclick="selProject('${p.id}')"><div class="proj-dot" style="background:${p.color}"></div><div class="proj-name">${p.name}</div><div class="proj-count">${scripts.length}</div></div>`;
+    scripts.forEach(s=>{h+=`<div class="nav-script${S.asid===s.id?' active':''}" onclick="selScript('${s.id}')"><div class="script-pip" style="background:${SC[s.status]||'#ccc'}"></div><div class="script-nav-name">${s.name}</div></div>`;});
+  });
+  if(!S.projects||!S.projects.length) h=`<div style="padding:20px 16px;font-size:12px;color:var(--text3)">No projects yet.</div>`;
+  document.getElementById('sidebarBody').innerHTML=h;
+};
+
+window.filterSb = v => renderSb(v);
+
+function show(){
+  document.getElementById('welcomeScreen').style.display='none';
+  const mv=document.getElementById('mainView');
+  mv.style.display='flex';mv.style.flexDirection='column';mv.style.overflow='hidden';
+}
+
+window.selProject = function(id){S.apid=id;S.asid=null;S.view='overview';renderSb();showProject(id);};
+
+function showProject(id){
+  const p=proj(id);const scripts=pscripts(id);show();
+  document.getElementById('topbarTitle').textContent=p.name;
+  const sc={draft:0,ready:0,shot:0,posted:0};
+  scripts.forEach(s=>{if(sc[s.status]!==undefined)sc[s.status]++;});
+  document.getElementById('topbarSub').innerHTML=`<span style="font-size:12px;color:var(--text3)">${scripts.length} script${scripts.length!==1?'s':''}</span>`;
+  document.getElementById('topbarRight').innerHTML=`<button class="btn-ghost" onclick="openEditProjectModal('${id}')">Edit</button><button class="btn" onclick="openNewScriptModal('${id}')">+ Script</button>`;
+  document.getElementById('tabsRow').innerHTML='';
+  const el=document.getElementById('mainContent');
+  if(!scripts.length){el.innerHTML=`<div class="empty"><div class="empty-title">No scripts yet</div><div class="empty-sub">Add your first script to this project.</div><button class="btn" style="margin-top:10px" onclick="openNewScriptModal('${id}')">+ New script</button></div>`;return;}
+  let h=`<div class="stat-grid"><div class="stat-card"><div class="stat-label">Scripts</div><div class="stat-val">${scripts.length}</div></div><div class="stat-card"><div class="stat-label">Ready</div><div class="stat-val" style="color:var(--green)">${sc.ready}</div></div><div class="stat-card"><div class="stat-label">Posted</div><div class="stat-val" style="color:var(--blue)">${sc.posted}</div></div><div class="stat-card"><div class="stat-label">Draft</div><div class="stat-val" style="color:var(--amber)">${sc.draft}</div></div></div><div class="sec-hd"><div class="sec-title">All scripts</div></div>`;
+  scripts.forEach(s=>{
+    const done=s.blocks.filter(b=>b.done).length;
+    const pct=s.blocks.length?Math.round(done/s.blocks.length*100):0;
+    const ds=dueSt(s.due);
+    h+=`<div class="osc" onclick="selScript('${s.id}')"><div class="osc-top"><div class="osc-name">${s.name}</div><span class="badge badge-${s.status}">${s.status}</span></div><div class="osc-meta">${s.due?`<span class="due${ds?' '+ds:''}">${fmtDate(s.due)}</span>`:''} ${(s.platforms||[]).map(pl=>`<span class="plat plat-${pl.toLowerCase()}">${pl}</span>`).join('')}</div><div class="prog-wrap" style="margin-top:10px"><div class="prog-fill" style="width:${pct}%"></div></div><div style="font-size:11px;color:var(--text3);margin-top:4px">${done}/${s.blocks.length} blocks · ${pct}% complete</div></div>`;
+  });
+  el.innerHTML=h;
+}
+
+window.selScript = function(id){S.asid=id;S.apid=scr(id)?.projectId;S.view='full';renderSb();showScript(id);};
+
+function showScript(id){
+  const s=scr(id);if(!s)return;show();
+  document.getElementById('topbarTitle').textContent=s.name;
+  const ds=dueSt(s.due);
+  document.getElementById('topbarSub').innerHTML=`<span class="badge badge-${s.status}" style="cursor:pointer" onclick="cycleStatus('${id}')">${s.status}</span>${s.due?`<span class="due${ds?' '+ds:''}">${fmtDate(s.due)}</span>`:''} ${(s.platforms||[]).map(p=>`<span class="plat plat-${p.toLowerCase()}">${p}</span>`).join('')}`;
+  document.getElementById('topbarRight').innerHTML=`<button class="btn-ghost" onclick="openEditScriptModal('${id}')">Edit</button><button class="btn-ghost" onclick="resetBlocks('${id}')">Reset</button>`;
+  const TABS=[{id:'full',label:'Full script'},{id:'shots',label:'Shots'},{id:'transitions',label:'Transitions'},{id:'subtitles',label:'Subtitles'},{id:'timeline',label:'Timeline'},{id:'notes',label:'Notes'}];
+  document.getElementById('tabsRow').innerHTML=TABS.map(t=>`<div class="tab${S.view===t.id?' active':''}" onclick="switchTab('${t.id}','${id}')">${t.label}</div>`).join('');
+  renderContent(id);
+}
+
+window.switchTab=(v,id)=>{S.view=v;showScript(id);};
+window.cycleStatus=id=>{const s=scr(id);s.status=STATUSES[(STATUSES.indexOf(s.status)+1)%STATUSES.length];save();showScript(id);};
+window.resetBlocks=id=>{scr(id).blocks.forEach(b=>{b.done=false;b.cut=false;});save();renderContent(id);};
+
+function renderContent(id){
+  const s=scr(id);const el=document.getElementById('mainContent');
+  if(S.view==='full')renderFull(s,el);
+  else if(S.view==='shots')renderShots(s,el);
+  else if(S.view==='transitions')renderTransitions(s,el);
+  else if(S.view==='subtitles')renderSubtitles(s,el);
+  else if(S.view==='timeline')renderTimeline(s,el);
+  else if(S.view==='notes')renderNotes(s,el);
+}
+
+function renderFull(s,el){
+  const done=s.blocks.filter(b=>b.done).length;
+  const pct=s.blocks.length?Math.round(done/s.blocks.length*100):0;
+  let h=`<div class="card" style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:12px;font-weight:600;color:var(--text2)">Shoot progress</span><span style="font-size:12px;font-weight:600">${pct}%</span></div><div class="prog-wrap"><div class="prog-fill" style="width:${pct}%"></div></div><div style="font-size:11px;color:var(--text3);margin-top:5px">${done} of ${s.blocks.length} blocks marked done</div></div>`;
+  h+=`<div class="legend">${Object.entries(TC).map(([t,c])=>`<div class="legend-item"><div class="legend-pip" style="background:${c}"></div>${t}</div>`).join('')}</div>`;
+  s.blocks.forEach(b=>{
+    const isSp=b.type==='subtitle'||b.type==='voiceover';
+    const txt=isSp?fp(b.spoken):(b.shotName+(b.desc?' — '+b.desc:''));
+    h+=`<div class="block-row${b.done?' done':''}${b.cut?' cut':''}" id="bl-${b.id}"><span class="type-pill pill-${b.type}">${b.type}${b.shotName&&!isSp?' · '+b.shotName:''}</span><div class="block-main ${isSp?'block-spoken':'block-desc'}">${txt}</div><button class="block-tick${b.done?' on':''}" onclick="toggle('${s.id}','${b.id}','done')">✓</button><button class="block-x${b.cut?' on':''}" onclick="toggle('${s.id}','${b.id}','cut')">✕</button></div>`;
+  });
+  el.innerHTML=h;
+}
+
+function renderShots(s,el){
+  const shots=s.blocks.filter(b=>b.type==='shot');
+  let h=`<div class="sec-hd"><div class="sec-title">Shots (${shots.length})</div></div><div class="shots-grid">`;
+  shots.forEach((b,i)=>{
+    const idx=s.blocks.indexOf(b);
+    const rel=s.blocks.slice(idx+1).filter(x=>x.type==='subtitle'||x.type==='voiceover').slice(0,2).map(x=>x.spoken).join(' ');
+    h+=`<div class="shot-card${b.done?' done':''}${b.cut?' cut':''}" id="bl-${b.id}"><div class="shot-num">0${i+1}</div><span class="type-pill pill-shot">${b.shotName}</span>${b.desc?`<div style="font-size:12px;color:var(--text2);margin-top:6px;font-style:italic">${b.desc}</div>`:''} ${rel?`<div class="shot-spoken-box">${fp(rel)}</div>`:''}<div class="shot-btns"><button class="tb${b.done?' on':''}" onclick="toggle('${s.id}','${b.id}','done')">✓ Done</button><button class="xb${b.cut?' on':''}" onclick="toggle('${s.id}','${b.id}','cut')">✕ Cut</button></div></div>`;
+  });
+  el.innerHTML=h+'</div>';
+}
+
+function renderTransitions(s,el){
+  const trans=s.blocks.filter(b=>b.type==='transition');
+  const groups={};
+  trans.forEach(b=>{if(!groups[b.shotName])groups[b.shotName]=[];groups[b.shotName].push(b);});
+  let h=`<div class="sec-hd"><div class="sec-title">Transitions (${trans.length} total)</div></div>`;
+  Object.entries(groups).forEach(([name,blocks])=>{
+    h+=`<div style="margin-bottom:18px"><div style="font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px">${name} <span style="font-size:11px;color:var(--text3);font-weight:400">×${blocks.length}</span></div>`;
+    blocks.forEach((b,i)=>{h+=`<div class="block-row${b.done?' done':''}${b.cut?' cut':''}" id="bl-${b.id}"><span class="type-pill pill-transition">#${i+1}</span><div class="block-main block-desc">${b.desc||'—'}</div><button class="block-tick${b.done?' on':''}" onclick="toggle('${s.id}','${b.id}','done')">✓</button><button class="block-x${b.cut?' on':''}" onclick="toggle('${s.id}','${b.id}','cut')">✕</button></div>`;});
+    h+='</div>';
+  });
+  el.innerHTML=h;
+}
+
+function renderSubtitles(s,el){
+  const lines=s.blocks.filter(b=>b.type==='subtitle'||b.type==='voiceover');
+  let h=`<div class="sec-hd"><div class="sec-title">Dialogue & subtitles (${lines.length} lines)</div></div>`;
+  lines.forEach((b,i)=>{h+=`<div class="sub-line"><div class="sub-idx">${String(i+1).padStart(2,'0')}</div><span class="type-pill ${b.type==='voiceover'?'pill-voiceover':'pill-subtitle'}" style="flex-shrink:0;align-self:flex-start;margin-top:1px">${b.type==='voiceover'?'VO':'SUB'}</span><div class="sub-text">${fp(b.spoken)}</div></div>`;});
+  el.innerHTML=h;
+}
+
+function renderTimeline(s,el){
+  let h=`<div class="sec-hd"><div class="sec-title">Shot timeline (${s.blocks.length} events)</div></div><div class="timeline">`;
+  s.blocks.forEach((b,i)=>{
+    const label=b.type==='subtitle'||b.type==='voiceover'?b.spoken:(b.shotName+(b.desc?' — '+b.desc:''));
+    h+=`<div class="tl-item"><div class="tl-dot" style="background:${TC[b.type]||'#ccc'}"></div><div class="tl-card"><div class="tl-meta">${String(i+1).padStart(2,'0')} · ${b.type}${b.shotName?' · '+b.shotName:''}</div><div class="tl-text">${fp(label)}</div></div></div>`;
+  });
+  el.innerHTML=h+'</div>';
+}
+
+function renderNotes(s,el){
+  const done=s.blocks.filter(b=>b.done).length;
+  const cut=s.blocks.filter(b=>b.cut).length;
+  el.innerHTML=`<div class="sec-hd"><div class="sec-title">Notes</div></div><textarea class="notes-ta" placeholder="Notes, reminders, shoot checklist…" oninput="saveNotes('${s.id}',this.value)">${s.notes||''}</textarea><div class="divider"></div><div class="sec-hd"><div class="sec-title">Script info</div></div><div class="stat-grid"><div class="stat-card"><div class="stat-label">Total blocks</div><div class="stat-val">${s.blocks.length}</div></div><div class="stat-card"><div class="stat-label">Shots</div><div class="stat-val" style="color:#c2410c">${s.blocks.filter(b=>b.type==='shot').length}</div></div><div class="stat-card"><div class="stat-label">Transitions</div><div class="stat-val" style="color:#1d4ed8">${s.blocks.filter(b=>b.type==='transition').length}</div></div><div class="stat-card"><div class="stat-label">Lines</div><div class="stat-val" style="color:#166534">${s.blocks.filter(b=>b.type==='subtitle'||b.type==='voiceover').length}</div></div><div class="stat-card"><div class="stat-label">Done</div><div class="stat-val" style="color:var(--green)">${done}</div></div><div class="stat-card"><div class="stat-label">Cut</div><div class="stat-val" style="color:var(--red)">${cut}</div></div></div>`;
+}
+
+window.saveNotes=(id,v)=>{const s=scr(id);if(s){s.notes=v;save();}};
+window.toggle=(sid,bid,field)=>{
+  const s=scr(sid);const b=s.blocks.find(x=>x.id===bid);if(!b)return;
+  b[field]=!b[field];
+  if(field==='done'&&b.done)b.cut=false;
+  if(field==='cut'&&b.cut)b.done=false;
+  save();renderContent(sid);
+};
+
+window.openModal=html=>{document.getElementById('modalBox').innerHTML=html;document.getElementById('modalOverlay').classList.add('open');};
+window.closeModal=()=>document.getElementById('modalOverlay').classList.remove('open');
+window.closeModalOutside=e=>{if(e.target===document.getElementById('modalOverlay'))closeModal();};
+window.selColor=el=>{document.querySelectorAll('.color-dot').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');};
+window.selStatus=el=>{document.querySelectorAll('.status-chip').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');};
+
+window.openNewProjectModal=()=>{openModal(`<div class="modal-title">New project</div><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="np-name" placeholder="e.g. Curate Launch" autofocus></div><div class="form-group"><label class="form-label">Colour</label><div class="color-row">${COLORS.map((c,i)=>`<div class="color-dot${i===0?' sel':''}" style="background:${c}" data-c="${c}" onclick="selColor(this)"></div>`).join('')}</div></div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="createProject()">Create</button></div>`);};
+window.createProject=()=>{const name=document.getElementById('np-name').value.trim();if(!name)return;const color=document.querySelector('.color-dot.sel')?.dataset.c||COLORS[0];const p={id:uid(),name,color};if(!S.projects)S.projects=[];S.projects.push(p);save();closeModal();renderSb();selProject(p.id);};
+window.openEditProjectModal=id=>{const p=proj(id);openModal(`<div class="modal-title">Edit project</div><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="ep-name" value="${p.name}"></div><div class="form-group"><label class="form-label">Colour</label><div class="color-row">${COLORS.map(c=>`<div class="color-dot${p.color===c?' sel':''}" style="background:${c}" data-c="${c}" onclick="selColor(this)"></div>`).join('')}</div></div><div class="modal-actions"><button class="btn-ghost btn-danger" onclick="deleteProject('${id}')">Delete project</button><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveProject('${id}')">Save</button></div>`);};
+window.saveProject=id=>{const p=proj(id);p.name=document.getElementById('ep-name').value.trim()||p.name;p.color=document.querySelector('.color-dot.sel')?.dataset.c||p.color;save();closeModal();renderSb();showProject(id);};
+window.deleteProject=id=>{if(!confirm('Delete this project and all its scripts?'))return;S.projects=S.projects.filter(p=>p.id!==id);S.scripts=S.scripts.filter(s=>s.projectId!==id);if(S.apid===id){S.apid=null;S.asid=null;}save();closeModal();renderSb();document.getElementById('mainView').style.display='none';document.getElementById('welcomeScreen').style.display='flex';};
+window.openNewScriptModal=projId=>{const pid=projId||S.apid;openModal(`<div class="modal-title">New script</div><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="ns-name" placeholder="e.g. Why I'm Building Curate" autofocus></div><div class="form-group"><label class="form-label">Project</label><select class="form-select" id="ns-proj">${(S.projects||[]).map(p=>`<option value="${p.id}"${p.id===pid?' selected':''}>${p.name}</option>`).join('')}</select></div><div class="form-group"><label class="form-label">Status</label><div class="status-row">${STATUSES.map((s,i)=>`<div class="status-chip badge badge-${s}${i===0?' sel':''}" data-s="${s}" onclick="selStatus(this)">${s}</div>`).join('')}</div></div><div class="form-group"><label class="form-label">Due date</label><input class="form-input" id="ns-due" type="date"></div><div class="form-group"><label class="form-label">Platforms</label><div class="plats-row">${PLATFORMS.map(p=>`<label><input type="checkbox" value="${p}" checked style="accent-color:var(--text)"> ${p}</label>`).join('')}</div></div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="createScript()">Create</button></div>`);};
+window.createScript=()=>{const name=document.getElementById('ns-name').value.trim();if(!name)return;const projectId=document.getElementById('ns-proj').value;const status=document.querySelector('.status-chip.sel')?.dataset.s||'draft';const due=document.getElementById('ns-due').value;const platforms=[...document.querySelectorAll('input[type=checkbox]:checked')].map(c=>c.value);const s={id:uid(),projectId,name,status,due,platforms,notes:'',blocks:[]};if(!S.scripts)S.scripts=[];S.scripts.push(s);save();closeModal();renderSb();selScript(s.id);};
+window.openEditScriptModal=id=>{const s=scr(id);openModal(`<div class="modal-title">Edit script</div><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="es-name" value="${s.name}"></div><div class="form-group"><label class="form-label">Status</label><div class="status-row">${STATUSES.map(opt=>`<div class="status-chip badge badge-${opt}${s.status===opt?' sel':''}" data-s="${opt}" onclick="selStatus(this)">${opt}</div>`).join('')}</div></div><div class="form-group"><label class="form-label">Due date</label><input class="form-input" id="es-due" type="date" value="${s.due||''}"></div><div class="form-group"><label class="form-label">Platforms</label><div class="plats-row">${PLATFORMS.map(p=>`<label><input type="checkbox" value="${p}" ${(s.platforms||[]).includes(p)?'checked':''} style="accent-color:var(--text)"> ${p}</label>`).join('')}</div></div><div class="modal-actions"><button class="btn-ghost btn-danger" onclick="deleteScript('${id}')">Delete script</button><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveScript('${id}')">Save</button></div>`);};
+window.saveScript=id=>{const s=scr(id);s.name=document.getElementById('es-name').value.trim()||s.name;s.status=document.querySelector('.status-chip.sel')?.dataset.s||s.status;s.due=document.getElementById('es-due').value;s.platforms=[...document.querySelectorAll('input[type=checkbox]:checked')].map(c=>c.value);save();closeModal();renderSb();showScript(id);};
+window.deleteScript=id=>{const s=scr(id);const pid=s.projectId;S.scripts=S.scripts.filter(x=>x.id!==id);if(S.asid===id)S.asid=null;save();closeModal();renderSb();selProject(pid);};
+</script>
+</body>
+</html>
