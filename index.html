@@ -329,7 +329,6 @@ const db = getFirestore(app);
 let currentUser = null;
 let saveTimeout = null;
 let unsubscribe = null;
-let redirectChecked = false;
 
 function showScreen(name) {
   document.getElementById('loadingScreen').style.display = name==='loading' ? 'flex' : 'none';
@@ -361,7 +360,17 @@ window.doApple = () => {
   signInWithRedirect(auth, provider);
 };
 
-async function loadUser(user) {
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    currentUser = null;
+    if (unsubscribe) {
+      unsubscribe();
+      unsubscribe = null;
+    }
+    showScreen('login');
+    return;
+  }
+
   currentUser = user;
 
   const needsVerify = user.providerData.length === 1 &&
@@ -426,40 +435,17 @@ async function loadUser(user) {
       }
     }
   });
-}
-
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    currentUser = null;
-    if (unsubscribe) {
-      unsubscribe();
-      unsubscribe = null;
-    }
-    if (!redirectChecked) {
-      showScreen('loading');
-      return;
-    }
-    showScreen('login');
-    return;
-  }
-
-  await loadUser(user);
 });
 
 async function handleRedirectResult() {
   try {
     const result = await getRedirectResult(auth);
-    redirectChecked = true;
     if (result?.user) {
-      await loadUser(result.user);
-      return;
+      // Redirect completed - onAuthStateChanged will handle the rest.
     }
-    if (!auth.currentUser && !currentUser) showScreen('login');
   } catch(e) {
-    redirectChecked = true;
     console.error('Redirect error:', e);
     document.getElementById('loginErr') && (document.getElementById('loginErr').textContent = friendlyError(e.code));
-    showScreen('login');
   }
 }
 
