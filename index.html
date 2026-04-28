@@ -311,7 +311,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, reload, GoogleAuthProvider, OAuthProvider, GithubAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCaq7I65QuHhhrK3QfoaR5dbJ_M98kA6U4",
@@ -351,11 +351,10 @@ function friendlyError(code) {
   return map[code] || 'Something went wrong. Please try again.';
 }
 
-// Handle redirect result on page load
 try {
   const result = await getRedirectResult(auth);
   if (result?.user) {
-    // Redirect completed — onAuthStateChanged will handle the rest
+    // Redirect completed — onAuthStateChanged will handle the rest.
   }
 } catch(e) {
   console.error('Redirect error:', e);
@@ -374,7 +373,10 @@ window.doApple = () => {
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     currentUser = null;
-    if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+    if (unsubscribe) {
+      unsubscribe();
+      unsubscribe = null;
+    }
     showScreen('login');
     return;
   }
@@ -391,17 +393,57 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
+  const userRef = doc(db, 'users', user.uid);
+
+  try {
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      await setDoc(userRef, {
+        email: user.email || '',
+        displayName: user.displayName || '',
+        projects: [],
+        scripts: [],
+        apid: null,
+        asid: null,
+        view: 'full',
+        createdAt: new Date().toISOString()
+      });
+    }
+  } catch (e) {
+    console.error('Could not create/load user document:', e);
+  }
+
   document.getElementById('userEmail').textContent = user.email || user.displayName || 'User';
   document.getElementById('userAvatar').textContent = (user.email || user.displayName || 'U')[0].toUpperCase();
   showScreen('app');
 
-  const userRef = doc(db, 'users', user.uid);
+  if (unsubscribe) {
+    unsubscribe();
+    unsubscribe = null;
+  }
+
   unsubscribe = onSnapshot(userRef, (snap) => {
-    window.S = snap.exists() ? snap.data() : { projects: [], scripts: [] };
+    window.S = snap.exists() ? snap.data() : {
+      projects: [],
+      scripts: [],
+      apid: null,
+      asid: null,
+      view: 'full'
+    };
+
+    if (!window.S.projects) window.S.projects = [];
+    if (!window.S.scripts) window.S.scripts = [];
+    if (!window.S.view) window.S.view = 'full';
+
     window.renderSb();
+
     if (!window.S.asid && !window.S.apid) {
-      if (window.S.scripts && window.S.scripts.length > 0) window.selScript(window.S.scripts[0].id);
-      else if (window.S.projects && window.S.projects.length > 0) window.selProject(window.S.projects[0].id);
+      if (window.S.scripts && window.S.scripts.length > 0) {
+        window.selScript(window.S.scripts[0].id);
+      } else if (window.S.projects && window.S.projects.length > 0) {
+        window.selProject(window.S.projects[0].id);
+      }
     }
   });
 });
