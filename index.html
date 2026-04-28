@@ -8,56 +8,31 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #f5f4f1;
-  --surface: #ffffff;
-  --border: #e5e3de;
-  --border2: #d0cdc6;
-  --text: #1a1916;
-  --text2: #6b6860;
-  --text3: #a8a59f;
-  --green: #3a7d44;
-  --green-bg: #edf5ef;
-  --red: #c0392b;
-  --red-bg: #fdf0ee;
-  --blue: #2563eb;
-  --blue-bg: #eff4ff;
-  --amber: #b45309;
-  --amber-bg: #fef3c7;
-  --radius: 10px;
-  --radius-sm: 6px;
+  --bg: #f5f4f1; --surface: #ffffff; --border: #e5e3de; --border2: #d0cdc6;
+  --text: #1a1916; --text2: #6b6860; --text3: #a8a59f;
+  --green: #3a7d44; --green-bg: #edf5ef; --red: #c0392b; --red-bg: #fdf0ee;
+  --blue: #2563eb; --blue-bg: #eff4ff; --amber: #b45309; --amber-bg: #fef3c7;
+  --radius: 10px; --radius-sm: 6px;
 }
 body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; line-height: 1.5; }
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
-/* ── AUTH ── */
 .auth-wrap { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg); }
 .auth-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 36px; width: 400px; max-width: 92vw; }
 .auth-logo { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 4px; }
 .auth-sub { font-size: 13px; color: var(--text2); margin-bottom: 24px; line-height: 1.6; }
-
-/* SOCIAL BUTTONS */
 .social-btns { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-.social-btn {
-  display: flex; align-items: center; gap: 12px;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 10px 14px;
-  font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
-  color: var(--text); cursor: pointer; transition: all 0.15s; width: 100%;
-  text-align: left;
-}
+.social-btn { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer; transition: all 0.15s; width: 100%; text-align: left; }
 .social-btn:hover { background: var(--bg); border-color: var(--border2); }
+.social-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .social-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
 .social-btn.apple { background: #000; color: #fff; border-color: #000; }
 .social-btn.apple:hover { background: #222; }
-
-/* DIVIDER */
 .or-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
 .or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 .or-divider span { font-size: 11px; color: var(--text3); font-weight: 500; }
-
-/* EMAIL FORM */
 .auth-tabs { display: flex; gap: 4px; background: var(--bg); border-radius: var(--radius-sm); padding: 3px; margin-bottom: 16px; }
 .auth-tab { flex: 1; text-align: center; padding: 7px; font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; border-radius: 4px; transition: all 0.15s; }
 .auth-tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
@@ -71,8 +46,10 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 .auth-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .auth-err { font-size: 12px; color: var(--red); margin-top: 10px; min-height: 16px; }
 .icloud-warning { font-size: 11px; color: var(--amber); background: var(--amber-bg); border: 1px solid #fde68a; border-radius: var(--radius-sm); padding: 8px 10px; margin-bottom: 12px; line-height: 1.5; }
-
-/* VERIFY SCREEN */
+.loading-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; flex-direction: column; gap: 12px; }
+.loading-spinner { width: 28px; height: 28px; border: 2px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 13px; color: var(--text3); }
 .verify-icon { font-size: 40px; margin-bottom: 16px; }
 .verify-email-display { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 13px; font-weight: 500; margin-bottom: 16px; word-break: break-all; }
 .verify-status { font-size: 12px; padding: 8px 12px; border-radius: var(--radius-sm); margin-top: 10px; }
@@ -81,7 +58,6 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 .auth-link { font-size: 12px; color: var(--text3); margin-top: 10px; cursor: pointer; text-decoration: underline; display: block; }
 .auth-link:hover { color: var(--text2); }
 
-/* ── APP ── */
 #appScreen { display: none; }
 .app { display: flex; height: 100vh; overflow: hidden; }
 .sidebar { width: 240px; min-width: 240px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
@@ -227,46 +203,42 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
-<div id="loginScreen" class="auth-wrap">
+<!-- LOADING -->
+<div id="loadingScreen" class="loading-screen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Loading…</div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="auth-wrap" style="display:none">
   <div class="auth-box">
     <div class="auth-logo">Director</div>
     <div class="auth-sub">Your script command centre</div>
-
     <div class="social-btns">
-      <!-- Google -->
-      <button class="social-btn" onclick="doGoogle()">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      <button class="social-btn" id="googleBtn" onclick="doGoogle()">
+        <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
         Continue with Google
       </button>
-
-      <!-- Apple -->
-      <button class="social-btn apple" onclick="doApple()">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+      <button class="social-btn apple" id="appleBtn" onclick="doApple()">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
         Continue with Apple
       </button>
-
-      <!-- GitHub -->
-      <button class="social-btn" onclick="doGitHub()">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      <button class="social-btn" id="githubBtn" onclick="doGitHub()">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
         Continue with GitHub
       </button>
     </div>
-
     <div class="or-divider"><span>or sign in with email</span></div>
-
     <div class="auth-tabs">
       <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Sign in</div>
       <div class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Create account</div>
     </div>
-
     <div id="loginForm">
       <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="loginEmail" type="email" placeholder="you@example.com"></div>
       <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="loginPassword" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
       <button class="auth-btn" id="loginBtn" onclick="doLogin()">Sign in</button>
       <div class="auth-err" id="loginErr"></div>
     </div>
-
     <div id="signupForm" style="display:none">
       <div class="icloud-warning">Use a Gmail address — iCloud emails may not receive the verification email.</div>
       <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="signupEmail" type="email" placeholder="you@gmail.com"></div>
@@ -277,7 +249,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
   </div>
 </div>
 
-<!-- VERIFY SCREEN -->
+<!-- VERIFY -->
 <div id="verifyScreen" class="auth-wrap" style="display:none">
   <div class="auth-box">
     <div class="verify-icon">✉️</div>
@@ -338,7 +310,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, reload, GoogleAuthProvider, OAuthProvider, GithubAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, reload, GoogleAuthProvider, OAuthProvider, GithubAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -359,6 +331,7 @@ let saveTimeout = null;
 let unsubscribe = null;
 
 function showScreen(name) {
+  document.getElementById('loadingScreen').style.display = name==='loading' ? 'flex' : 'none';
   document.getElementById('loginScreen').style.display = name==='login' ? 'flex' : 'none';
   document.getElementById('verifyScreen').style.display = name==='verify' ? 'flex' : 'none';
   document.getElementById('appScreen').style.display = name==='app' ? 'block' : 'none';
@@ -373,29 +346,29 @@ function friendlyError(code) {
     'auth/weak-password': 'Password must be at least 6 characters.',
     'auth/invalid-credential': 'Email or password is incorrect.',
     'auth/too-many-requests': 'Too many attempts. Please try again later.',
-    'auth/popup-closed-by-user': 'Sign-in cancelled.',
-    'auth/popup-blocked': 'Popup was blocked. Please allow popups for this site.',
     'auth/account-exists-with-different-credential': 'An account already exists with this email using a different sign-in method.',
   };
   return map[code] || 'Something went wrong. Please try again.';
 }
 
-async function handleSocialSignIn(provider) {
-  try {
-    await signInWithPopup(auth, provider);
-  } catch(e) {
-    document.getElementById('loginErr') && (document.getElementById('loginErr').textContent = friendlyError(e.code));
-    console.error(e);
+// Handle redirect result on page load
+try {
+  const result = await getRedirectResult(auth);
+  if (result?.user) {
+    // Redirect completed — onAuthStateChanged will handle the rest
   }
+} catch(e) {
+  console.error('Redirect error:', e);
+  document.getElementById('loginErr') && (document.getElementById('loginErr').textContent = friendlyError(e.code));
 }
 
-window.doGoogle = () => handleSocialSignIn(new GoogleAuthProvider());
-window.doGitHub = () => handleSocialSignIn(new GithubAuthProvider());
+window.doGoogle = () => signInWithRedirect(auth, new GoogleAuthProvider());
+window.doGitHub = () => signInWithRedirect(auth, new GithubAuthProvider());
 window.doApple = () => {
   const provider = new OAuthProvider('apple.com');
   provider.addScope('email');
   provider.addScope('name');
-  handleSocialSignIn(provider);
+  signInWithRedirect(auth, provider);
 };
 
 onAuthStateChanged(auth, async (user) => {
@@ -408,8 +381,9 @@ onAuthStateChanged(auth, async (user) => {
 
   currentUser = user;
 
-  // Social sign-ins are auto-verified, only email/password needs verification
-  const needsVerify = user.providerData.length === 1 && user.providerData[0].providerId === 'password' && !user.emailVerified;
+  const needsVerify = user.providerData.length === 1 &&
+    user.providerData[0].providerId === 'password' &&
+    !user.emailVerified;
 
   if (needsVerify) {
     document.getElementById('verifyEmailDisplay').textContent = user.email;
@@ -484,7 +458,7 @@ window.resendVerification = async () => {
   try {
     await sendEmailVerification(auth.currentUser);
     const status = document.getElementById('verifyStatus');
-    status.style.display = 'block'; status.className = 'verify-status success'; status.textContent = 'Verification email resent — check your inbox.';
+    status.style.display = 'block'; status.className = 'verify-status success'; status.textContent = 'Resent — check your inbox.';
   } catch(e) { document.getElementById('verifyErr').textContent = 'Could not resend. Try again in a minute.'; }
 };
 
@@ -663,7 +637,6 @@ window.closeModal=()=>document.getElementById('modalOverlay').classList.remove('
 window.closeModalOutside=e=>{if(e.target===document.getElementById('modalOverlay'))closeModal();};
 window.selColor=el=>{document.querySelectorAll('.color-dot').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');};
 window.selStatus=el=>{document.querySelectorAll('.status-chip').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');};
-
 window.openNewProjectModal=()=>{openModal(`<div class="modal-title">New project</div><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="np-name" placeholder="e.g. Curate Launch" autofocus></div><div class="form-group"><label class="form-label">Colour</label><div class="color-row">${COLORS.map((c,i)=>`<div class="color-dot${i===0?' sel':''}" style="background:${c}" data-c="${c}" onclick="selColor(this)"></div>`).join('')}</div></div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="createProject()">Create</button></div>`);};
 window.createProject=()=>{const name=document.getElementById('np-name').value.trim();if(!name)return;const color=document.querySelector('.color-dot.sel')?.dataset.c||COLORS[0];const p={id:uid(),name,color};if(!S.projects)S.projects=[];S.projects.push(p);save();closeModal();renderSb();selProject(p.id);};
 window.openEditProjectModal=id=>{const p=proj(id);openModal(`<div class="modal-title">Edit project</div><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="ep-name" value="${p.name}"></div><div class="form-group"><label class="form-label">Colour</label><div class="color-row">${COLORS.map(c=>`<div class="color-dot${p.color===c?' sel':''}" style="background:${c}" data-c="${c}" onclick="selColor(this)"></div>`).join('')}</div></div><div class="modal-actions"><button class="btn-ghost btn-danger" onclick="deleteProject('${id}')">Delete project</button><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveProject('${id}')">Save</button></div>`);};
