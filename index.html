@@ -310,7 +310,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, reload, GoogleAuthProvider, OAuthProvider, GithubAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, reload, GoogleAuthProvider, OAuthProvider, GithubAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, onSnapshot, deleteField } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -329,6 +329,7 @@ const db = getFirestore(app);
 let currentUser = null;
 let saveTimeout = null;
 let unsubscribe = null;
+let redirectChecked = false;
 
 function showScreen(name) {
   document.getElementById('loadingScreen').style.display = name==='loading' ? 'flex' : 'none';
@@ -347,30 +348,38 @@ function friendlyError(code) {
     'auth/invalid-credential': 'Email or password is incorrect.',
     'auth/too-many-requests': 'Too many attempts. Please try again later.',
     'auth/account-exists-with-different-credential': 'An account already exists with this email using a different sign-in method.',
+    'auth/operation-not-allowed': 'This sign-in provider is not enabled in Firebase.',
+    'auth/unauthorized-domain': 'This domain is not authorized in Firebase Authentication.',
+    'auth/popup-blocked': 'The sign-in popup was blocked. Allow popups for this site and try again.',
+    'auth/popup-closed-by-user': 'The sign-in popup was closed before finishing.',
   };
   return map[code] || 'Something went wrong. Please try again.';
 }
 
-window.doGoogle = () => signInWithRedirect(auth, new GoogleAuthProvider());
-window.doGitHub = () => signInWithRedirect(auth, new GithubAuthProvider());
+async function startProviderSignIn(provider) {
+  const err = document.getElementById('loginErr');
+  if (err) err.textContent = '';
+  showScreen('loading');
+  try {
+    const cred = await signInWithPopup(auth, provider);
+    await loadUser(cred.user);
+  } catch(e) {
+    console.error('Provider sign-in error:', e);
+    if (err) err.textContent = friendlyError(e.code);
+    showScreen('login');
+  }
+}
+
+window.doGoogle = () => startProviderSignIn(new GoogleAuthProvider());
+window.doGitHub = () => startProviderSignIn(new GithubAuthProvider());
 window.doApple = () => {
   const provider = new OAuthProvider('apple.com');
   provider.addScope('email');
   provider.addScope('name');
-  signInWithRedirect(auth, provider);
+  startProviderSignIn(provider);
 };
 
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    currentUser = null;
-    if (unsubscribe) {
-      unsubscribe();
-      unsubscribe = null;
-    }
-    showScreen('login');
-    return;
-  }
-
+async function loadUser(user) {
   currentUser = user;
 
   const needsVerify = user.providerData.length === 1 &&
@@ -400,6 +409,9 @@ onAuthStateChanged(auth, async (user) => {
     }
   } catch (e) {
     console.error('Could not create/load user document:', e);
+    document.getElementById('loginErr').textContent = e.code === 'permission-denied' ? 'Signed in, but Firestore blocked saving your profile. Check Firestore rules for users/{uid}.' : 'Signed in, but could not save your profile. Try again.';
+    showScreen('login');
+    return;
   }
 
   document.getElementById('userEmail').textContent = user.email || user.displayName || 'User';
@@ -435,17 +447,40 @@ onAuthStateChanged(auth, async (user) => {
       }
     }
   });
+}
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    currentUser = null;
+    if (unsubscribe) {
+      unsubscribe();
+      unsubscribe = null;
+    }
+    if (!redirectChecked) {
+      showScreen('loading');
+      return;
+    }
+    showScreen('login');
+    return;
+  }
+
+  await loadUser(user);
 });
 
 async function handleRedirectResult() {
   try {
     const result = await getRedirectResult(auth);
+    redirectChecked = true;
     if (result?.user) {
-      // Redirect completed - onAuthStateChanged will handle the rest.
+      await loadUser(result.user);
+      return;
     }
+    if (!auth.currentUser && !currentUser) showScreen('login');
   } catch(e) {
+    redirectChecked = true;
     console.error('Redirect error:', e);
     document.getElementById('loginErr') && (document.getElementById('loginErr').textContent = friendlyError(e.code));
+    showScreen('login');
   }
 }
 
