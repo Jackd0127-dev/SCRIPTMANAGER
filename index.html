@@ -311,7 +311,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification, reload, GoogleAuthProvider, OAuthProvider, GithubAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot, deleteField } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCaq7I65QuHhhrK3QfoaR5dbJ_M98kA6U4",
@@ -349,16 +349,6 @@ function friendlyError(code) {
     'auth/account-exists-with-different-credential': 'An account already exists with this email using a different sign-in method.',
   };
   return map[code] || 'Something went wrong. Please try again.';
-}
-
-try {
-  const result = await getRedirectResult(auth);
-  if (result?.user) {
-    // Redirect completed — onAuthStateChanged will handle the rest.
-  }
-} catch(e) {
-  console.error('Redirect error:', e);
-  document.getElementById('loginErr') && (document.getElementById('loginErr').textContent = friendlyError(e.code));
 }
 
 window.doGoogle = () => signInWithRedirect(auth, new GoogleAuthProvider());
@@ -404,8 +394,6 @@ onAuthStateChanged(auth, async (user) => {
         displayName: user.displayName || '',
         projects: [],
         scripts: [],
-        apid: null,
-        asid: null,
         view: 'full',
         createdAt: new Date().toISOString()
       });
@@ -424,17 +412,18 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   unsubscribe = onSnapshot(userRef, (snap) => {
-    window.S = snap.exists() ? snap.data() : {
-      projects: [],
-      scripts: [],
-      apid: null,
-      asid: null,
-      view: 'full'
-    };
+    const previous = window.S || {};
+    const data = snap.exists() ? snap.data() : {};
+    window.S = { ...data };
 
-    if (!window.S.projects) window.S.projects = [];
-    if (!window.S.scripts) window.S.scripts = [];
-    if (!window.S.view) window.S.view = 'full';
+    window.S.projects = Array.isArray(data.projects) ? data.projects : [];
+    window.S.scripts = Array.isArray(data.scripts) ? data.scripts : [];
+    window.S.view = data.view || previous.view || 'full';
+    const hasProject = id => !!id && window.S.projects.some(p => p.id === id);
+    const hasScript = id => !!id && window.S.scripts.some(s => s.id === id);
+    window.S.asid = hasScript(data.asid) ? data.asid : (hasScript(previous.asid) ? previous.asid : null);
+    window.S.apid = hasProject(data.apid) ? data.apid : (hasProject(previous.apid) ? previous.apid : null);
+    if (window.S.asid && !window.S.apid) window.S.apid = window.S.scripts.find(s => s.id === window.S.asid)?.projectId || null;
 
     window.renderSb();
 
@@ -447,6 +436,20 @@ onAuthStateChanged(auth, async (user) => {
     }
   });
 });
+
+async function handleRedirectResult() {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result?.user) {
+      // Redirect completed - onAuthStateChanged will handle the rest.
+    }
+  } catch(e) {
+    console.error('Redirect error:', e);
+    document.getElementById('loginErr') && (document.getElementById('loginErr').textContent = friendlyError(e.code));
+  }
+}
+
+handleRedirectResult();
 
 window.doLogin = async () => {
   const email = document.getElementById('loginEmail').value.trim();
@@ -511,13 +514,25 @@ window.switchAuthTab = (tab) => {
   document.getElementById('signupForm').style.display = tab==='signup' ? 'block' : 'none';
 };
 
+function stateForSave() {
+  const data = { ...window.S };
+  data.projects = Array.isArray(window.S.projects) ? window.S.projects : [];
+  data.scripts = Array.isArray(window.S.scripts) ? window.S.scripts : [];
+  const validScript = data.asid && data.scripts.find(s => s.id === data.asid);
+  const validProject = data.apid && data.projects.find(p => p.id === data.apid);
+  const scriptProject = validScript && data.projects.find(p => p.id === validScript.projectId);
+  data.asid = validScript ? validScript.id : deleteField();
+  data.apid = validProject ? validProject.id : (scriptProject ? scriptProject.id : deleteField());
+  return data;
+}
+
 window.save = () => {
   if (!currentUser) return;
   const ind = document.getElementById('savingIndicator');
   ind.classList.add('show');
   clearTimeout(saveTimeout);
   saveTimeout = setTimeout(async () => {
-    try { await setDoc(doc(db, 'users', currentUser.uid), window.S); } catch(e) { console.error(e); }
+    try { await setDoc(doc(db, 'users', currentUser.uid), stateForSave(), { merge: true }); } catch(e) { console.error(e); }
     ind.classList.remove('show');
   }, 800);
 };
