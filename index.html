@@ -342,7 +342,7 @@ function showScreen(name) {
   document.getElementById('appScreen').style.display = name==='app' ? 'block' : 'none';
 }
 
-function friendlyError(code) {
+function friendlyError(code, message='') {
   const map = {
     'auth/invalid-email': 'Invalid email address.',
     'auth/user-not-found': 'No account found with that email.',
@@ -356,8 +356,11 @@ function friendlyError(code) {
     'auth/unauthorized-domain': 'This domain is not authorized in Firebase Authentication.',
     'auth/popup-blocked': 'The sign-in popup was blocked. Allow popups for this site and try again.',
     'auth/popup-closed-by-user': 'The sign-in popup was closed before finishing.',
+    'auth/network-request-failed': 'Network request failed. Check the domain and try again.',
+    'auth/internal-error': 'Firebase returned an internal auth error. Check this provider setup in Firebase.',
+    'auth/cancelled-popup-request': 'Another sign-in popup was already open. Close it and try again.',
   };
-  return map[code] || 'Something went wrong. Please try again.';
+  return map[code] || `Something went wrong${code ? ` (${code})` : ''}${message ? `: ${message}` : ''}`;
 }
 
 async function startProviderSignIn(provider) {
@@ -369,7 +372,7 @@ async function startProviderSignIn(provider) {
     await loadUser(cred.user);
   } catch(e) {
     console.error('Provider sign-in error:', e);
-    if (err) err.textContent = friendlyError(e.code);
+    if (err) err.textContent = friendlyError(e.code, e.message);
     showScreen('login');
   }
 }
@@ -483,7 +486,7 @@ async function handleRedirectResult() {
   } catch(e) {
     redirectChecked = true;
     console.error('Redirect error:', e);
-    document.getElementById('loginErr') && (document.getElementById('loginErr').textContent = friendlyError(e.code));
+    document.getElementById('loginErr') && (document.getElementById('loginErr').textContent = friendlyError(e.code, e.message));
     showScreen('login');
   }
 }
@@ -497,7 +500,7 @@ window.doLogin = async () => {
   const btn = document.getElementById('loginBtn');
   err.textContent = ''; btn.disabled = true; btn.textContent = 'Signing in…';
   try { await signInWithEmailAndPassword(auth, email, pass); }
-  catch(e) { err.textContent = friendlyError(e.code); btn.disabled = false; btn.textContent = 'Sign in'; }
+  catch(e) { err.textContent = friendlyError(e.code, e.message); btn.disabled = false; btn.textContent = 'Sign in'; }
 };
 
 window.doSignup = async () => {
@@ -509,7 +512,7 @@ window.doSignup = async () => {
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
     await sendEmailVerification(cred.user);
-  } catch(e) { err.textContent = friendlyError(e.code); btn.disabled = false; btn.textContent = 'Create account'; }
+  } catch(e) { err.textContent = friendlyError(e.code, e.message); btn.disabled = false; btn.textContent = 'Create account'; }
 };
 
 window.doSignout = async () => {
