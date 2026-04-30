@@ -1535,6 +1535,46 @@ function renderLoadedWorkspace() {
 
 }
 
+function sidebarEsc(v) {
+
+  return String(v ?? '').replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
+
+}
+
+function renderSidebarFallback() {
+
+  const el = document.getElementById('sidebarBody');
+
+  if (!el || !window.S) return;
+
+  const projects = Array.isArray(window.S.projects) ? window.S.projects : [];
+
+  const scripts = Array.isArray(window.S.scripts) ? window.S.scripts : [];
+
+  const statusColors = { draft:'#b45309', ready:'#3a7d44', shot:'#c0392b', posted:'#2563eb' };
+
+  if (!projects.length) {
+
+    el.innerHTML = `<div style="padding:20px 16px;font-size:12px;color:var(--text3)">No projects yet.</div>`;
+
+    return;
+
+  }
+
+  el.innerHTML = projects.map(project => {
+
+    const projectScripts = scripts.filter(script => script.projectId === project.id);
+
+    const color = project.color || '#1a1916';
+
+    const active = window.S.apid === project.id && !window.S.asid ? ' active' : '';
+
+    return `<div class="nav-project${active}" style="--project-color:${color};--project-soft:rgba(26,25,22,0.06);--project-border:rgba(26,25,22,0.16);--project-shadow:rgba(26,25,22,0.08)" onclick="window.selProject&&selProject('${sidebarEsc(project.id)}')"><button class="project-toggle" type="button" aria-label="Toggle scripts"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="proj-dot" style="background:${color}"></div><div class="proj-name">${sidebarEsc(project.name || 'Untitled project')}</div><div class="proj-count">${projectScripts.length}</div></div><div class="project-scripts">${projectScripts.map(script => `<div class="nav-script${window.S.asid===script.id?' active':''}" onclick="window.selScript&&selScript('${sidebarEsc(script.id)}')"><div class="script-pip" style="background:${statusColors[script.status]||'#ccc'}"></div><div class="script-nav-name">${sidebarEsc(script.name || 'Untitled script')}</div></div>`).join('')}</div>`;
+
+  }).join('');
+
+}
+
 function hydrateWorkspaceData(data, previous = window.S || {}) {
 
   window.S = { ...data };
@@ -1556,6 +1596,8 @@ function hydrateWorkspaceData(data, previous = window.S || {}) {
   window.S.apid = hasProject(data.apid) ? data.apid : (hasProject(previous.apid) ? previous.apid : null);
 
   if (window.S.asid && !window.S.apid) window.S.apid = window.S.scripts.find(s => s.id === window.S.asid)?.projectId || null;
+
+  renderSidebarFallback();
 
 }
 
@@ -2192,6 +2234,21 @@ window.renderSb = function(filter='') {
 
 
 window.filterSb = v => renderSb(v);
+
+window.recoverSidebarIfLoading = () => {
+  const el = document.getElementById('sidebarBody');
+  if (!el || !/Loading/.test(el.textContent || '')) return;
+  if (window.S?.projects?.length || window.S?.scripts?.length) renderSb();
+};
+
+window.addEventListener('load', () => {
+  let attempts = 0;
+  const timer = setInterval(() => {
+    attempts += 1;
+    recoverSidebarIfLoading();
+    if (attempts >= 20 || !/Loading/.test(document.getElementById('sidebarBody')?.textContent || '')) clearInterval(timer);
+  }, 500);
+});
 
 window.toggleProjectScripts = id => {
   if (collapsedProjects.has(id)) collapsedProjects.delete(id);
