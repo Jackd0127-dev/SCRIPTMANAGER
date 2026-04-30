@@ -762,7 +762,8 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
   min-height: 100vh;
   margin: 0;
   padding: 28px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   color: var(--text);
   background:
     radial-gradient(circle at 14% 16%, rgba(78,205,196,0.11), transparent 32%),
@@ -883,7 +884,7 @@ body.theme-dark .flow-ribbons span { opacity: 1; background: linear-gradient(90d
 
 @keyframes ribbonRun { to { transform: translateX(135vw) rotate(-14deg); } }
 
-.working-stage { text-align: center; grid-template-columns: 1fr; }
+.working-stage { text-align: center; grid-template-columns: 1fr; align-items: center; min-height: calc(100dvh - 56px); padding: 64px 0 48px; }
 
 /* AI Spinner */
 .ai-spinner { position: relative; width: 80px; height: 80px; margin: 0 auto 44px; border-radius: 50%; }
@@ -1193,7 +1194,7 @@ body.theme-dark .flow-ribbons span { opacity: 1; background: linear-gradient(90d
   .project-choice-grid.import-full { grid-template-columns: 1fr; max-height: 190px; }
   .script-drop-zone.full textarea { min-height: 220px; }
   .import-top-actions { top: 12px; right: 12px; }
-  .working-stage { align-items: center; padding-top: 64px; }
+  .working-stage { align-items: center; padding: 64px 0 max(48px, env(safe-area-inset-bottom)); min-height: calc(100dvh - 36px); }
   .ai-spinner { width: 64px; height: 64px; }
   .working-stage h1 { font-size: 44px; }
   .working-steps { flex-direction: column; align-items: stretch; }
@@ -1490,6 +1491,66 @@ let unsubscribe = null;
 
 let redirectChecked = false;
 
+function renderLoadedWorkspace() {
+
+  if (!window.renderSb || !window.showProject || !window.showScript) {
+
+    setTimeout(renderLoadedWorkspace, 50);
+
+    return;
+
+  }
+
+  window.renderSb();
+
+  if (window.S.asid && window.S.scripts.some(s => s.id === window.S.asid)) {
+
+    window.showScript(window.S.asid);
+
+  } else if (window.S.apid && window.S.projects.some(p => p.id === window.S.apid)) {
+
+    window.showProject(window.S.apid);
+
+  } else {
+
+    const preferredProject = window.S.settings?.defaultProject && window.S.projects.find(p => p.id === window.S.settings.defaultProject);
+
+    if (preferredProject) window.selProject(preferredProject.id);
+    else if (window.S.scripts.length > 0) window.selScript(window.S.scripts[0].id);
+    else if (window.S.projects.length > 0) window.selProject(window.S.projects[0].id);
+    else {
+      document.getElementById('mainView').style.display='none';
+      document.getElementById('welcomeScreen').style.display='flex';
+    }
+
+  }
+
+}
+
+function hydrateWorkspaceData(data, previous = window.S || {}) {
+
+  window.S = { ...data };
+
+  window.S.projects = Array.isArray(data.projects) ? data.projects : [];
+
+  window.S.scripts = Array.isArray(data.scripts) ? data.scripts : [];
+
+  window.S.view = data.view || previous.view || 'full';
+
+  window.S.settings = { ...(window.DEFAULT_SETTINGS || {}), ...(previous.settings || {}), ...(data.settings || {}) };
+
+  const hasProject = id => !!id && window.S.projects.some(p => p.id === id);
+
+  const hasScript = id => !!id && window.S.scripts.some(s => s.id === id);
+
+  window.S.asid = hasScript(data.asid) ? data.asid : (hasScript(previous.asid) ? previous.asid : null);
+
+  window.S.apid = hasProject(data.apid) ? data.apid : (hasProject(previous.apid) ? previous.apid : null);
+
+  if (window.S.asid && !window.S.apid) window.S.apid = window.S.scripts.find(s => s.id === window.S.asid)?.projectId || null;
+
+}
+
 
 function showScreen(name) {
 
@@ -1640,6 +1701,10 @@ async function loadUser(user) {
 
       });
 
+    } else {
+
+      hydrateWorkspaceData(userSnap.data(), window.S || {});
+
     }
 
   } catch (e) {
@@ -1667,6 +1732,10 @@ async function loadUser(user) {
 
   showScreen('app');
 
+  applySettings();
+
+  renderLoadedWorkspace();
+
 
   if (unsubscribe) {
 
@@ -1679,64 +1748,19 @@ async function loadUser(user) {
 
   unsubscribe = onSnapshot(userRef, (snap) => {
 
-    const previous = window.S || {};
-
-    const data = snap.exists() ? snap.data() : {};
-
-    window.S = { ...data };
-
-
-    window.S.projects = Array.isArray(data.projects) ? data.projects : [];
-
-    window.S.scripts = Array.isArray(data.scripts) ? data.scripts : [];
-
-    window.S.view = data.view || previous.view || 'full';
-
-    window.S.settings = { ...(window.DEFAULT_SETTINGS || {}), ...(previous.settings || {}), ...(data.settings || {}) };
+    hydrateWorkspaceData(snap.exists() ? snap.data() : {}, window.S || {});
 
     applySettings();
 
-    const hasProject = id => !!id && window.S.projects.some(p => p.id === id);
+    renderLoadedWorkspace();
 
-    const hasScript = id => !!id && window.S.scripts.some(s => s.id === id);
+  }, (error) => {
 
-    window.S.asid = hasScript(data.asid) ? data.asid : (hasScript(previous.asid) ? previous.asid : null);
+    console.error('Workspace listener error:', error);
 
-    window.S.apid = hasProject(data.apid) ? data.apid : (hasProject(previous.apid) ? previous.apid : null);
+    const sb = document.getElementById('sidebarBody');
 
-    if (window.S.asid && !window.S.apid) window.S.apid = window.S.scripts.find(s => s.id === window.S.asid)?.projectId || null;
-
-
-    window.renderSb();
-
-
-    if (!window.S.asid && !window.S.apid) {
-
-      const preferredProject = window.S.settings.defaultProject && window.S.projects.find(p => p.id === window.S.settings.defaultProject);
-
-      if (preferredProject) {
-
-        window.selProject(preferredProject.id);
-
-      } else if (window.S.scripts && window.S.scripts.length > 0) {
-
-        window.selScript(window.S.scripts[0].id);
-
-      } else if (window.S.projects && window.S.projects.length > 0) {
-
-        window.selProject(window.S.projects[0].id);
-
-      }
-
-    } else if (window.S.asid && hasScript(window.S.asid)) {
-
-      window.showScript(window.S.asid);
-
-    } else if (window.S.apid && hasProject(window.S.apid)) {
-
-      window.showProject(window.S.apid);
-
-    }
+    if (sb) sb.innerHTML = `<div style="padding:20px 16px;font-size:12px;color:var(--red)">Could not load workspace. Refresh and try again.</div>`;
 
   });
 
