@@ -1493,7 +1493,7 @@ let redirectChecked = false;
 
 function renderLoadedWorkspace() {
 
-  if (!window.renderSb || !window.showProject || !window.showScript) {
+  if (!window.renderSb) {
 
     setTimeout(renderLoadedWorkspace, 50);
 
@@ -1503,13 +1503,21 @@ function renderLoadedWorkspace() {
 
   window.renderSb();
 
+  if (!window.selProject || !window.selScript) {
+
+    setTimeout(renderLoadedWorkspace, 50);
+
+    return;
+
+  }
+
   if (window.S.asid && window.S.scripts.some(s => s.id === window.S.asid)) {
 
-    window.showScript(window.S.asid);
+    window.selScript(window.S.asid);
 
   } else if (window.S.apid && window.S.projects.some(p => p.id === window.S.apid)) {
 
-    window.showProject(window.S.apid);
+    window.selProject(window.S.apid);
 
   } else {
 
