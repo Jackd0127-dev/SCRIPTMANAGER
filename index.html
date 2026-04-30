@@ -686,6 +686,39 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .script-drop-zone textarea { min-height: 250px; background: rgba(255,255,255,0.76); }
 
+.generate-field { position: relative; }
+
+.generate-field .form-input,
+.generate-field .import-ta { padding-right: 98px; }
+
+.tiny-generate-btn { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); z-index: 2; border: 1px solid rgba(78,205,196,0.46); border-radius: 999px; background: linear-gradient(135deg, rgba(78,205,196,0.2), rgba(255,107,107,0.14)); color: var(--text); padding: 5px 9px; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 22px rgba(78,205,196,0.16); transition: transform 0.14s, border-color 0.14s, box-shadow 0.14s; }
+
+.tiny-generate-btn:hover { transform: translateY(-50%) scale(1.03); border-color: #4ecdc4; box-shadow: 0 10px 26px rgba(78,205,196,0.22); }
+
+.script-drop-zone .tiny-generate-btn { top: 14px; transform: none; }
+
+.script-drop-zone .tiny-generate-btn:hover { transform: scale(1.03); }
+
+.generate-menu { position: absolute; right: 0; top: calc(100% + 8px); z-index: 6; width: min(340px, 88vw); display: none; border: 1px solid rgba(78,205,196,0.34); border-radius: 14px; background: rgba(255,255,255,0.94); color: var(--text); box-shadow: 0 22px 58px rgba(26,25,22,0.2); padding: 12px; backdrop-filter: blur(18px); }
+
+.generate-menu.open { display: block; animation: modalIn 0.18s cubic-bezier(.2,.8,.2,1) both; }
+
+.generate-menu-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+
+.generate-menu-sub { font-size: 11px; color: var(--text2); line-height: 1.45; margin-bottom: 10px; }
+
+.generate-options { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 9px; }
+
+.generate-option { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg); padding: 8px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 800; color: var(--text2); cursor: pointer; text-align: left; }
+
+.generate-option.sel { border-color: #4ecdc4; background: rgba(78,205,196,0.14); color: var(--text); }
+
+.generate-menu textarea { width: 100%; min-height: 86px; margin-bottom: 9px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 10px; font-family: 'Inter', sans-serif; font-size: 12px; line-height: 1.5; color: var(--text); resize: vertical; outline: none; }
+
+.generate-menu textarea:focus { border-color: #4ecdc4; }
+
+.generate-menu-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
 .ai-working-modal { width: min(820px, 94vw); min-height: min(560px, 84vh); padding: 0; border: 0; background: #101014; color: #fbfaf7; overflow: hidden; box-shadow: 0 30px 90px rgba(16,16,20,0.44); }
 
 .ai-working { position: relative; min-height: inherit; display: flex; align-items: center; justify-content: center; text-align: center; padding: 48px 28px; overflow: hidden; }
@@ -1170,6 +1203,8 @@ body.theme-dark .flow-ribbons span { opacity: 1; background: linear-gradient(90d
   .script-create-panel { padding: 20px 16px max(20px, env(safe-area-inset-bottom)); }
   .script-create-grid,
   .preset-row { grid-template-columns: 1fr; }
+  .generate-menu { position: fixed; left: 12px; right: 12px; top: auto; bottom: max(16px, env(safe-area-inset-bottom)); width: auto; }
+  .generate-options { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 390px) {
@@ -2722,7 +2757,6 @@ window.openNewScriptModal=projId=>{
     </div>
     <div class="script-create-panel">
       <div class="modal-title">New script</div>
-      <div class="script-create-help">Start simple. You can fill in blocks, shots, and notes after it opens.</div>
       <div class="form-group"><label class="form-label">Script title</label><input class="form-input" id="ns-name" placeholder="Optional, e.g. Founder launch hook" autofocus></div>
       <div class="form-group"><label class="form-label">What is it about?</label><textarea class="notes-ta script-idea" id="ns-idea" placeholder="Optional brief, hook, angle, talking points, or anything you already know..."></textarea></div>
       <div class="form-group"><label class="form-label">Quick starts</label><div class="preset-row">
@@ -2768,6 +2802,82 @@ window.selectImportProject = el => {
   document.getElementById('is-proj').value = el.dataset.projectId;
 };
 
+window.selectGenerateMode = mode => {
+  const menu = document.getElementById('importGenerateMenu');
+  if (!menu) return;
+  menu.dataset.mode = mode;
+  menu.querySelectorAll('.generate-option').forEach(btn => btn.classList.toggle('sel', btn.dataset.mode === mode));
+  const instructions = document.getElementById('generateInstructions');
+  if (instructions) {
+    instructions.style.display = mode === 'custom' ? 'block' : 'none';
+    if (mode === 'custom') instructions.focus();
+  }
+};
+
+window.openImportGenerateMenu = (source, trigger) => {
+  const menu = document.getElementById('importGenerateMenu');
+  if (!menu) return;
+  menu.dataset.source = source;
+  menu.classList.toggle('open');
+  if (!menu.classList.contains('open')) return;
+  if (trigger && !window.matchMedia('(max-width: 780px)').matches) {
+    const rect = trigger.getBoundingClientRect();
+    menu.style.position = 'fixed';
+    menu.style.top = `${Math.max(12, rect.bottom + 8)}px`;
+    menu.style.left = `${Math.min(Math.max(12, rect.right - 340), window.innerWidth - 352)}px`;
+    menu.style.right = 'auto';
+  } else {
+    menu.removeAttribute('style');
+  }
+  selectGenerateMode(menu.dataset.mode || 'auto');
+};
+
+window.closeImportGenerateMenu = () => {
+  const menu = document.getElementById('importGenerateMenu');
+  if (!menu) return;
+  menu.classList.remove('open');
+  menu.removeAttribute('style');
+};
+
+window.generateImportScript = async () => {
+  const menu = document.getElementById('importGenerateMenu');
+  const msg = document.getElementById('is-msg');
+  const btn = document.getElementById('generateScriptBtn');
+  const mode = menu?.dataset.mode || 'auto';
+  const instructions = document.getElementById('generateInstructions')?.value.trim() || '';
+  if (mode === 'custom' && !instructions) {
+    msg.textContent = 'Tell Gemini what you want first.';
+    document.getElementById('generateInstructions')?.focus();
+    return;
+  }
+  const currentName = document.getElementById('is-name')?.value.trim() || '';
+  const currentScript = document.getElementById('is-raw')?.value.trim() || '';
+  const platforms = [...document.querySelectorAll('.import-panel input[type=checkbox]:checked')].map(c=>c.value);
+  msg.textContent = 'Gemini is generating a name and script...';
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+  try {
+    const res = await fetch('/api/generate-script', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ mode, instructions, currentName, currentScript, platforms })
+    });
+    const raw = await res.text();
+    let data;
+    try { data = JSON.parse(raw); } catch(_) { throw new Error('AI endpoint returned HTML. Check that api/generate-script.js is deployed.'); }
+    if(!res.ok) throw new Error(data.error || 'Could not generate script.');
+    document.getElementById('is-name').value = data.title || '';
+    document.getElementById('is-raw').value = data.script || '';
+    msg.textContent = 'Generated. Review it, then press Continue to sort it into blocks.';
+    closeImportGenerateMenu();
+  } catch(e) {
+    msg.textContent = e.message || 'Gemini could not generate this script.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Generate script';
+  }
+};
+
 window.openImportScriptModal = projId => {
   const pid = projId || S.apid || S.projects?.[0]?.id;
   if(!S.projects || !S.projects.length){openNewProjectModal();return;}
@@ -2797,11 +2907,22 @@ window.openImportScriptModal = projId => {
           </div>
           <div class="divider"></div>
           <div class="ai-step">02 · Script identity</div>
-          <div class="form-group"><label class="form-label">Script name</label><input class="form-input" id="is-name" placeholder="${settings().smartTitles?'Leave blank and Gemini will name it':'Imported script'}"></div>
+          <div class="form-group"><label class="form-label">Script name</label><div class="generate-field"><input class="form-input" id="is-name" placeholder="${settings().smartTitles?'Leave blank and Gemini will name it':'Imported script'}"><button class="tiny-generate-btn" type="button" onclick="openImportGenerateMenu('name', this)">Generate</button></div></div>
           <div class="form-group"><label class="form-label">Platforms</label><div class="plats-row">${PLATFORMS.map(p=>`<label><input type="checkbox" value="${p}" checked style="accent-color:#4ecdc4"> ${p}</label>`).join('')}</div></div>
           <div class="divider"></div>
           <div class="ai-step">03 · Paste the full script</div>
-          <div class="script-drop-zone full"><textarea class="import-ta" id="is-raw" placeholder="Paste the messy version: bullets, captions, ideas, shot notes, voiceover, everything. Gemini will sort the structure." autofocus></textarea></div>
+          <div class="script-drop-zone full generate-field"><textarea class="import-ta" id="is-raw" placeholder="Paste the messy version: bullets, captions, ideas, shot notes, voiceover, everything. Gemini will sort the structure." autofocus></textarea><button class="tiny-generate-btn" type="button" onclick="openImportGenerateMenu('script', this)">Generate</button>
+            <div class="generate-menu" id="importGenerateMenu" data-mode="auto">
+              <div class="generate-menu-title">Generate with Gemini</div>
+              <div class="generate-menu-sub">Gemini will create a new script name and full script, then place both into this import form.</div>
+              <div class="generate-options">
+                <button type="button" class="generate-option sel" data-mode="auto" onclick="selectGenerateMode('auto')">Let Gemini choose</button>
+                <button type="button" class="generate-option" data-mode="custom" onclick="selectGenerateMode('custom')">Tell Gemini</button>
+              </div>
+              <textarea id="generateInstructions" style="display:none" placeholder="Example: write a punchy TikTok script about my new productivity app, with a bold hook and CTA to join the waitlist."></textarea>
+              <div class="generate-menu-actions"><button class="btn-ghost" type="button" onclick="closeImportGenerateMenu()">Cancel</button><button class="btn" id="generateScriptBtn" type="button" onclick="generateImportScript()">Generate script</button></div>
+            </div>
+          </div>
           <div class="modal-msg" id="is-msg"></div>
           <div class="modal-actions">
             <button class="glass-btn" onclick="closeImportPage()">Cancel</button>
