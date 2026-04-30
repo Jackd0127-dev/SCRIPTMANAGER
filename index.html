@@ -220,7 +220,7 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
 
-.global-project-btn { position: fixed; top: 22px; right: 24px; z-index: 70; background: var(--text); color: #fff; border: 0; border-radius: var(--radius-sm); padding: 8px 13px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 10px 26px rgba(26,25,22,0.14); transition: transform 0.12s, opacity 0.15s; }
+.global-project-btn { position: fixed; top: 21.25px; right: 24px; z-index: 70; background: var(--text); color: #fff; border: 0; border-radius: var(--radius-sm); padding: 0 13px; min-width: 108px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 10px 26px rgba(26,25,22,0.14); transition: transform 0.12s, opacity 0.15s; }
 
 .global-project-btn:hover { opacity: 0.86; transform: translateY(-1px); }
 
@@ -241,6 +241,9 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 .topbar-sub { display: flex; align-items: center; gap: 8px; margin-top: 3px; flex-wrap: wrap; }
 
 .topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+.topbar-right .btn,
+.topbar-right .btn-ghost { min-width: 108px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0 13px; }
 
 .tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; flex-shrink: 0; gap: 2px; overflow-x: auto; }
 
@@ -452,7 +455,7 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .welcome-sub { font-size: 13px; color: var(--text2); max-width: 280px; line-height: 1.7; }
 
-.welcome-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; min-width: 180px; }
+.welcome-actions { display: grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap: 14px; width: min(560px, 100%); margin-top: 18px; }
 
 .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; color: var(--text3); gap: 8px; text-align: center; }
 
@@ -1196,6 +1199,7 @@ body.theme-dark .flow-ribbons span { opacity: 1; background: linear-gradient(90d
   .working-steps { flex-direction: column; align-items: stretch; }
   .block-detail-grid { grid-template-columns: 1fr; }
   .empty-actions { grid-template-columns: 1fr; width: 100%; }
+  .welcome-actions { grid-template-columns: 1fr; width: 100%; }
   .action-card { min-height: 96px; }
   .script-create-shell { grid-template-columns: 1fr; min-height: 0; }
   .script-create-visual { min-height: 180px; padding: 22px 18px; }
@@ -1401,9 +1405,9 @@ body.theme-dark .flow-ribbons span { opacity: 1; background: linear-gradient(90d
 
         <div class="welcome-actions">
 
-          <button class="btn" onclick="openNewProjectModal()">Create first project</button>
+          <button class="action-card create-action" onclick="openNewProjectModal()"><strong>Create project</strong><span>Start a colour-coded workspace for your scripts.</span></button>
 
-          <button class="btn-ghost" onclick="openImportScriptModal()">Import script</button>
+          <button class="action-card import-action" onclick="openImportScriptModal()"><strong>Import script</strong><span>Bring in a draft or generate one with Gemini.</span></button>
 
         </div>
 
@@ -1723,6 +1727,14 @@ async function loadUser(user) {
         window.selProject(window.S.projects[0].id);
 
       }
+
+    } else if (window.S.asid && hasScript(window.S.asid)) {
+
+      window.showScript(window.S.asid);
+
+    } else if (window.S.apid && hasProject(window.S.apid)) {
+
+      window.showProject(window.S.apid);
 
     }
 
