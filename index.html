@@ -168,11 +168,23 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .sidebar-body { flex: 1; overflow-y: auto; padding: 8px 0; }
 
-.nav-project { display: flex; align-items: center; gap: 8px; padding: 7px 16px; cursor: pointer; border-left: 2px solid transparent; transition: background 0.1s; }
+.nav-project { display: flex; align-items: center; gap: 8px; margin: 2px 8px; padding: 8px 8px 8px 10px; cursor: pointer; border: 1px solid transparent; border-left: 3px solid transparent; border-radius: var(--radius-sm); transition: background 0.14s, border-color 0.14s, box-shadow 0.14s; }
 
-.nav-project:hover { background: var(--bg); }
+.nav-project:hover { background: var(--project-soft, var(--bg)); border-color: var(--project-border, var(--border)); }
 
-.nav-project.active { background: var(--bg); border-left-color: var(--text); }
+.nav-project.active { background: var(--project-soft, var(--bg)); border-color: var(--project-border, var(--border)); border-left-color: var(--project-color, var(--text)); box-shadow: 0 8px 20px var(--project-shadow, rgba(26,25,22,0.07)); }
+
+.project-toggle { width: 20px; height: 20px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 5px; background: var(--surface); color: var(--text3); cursor: pointer; transition: transform 0.16s, color 0.12s, border-color 0.12s; }
+
+.project-toggle:hover { color: var(--text); border-color: var(--border2); }
+
+.project-toggle svg { width: 13px; height: 13px; transition: transform 0.18s ease; }
+
+.nav-project.collapsed .project-toggle svg { transform: rotate(-90deg); }
+
+.project-scripts { overflow: hidden; max-height: 720px; opacity: 1; transition: max-height 0.22s ease, opacity 0.18s ease; }
+
+.project-scripts.collapsed { max-height: 0; opacity: 0; }
 
 .proj-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
@@ -180,7 +192,7 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .proj-count { font-size: 11px; color: var(--text3); }
 
-.nav-script { display: flex; align-items: center; gap: 8px; padding: 5px 16px 5px 32px; cursor: pointer; border-left: 2px solid transparent; transition: background 0.1s; }
+.nav-script { display: flex; align-items: center; gap: 8px; padding: 5px 16px 5px 39px; cursor: pointer; border-left: 2px solid transparent; transition: background 0.1s; }
 
 .nav-script:hover { background: var(--bg); }
 
@@ -197,6 +209,14 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 .sb-btn { display: flex; align-items: center; gap: 8px; background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 10px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text2); cursor: pointer; text-align: left; transition: all 0.1s; }
 
 .sb-btn:hover { background: var(--bg); color: var(--text); border-color: var(--border2); }
+
+.sb-btn.import-accent { border-color: rgba(78,205,196,0.36); color: #137b76; background: rgba(78,205,196,0.09); }
+
+.sb-btn.import-accent:hover { border-color: #4ecdc4; background: rgba(78,205,196,0.16); color: #0f625e; }
+
+.sb-btn.create-accent { border-color: rgba(255,107,107,0.38); color: #b8324a; background: rgba(255,107,107,0.09); }
+
+.sb-btn.create-accent:hover { border-color: #ff6b6b; background: rgba(255,107,107,0.16); color: #98273b; }
 
 .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
 
@@ -342,7 +362,19 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
 
+.project-stats { gap: 14px; margin-bottom: 24px; }
+
 .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+
+.project-stat-card { position: relative; overflow: hidden; min-height: 104px; padding: 16px 17px; border-color: var(--project-border, var(--border)); background: linear-gradient(135deg, var(--project-soft, var(--surface)), var(--surface) 58%); box-shadow: 0 14px 34px var(--project-shadow, rgba(26,25,22,0.07)); }
+
+.project-stat-card::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--project-color, var(--text)); }
+
+.project-stat-card::after { content: ''; position: absolute; right: -24px; top: -34px; width: 92px; height: 92px; border-radius: 50%; background: var(--project-color, var(--text)); opacity: 0.12; }
+
+.project-stat-card .stat-label { position: relative; z-index: 1; color: var(--text2); font-weight: 700; letter-spacing: 0.7px; }
+
+.project-stat-card .stat-val { position: relative; z-index: 1; color: var(--project-color, var(--text)); font-size: 34px; }
 
 .stat-label { font-size: 11px; color: var(--text3); font-weight: 500; margin-bottom: 4px; }
 
@@ -428,9 +460,13 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .empty-sub { font-size: 12px; line-height: 1.6; max-width: 220px; }
 
-.osc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s; }
+.osc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s; }
 
-.osc:hover { border-color: var(--border2); }
+.osc:hover { border-color: var(--border2); transform: translateY(-1px); }
+
+.project-script-card { border-color: var(--project-border, var(--border)); border-left: 4px solid var(--project-color, var(--text)); background: linear-gradient(135deg, var(--project-soft, var(--surface)), var(--surface) 64%); box-shadow: 0 12px 28px var(--project-shadow, rgba(26,25,22,0.06)); }
+
+.project-script-card:hover { border-color: var(--project-color, var(--border2)); box-shadow: 0 16px 34px var(--project-shadow, rgba(26,25,22,0.1)); }
 
 .osc-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
 
@@ -446,9 +482,15 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(26,25,22,0.45); z-index: 100; align-items: center; justify-content: center; }
 
-.modal-overlay.open { display: flex; }
+.modal-overlay.open { display: flex; animation: overlayFade 0.18s ease both; }
 
 .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; width: 440px; max-width: 92vw; max-height: 85vh; overflow-y: auto; }
+
+.modal-overlay.open .modal { animation: modalIn 0.22s cubic-bezier(.2,.8,.2,1) both; transform-origin: center top; }
+
+@keyframes overlayFade { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes modalIn { from { opacity: 0; transform: translateY(14px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
 .modal-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 18px; }
 
@@ -1242,9 +1284,9 @@ body.theme-dark .flow-ribbons span { opacity: 1; background: linear-gradient(90d
 
       <div class="sidebar-bottom">
 
-        <button class="sb-btn" onclick="openImportScriptModal()">Import script</button>
+        <button class="sb-btn import-accent" onclick="openImportScriptModal()">Import script</button>
 
-        <button class="sb-btn" onclick="openNewScriptModal()">Create script</button>
+        <button class="sb-btn create-accent" onclick="openNewScriptModal()">Create script</button>
 
       </div>
 
@@ -1897,6 +1939,28 @@ const settings = () => ({ ...window.DEFAULT_SETTINGS, ...(S.settings || {}) });
 
 let sessionTimer = null;
 
+const collapsedProjects = new Set(JSON.parse(localStorage.getItem('directorCollapsedProjects') || '[]'));
+
+function saveCollapsedProjects() {
+  localStorage.setItem('directorCollapsedProjects', JSON.stringify([...collapsedProjects]));
+}
+
+function hexToRgb(hex) {
+  const clean = String(hex || '#1a1916').replace('#', '');
+  const full = clean.length === 3 ? clean.split('').map(ch => ch + ch).join('') : clean;
+  const value = Number.parseInt(full, 16);
+  return {
+    r: (value >> 16) & 255,
+    g: (value >> 8) & 255,
+    b: value & 255
+  };
+}
+
+function projectStyleVars(color) {
+  const { r, g, b } = hexToRgb(color);
+  return `--project-color:${color};--project-soft:rgba(${r},${g},${b},0.10);--project-border:rgba(${r},${g},${b},0.30);--project-shadow:rgba(${r},${g},${b},0.13)`;
+}
+
 function applySettings() {
   const st = settings();
   const darkSystem = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
@@ -1954,13 +2018,23 @@ window.renderSb = function(filter='') {
 
   let h='';
 
+  const q = filter.toLowerCase();
+
   (S.projects||[]).forEach(p=>{
 
-    const scripts=pscripts(p.id).filter(s=>!filter||s.name.toLowerCase().includes(filter.toLowerCase()));
+    const scripts=pscripts(p.id).filter(s=>!q||s.name.toLowerCase().includes(q)||p.name.toLowerCase().includes(q));
 
-    h+=`<div class="nav-project${S.apid===p.id&&!S.asid?' active':''}" onclick="selProject('${p.id}')"><div class="proj-dot" style="background:${p.color}"></div><div class="proj-name">${p.name}</div><div class="proj-count">${scripts.length}</div></div>`;
+    const collapsed=!q && collapsedProjects.has(p.id);
+    const active=S.apid===p.id&&!S.asid;
+    const style=projectStyleVars(p.color);
 
-    scripts.forEach(s=>{h+=`<div class="nav-script${S.asid===s.id?' active':''}" onclick="selScript('${s.id}')"><div class="script-pip" style="background:${SC[s.status]||'#ccc'}"></div><div class="script-nav-name">${s.name}</div></div>`;});
+    h+=`<div class="nav-project${active?' active':''}${collapsed?' collapsed':''}" style="${style}" onclick="selProject('${p.id}')"><button class="project-toggle" type="button" aria-label="${collapsed?'Show':'Hide'} ${esc(p.name)} scripts" onclick="event.stopPropagation();toggleProjectScripts('${p.id}')"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="proj-dot" style="background:${p.color}"></div><div class="proj-name">${esc(p.name)}</div><div class="proj-count">${scripts.length}</div></div>`;
+
+    h+=`<div class="project-scripts${collapsed?' collapsed':''}" id="scripts-${p.id}">`;
+
+    scripts.forEach(s=>{h+=`<div class="nav-script${S.asid===s.id?' active':''}" onclick="selScript('${s.id}')"><div class="script-pip" style="background:${SC[s.status]||'#ccc'}"></div><div class="script-nav-name">${esc(s.name)}</div></div>`;});
+
+    h+='</div>';
 
   });
 
@@ -1972,6 +2046,13 @@ window.renderSb = function(filter='') {
 
 
 window.filterSb = v => renderSb(v);
+
+window.toggleProjectScripts = id => {
+  if (collapsedProjects.has(id)) collapsedProjects.delete(id);
+  else collapsedProjects.add(id);
+  saveCollapsedProjects();
+  renderSb(document.querySelector('.search')?.value || '');
+};
 
 
 function show(){
@@ -1994,6 +2075,8 @@ function showProject(id){
 
   const p=proj(id);const scripts=pscripts(id);show();
 
+  const style=projectStyleVars(p.color);
+
   document.getElementById('topbarTitle').textContent=p.name;
 
   const sc={draft:0,ready:0,shot:0,posted:0};
@@ -2003,7 +2086,7 @@ function showProject(id){
   const dueSoon = settings().dueReminders ? scripts.filter(s=>['soon','overdue'].includes(dueSt(s.due))).length : 0;
   document.getElementById('topbarSub').innerHTML=`<span style="font-size:12px;color:var(--text3)">${scripts.length} script${scripts.length!==1?'s':''}</span>${dueSoon?`<span class="due soon">${dueSoon} need attention</span>`:''}`;
 
-  document.getElementById('topbarRight').innerHTML=`<button class="btn-ghost" onclick="openEditProjectModal('${id}')">Edit</button><button class="btn-ghost" onclick="openImportScriptModal('${id}')">Import script</button><button class="btn" onclick="openNewScriptModal('${id}')">Create script</button>`;
+  document.getElementById('topbarRight').innerHTML=`<button class="btn-ghost" onclick="openEditProjectModal('${id}')">Edit</button>`;
 
   document.getElementById('tabsRow').innerHTML='';
 
@@ -2011,7 +2094,7 @@ function showProject(id){
 
   if(!scripts.length){el.innerHTML=`<div class="empty"><div class="empty-title">No scripts yet</div><div class="empty-sub">Add your first script to this project.</div><button class="btn" style="margin-top:10px" onclick="openNewScriptModal('${id}')">Create script</button><button class="btn-ghost" onclick="openImportScriptModal('${id}')">Import script</button></div>`;return;}
 
-  let h=`<div class="stat-grid"><div class="stat-card"><div class="stat-label">Scripts</div><div class="stat-val">${scripts.length}</div></div><div class="stat-card"><div class="stat-label">Ready</div><div class="stat-val" style="color:var(--green)">${sc.ready}</div></div><div class="stat-card"><div class="stat-label">Posted</div><div class="stat-val" style="color:var(--blue)">${sc.posted}</div></div><div class="stat-card"><div class="stat-label">Draft</div><div class="stat-val" style="color:var(--amber)">${sc.draft}</div></div></div><div class="sec-hd"><div class="sec-title">All scripts</div></div>`;
+  let h=`<div class="stat-grid project-stats" style="${style}"><div class="stat-card project-stat-card"><div class="stat-label">Scripts</div><div class="stat-val">${scripts.length}</div></div><div class="stat-card project-stat-card"><div class="stat-label">Ready</div><div class="stat-val">${sc.ready}</div></div><div class="stat-card project-stat-card"><div class="stat-label">Posted</div><div class="stat-val">${sc.posted}</div></div><div class="stat-card project-stat-card"><div class="stat-label">Draft</div><div class="stat-val">${sc.draft}</div></div></div><div class="sec-hd"><div class="sec-title">All scripts</div></div>`;
 
   scripts.forEach(s=>{
 
@@ -2021,7 +2104,7 @@ function showProject(id){
 
     const ds=dueSt(s.due);
 
-    h+=`<div class="osc" onclick="selScript('${s.id}')"><div class="osc-top"><div class="osc-name">${s.name}</div><span class="badge badge-${s.status}">${s.status}</span></div><div class="osc-meta">${s.due?`<span class="due${ds?' '+ds:''}">${fmtDate(s.due)}</span>`:''} ${(s.platforms||[]).map(pl=>`<span class="plat plat-${pl.toLowerCase()}">${pl}</span>`).join('')}</div><div class="prog-wrap" style="margin-top:10px"><div class="prog-fill" style="width:${pct}%"></div></div><div style="font-size:11px;color:var(--text3);margin-top:4px">${done}/${s.blocks.length} blocks · ${pct}% complete</div></div>`;
+    h+=`<div class="osc project-script-card" style="${style}" onclick="selScript('${s.id}')"><div class="osc-top"><div class="osc-name">${esc(s.name)}</div><span class="badge badge-${s.status}">${s.status}</span></div><div class="osc-meta">${s.due?`<span class="due${ds?' '+ds:''}">${fmtDate(s.due)}</span>`:''} ${(s.platforms||[]).map(pl=>`<span class="plat plat-${pl.toLowerCase()}">${esc(pl)}</span>`).join('')}</div><div class="prog-wrap" style="margin-top:10px"><div class="prog-fill" style="width:${pct}%"></div></div><div style="font-size:11px;color:var(--text3);margin-top:4px">${done}/${s.blocks.length} blocks · ${pct}% complete</div></div>`;
 
   });
 
