@@ -220,7 +220,7 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
 
-.global-project-btn { position: fixed; top: 14px; right: 24px; z-index: 70; background: var(--text); color: #fff; border: 0; border-radius: var(--radius-sm); padding: 8px 13px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 10px 26px rgba(26,25,22,0.14); transition: transform 0.12s, opacity 0.15s; }
+.global-project-btn { position: fixed; top: 22px; right: 24px; z-index: 70; background: var(--text); color: #fff; border: 0; border-radius: var(--radius-sm); padding: 8px 13px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 10px 26px rgba(26,25,22,0.14); transition: transform 0.12s, opacity 0.15s; }
 
 .global-project-btn:hover { opacity: 0.86; transform: translateY(-1px); }
 
@@ -460,6 +460,26 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .empty-sub { font-size: 12px; line-height: 1.6; max-width: 220px; }
 
+.empty-actions { display: grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap: 14px; width: min(560px, 100%); margin-top: 18px; }
+
+.action-card { position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: flex-start; gap: 7px; min-height: 132px; border: 1px solid transparent; border-radius: var(--radius); padding: 18px; font-family: 'Inter', sans-serif; text-align: left; cursor: pointer; transition: transform 0.16s, box-shadow 0.16s, border-color 0.16s; }
+
+.action-card::after { content: ''; position: absolute; right: -24px; top: -30px; width: 90px; height: 90px; border-radius: 50%; opacity: 0.2; background: currentColor; }
+
+.action-card strong { position: relative; z-index: 1; font-family: 'Syne', sans-serif; font-size: 20px; line-height: 1.1; color: var(--text); }
+
+.action-card span { position: relative; z-index: 1; max-width: 230px; color: var(--text2); font-size: 13px; line-height: 1.45; }
+
+.action-card:hover { transform: translateY(-2px); }
+
+.action-card.import-action { color: #137b76; border-color: rgba(78,205,196,0.42); background: linear-gradient(135deg, rgba(78,205,196,0.18), var(--surface) 72%); box-shadow: 0 18px 38px rgba(78,205,196,0.16); }
+
+.action-card.create-action { color: #b8324a; border-color: rgba(255,107,107,0.42); background: linear-gradient(135deg, rgba(255,107,107,0.18), var(--surface) 72%); box-shadow: 0 18px 38px rgba(255,107,107,0.15); }
+
+.action-card.import-action:hover { border-color: #4ecdc4; box-shadow: 0 22px 46px rgba(78,205,196,0.22); }
+
+.action-card.create-action:hover { border-color: #ff6b6b; box-shadow: 0 22px 46px rgba(255,107,107,0.2); }
+
 .osc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s; }
 
 .osc:hover { border-color: var(--border2); transform: translateY(-1px); }
@@ -493,6 +513,40 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 @keyframes modalIn { from { opacity: 0; transform: translateY(14px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
 .modal-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 18px; }
+
+.script-create-modal { width: min(720px, 94vw); padding: 0; overflow: hidden; border-color: var(--script-border, var(--border)); box-shadow: 0 28px 80px var(--script-shadow, rgba(26,25,22,0.18)); }
+
+.script-create-shell { display: grid; grid-template-columns: 0.72fr 1fr; min-height: 540px; }
+
+.script-create-visual { position: relative; overflow: hidden; padding: 26px; color: #fff; background: radial-gradient(circle at 18% 22%, rgba(255,255,255,0.24), transparent 28%), linear-gradient(145deg, var(--script-color, #ff6b6b), #101014); }
+
+.script-create-visual::after { content: ''; position: absolute; right: -54px; bottom: -64px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,0.16); }
+
+.script-create-kicker { font-size: 11px; font-weight: 800; letter-spacing: 0.7px; text-transform: uppercase; opacity: 0.72; margin-bottom: 12px; }
+
+.script-create-visual h2 { position: relative; z-index: 1; font-family: 'Syne', sans-serif; font-size: 38px; line-height: 0.96; letter-spacing: -1px; max-width: 250px; margin-bottom: 16px; }
+
+.script-create-visual p { position: relative; z-index: 1; color: rgba(255,255,255,0.76); font-size: 13px; line-height: 1.65; max-width: 260px; }
+
+.script-create-panel { padding: 26px; background: var(--surface); }
+
+.script-create-panel .modal-title { margin-bottom: 4px; }
+
+.script-create-help { font-size: 12px; color: var(--text2); margin-bottom: 18px; line-height: 1.55; }
+
+.script-idea { min-height: 96px; background: linear-gradient(135deg, var(--script-soft, var(--bg)), var(--bg)); border-color: var(--script-border, var(--border)); }
+
+.preset-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 14px; }
+
+.preset-chip { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg); padding: 9px 10px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; color: var(--text2); cursor: pointer; text-align: left; transition: border-color 0.12s, background 0.12s, color 0.12s, transform 0.12s; }
+
+.preset-chip:hover, .preset-chip.sel { border-color: var(--script-color, var(--text)); background: var(--script-soft, var(--bg)); color: var(--text); transform: translateY(-1px); }
+
+.script-create-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.script-platforms { gap: 8px; }
+
+.script-platforms label { border: 1px solid var(--border); border-radius: 999px; padding: 6px 9px; background: var(--bg); font-weight: 600; }
 
 .form-select { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text); outline: none; }
 
@@ -1108,6 +1162,14 @@ body.theme-dark .flow-ribbons span { opacity: 1; background: linear-gradient(90d
   .working-stage h1 { font-size: 44px; }
   .working-steps { flex-direction: column; align-items: stretch; }
   .block-detail-grid { grid-template-columns: 1fr; }
+  .empty-actions { grid-template-columns: 1fr; width: 100%; }
+  .action-card { min-height: 96px; }
+  .script-create-shell { grid-template-columns: 1fr; min-height: 0; }
+  .script-create-visual { min-height: 180px; padding: 22px 18px; }
+  .script-create-visual h2 { font-size: 34px; }
+  .script-create-panel { padding: 20px 16px max(20px, env(safe-area-inset-bottom)); }
+  .script-create-grid,
+  .preset-row { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 390px) {
@@ -1961,6 +2023,11 @@ function projectStyleVars(color) {
   return `--project-color:${color};--project-soft:rgba(${r},${g},${b},0.10);--project-border:rgba(${r},${g},${b},0.30);--project-shadow:rgba(${r},${g},${b},0.13)`;
 }
 
+function scriptStyleVars(color) {
+  const { r, g, b } = hexToRgb(color);
+  return `--script-color:${color};--script-soft:rgba(${r},${g},${b},0.10);--script-border:rgba(${r},${g},${b},0.30);--script-shadow:rgba(${r},${g},${b},0.18)`;
+}
+
 function applySettings() {
   const st = settings();
   const darkSystem = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
@@ -2092,7 +2159,7 @@ function showProject(id){
 
   const el=document.getElementById('mainContent');
 
-  if(!scripts.length){el.innerHTML=`<div class="empty"><div class="empty-title">No scripts yet</div><div class="empty-sub">Add your first script to this project.</div><button class="btn" style="margin-top:10px" onclick="openNewScriptModal('${id}')">Create script</button><button class="btn-ghost" onclick="openImportScriptModal('${id}')">Import script</button></div>`;return;}
+  if(!scripts.length){el.innerHTML=`<div class="empty" style="${style}"><div class="empty-title">No scripts yet</div><div class="empty-sub">Start clean or bring in a draft and let Director structure it.</div><div class="empty-actions"><button class="action-card create-action" onclick="openNewScriptModal('${id}')"><strong>Create script</strong><span>Start from an idea, title, or quick production brief.</span></button><button class="action-card import-action" onclick="openImportScriptModal('${id}')"><strong>Import script</strong><span>Paste a full draft and let AI sort it into blocks.</span></button></div></div>`;return;}
 
   let h=`<div class="stat-grid project-stats" style="${style}"><div class="stat-card project-stat-card"><div class="stat-label">Scripts</div><div class="stat-val">${scripts.length}</div></div><div class="stat-card project-stat-card"><div class="stat-label">Ready</div><div class="stat-val">${sc.ready}</div></div><div class="stat-card project-stat-card"><div class="stat-label">Posted</div><div class="stat-val">${sc.posted}</div></div><div class="stat-card project-stat-card"><div class="stat-label">Draft</div><div class="stat-val">${sc.draft}</div></div></div><div class="sec-hd"><div class="sec-title">All scripts</div></div>`;
 
@@ -2629,9 +2696,68 @@ window.saveProject=id=>{const p=proj(id);p.name=document.getElementById('ep-name
 
 window.deleteProject=id=>{if(!confirm('Delete this project and all its scripts?'))return;S.projects=S.projects.filter(p=>p.id!==id);S.scripts=S.scripts.filter(s=>s.projectId!==id);if(S.apid===id){S.apid=null;S.asid=null;}save();closeModal();renderSb();document.getElementById('mainView').style.display='none';document.getElementById('welcomeScreen').style.display='flex';};
 
-window.openNewScriptModal=projId=>{const pid=projId||S.apid;openModal(`<div class="modal-title">New script</div><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="ns-name" placeholder="e.g. Why I'm Building Curate" autofocus></div><div class="form-group"><label class="form-label">Project</label><select class="form-select" id="ns-proj">${(S.projects||[]).map(p=>`<option value="${p.id}"${p.id===pid?' selected':''}>${p.name}</option>`).join('')}</select></div><div class="form-group"><label class="form-label">Status</label><div class="status-row">${STATUSES.map((s,i)=>`<div class="status-chip badge badge-${s}${i===0?' sel':''}" data-s="${s}" onclick="selStatus(this)">${s}</div>`).join('')}</div></div><div class="form-group"><label class="form-label">Due date</label><input class="form-input" id="ns-due" type="date"></div><div class="form-group"><label class="form-label">Platforms</label><div class="plats-row">${PLATFORMS.map(p=>`<label><input type="checkbox" value="${p}" checked style="accent-color:var(--text)"> ${p}</label>`).join('')}</div></div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="createScript()">Create</button></div>`);};
+window.updateNewScriptAccent = projectId => {
+  const p = proj(projectId);
+  const box = document.getElementById('modalBox');
+  if (p && box) box.setAttribute('style', scriptStyleVars(p.color));
+};
 
-window.createScript=()=>{const name=document.getElementById('ns-name').value.trim();if(!name)return;const projectId=document.getElementById('ns-proj').value;const status=document.querySelector('.status-chip.sel')?.dataset.s||'draft';const due=document.getElementById('ns-due').value;const platforms=[...document.querySelectorAll('input[type=checkbox]:checked')].map(c=>c.value);const template=settings().template?.trim();const blocks=template?template.split('\n').filter(Boolean).map(line=>({id:uid(),type:'direction',shotName:'Template',desc:line.trim(),spoken:'',notes:'',done:false,cut:false})):[];const s={id:uid(),projectId,name,status,due,platforms,notes:'',blocks};if(!S.scripts)S.scripts=[];S.scripts.push(s);save();closeModal();renderSb();selScript(s.id);};
+window.selectScriptPreset = el => {
+  document.querySelectorAll('.preset-chip').forEach(btn => btn.classList.remove('sel'));
+  el.classList.add('sel');
+  const idea = document.getElementById('ns-idea');
+  if (idea && !idea.value.trim()) idea.value = el.dataset.idea || '';
+};
+
+window.openNewScriptModal=projId=>{
+  const pid=projId||S.apid||S.projects?.[0]?.id;
+  if(!S.projects || !S.projects.length){openNewProjectModal();return;}
+  const p=proj(pid)||S.projects[0];
+  const projectOptions=(S.projects||[]).map(project=>`<option value="${project.id}"${project.id===p.id?' selected':''}>${esc(project.name)}</option>`).join('');
+  openModal(`<div class="script-create-shell">
+    <div class="script-create-visual">
+      <div class="script-create-kicker">Create script</div>
+      <h2>Turn a rough idea into a shoot plan.</h2>
+      <p>Only the idea is optional. Pick a project, add a quick brief if you have one, and Director will open a clean script workspace.</p>
+    </div>
+    <div class="script-create-panel">
+      <div class="modal-title">New script</div>
+      <div class="script-create-help">Start simple. You can fill in blocks, shots, and notes after it opens.</div>
+      <div class="form-group"><label class="form-label">Script title</label><input class="form-input" id="ns-name" placeholder="Optional, e.g. Founder launch hook" autofocus></div>
+      <div class="form-group"><label class="form-label">What is it about?</label><textarea class="notes-ta script-idea" id="ns-idea" placeholder="Optional brief, hook, angle, talking points, or anything you already know..."></textarea></div>
+      <div class="form-group"><label class="form-label">Quick starts</label><div class="preset-row">
+        <button type="button" class="preset-chip" data-idea="Talking head video with a sharp hook, one clear point, and a direct CTA." onclick="selectScriptPreset(this)">Talking head</button>
+        <button type="button" class="preset-chip" data-idea="Product demo showing the problem, the product in action, and the payoff." onclick="selectScriptPreset(this)">Product demo</button>
+        <button type="button" class="preset-chip" data-idea="Launch announcement with context, proof, benefits, and next step." onclick="selectScriptPreset(this)">Launch post</button>
+        <button type="button" class="preset-chip" data-idea="Short ad with hook, problem, solution, proof, and CTA." onclick="selectScriptPreset(this)">Short ad</button>
+      </div></div>
+      <div class="script-create-grid">
+        <div class="form-group"><label class="form-label">Project</label><select class="form-select" id="ns-proj" onchange="updateNewScriptAccent(this.value)">${projectOptions}</select></div>
+        <div class="form-group"><label class="form-label">Due date</label><input class="form-input" id="ns-due" type="date"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Status</label><div class="status-row">${STATUSES.map((s,i)=>`<div class="status-chip badge badge-${s}${i===0?' sel':''}" data-s="${s}" onclick="selStatus(this)">${s}</div>`).join('')}</div></div>
+      <div class="form-group"><label class="form-label">Platforms</label><div class="plats-row script-platforms">${PLATFORMS.map(platform=>`<label><input type="checkbox" value="${platform}" checked style="accent-color:var(--script-color)"> ${platform}</label>`).join('')}</div></div>
+      <div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="createScript()">Create script</button></div>
+    </div>
+  </div>`, 'script-create-modal');
+  updateNewScriptAccent(p.id);
+};
+
+window.createScript=()=>{
+  const rawName=document.getElementById('ns-name').value.trim();
+  const idea=document.getElementById('ns-idea')?.value.trim()||'';
+  const name=rawName||idea.split(/\s+/).slice(0,7).join(' ').replace(/[,.!?;:]+$/,'')||'Untitled script';
+  const projectId=document.getElementById('ns-proj').value;
+  const status=document.querySelector('.status-chip.sel')?.dataset.s||'draft';
+  const due=document.getElementById('ns-due').value;
+  const platforms=[...document.querySelectorAll('#modalBox input[type=checkbox]:checked')].map(c=>c.value);
+  const template=settings().template?.trim();
+  const blocks=template?template.split('\n').filter(Boolean).map(line=>({id:uid(),type:'direction',shotName:'Template',desc:line.trim(),spoken:'',notes:'',done:false,cut:false})):[];
+  if(idea)blocks.unshift({id:uid(),type:'direction',shotName:'Brief',desc:idea,spoken:'',notes:'',done:false,cut:false});
+  const s={id:uid(),projectId,name,status,due,platforms,notes:idea,blocks};
+  if(!S.scripts)S.scripts=[];
+  S.scripts.push(s);save();closeModal();renderSb();selScript(s.id);
+};
 
 let activeAiJob = null;
 let lastImportedScriptId = null;
