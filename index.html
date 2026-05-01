@@ -222,6 +222,10 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .sb-btn.generate-accent:hover { border-color: #e9c46a; background: linear-gradient(135deg, rgba(233,196,106,0.25), rgba(78,205,196,0.16)); color: #6f4702; }
 
+.sb-btn.stuff-accent { border-color: rgba(106,76,147,0.38); color: #5b3d82; background: linear-gradient(135deg, rgba(106,76,147,0.14), rgba(69,123,157,0.10)); }
+
+.sb-btn.stuff-accent:hover { border-color: #6a4c93; background: linear-gradient(135deg, rgba(106,76,147,0.22), rgba(69,123,157,0.16)); color: #432b64; }
+
 .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
 
 .global-project-btn { position: fixed; top: 21.25px; right: 24px; z-index: 70; background: var(--text); color: #fff; border: 0; border-radius: var(--radius-sm); padding: 0 13px; min-width: 108px; height: 32px; display: inline-flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 10px 26px rgba(26,25,22,0.14); transition: transform 0.12s, opacity 0.15s; }
@@ -1047,6 +1051,127 @@ body.theme-dark .filtered-hero::before { opacity: 0.16; }
 
 .generate-preview-body { max-height: 250px; overflow: auto; white-space: pre-wrap; padding: 14px; font-size: 13px; line-height: 1.7; color: var(--text2); }
 
+.stuff-hero { position: relative; overflow: hidden; border: 1px solid rgba(106,76,147,0.24); border-radius: 18px; padding: 22px; margin-bottom: 18px; background: linear-gradient(135deg, rgba(106,76,147,0.12), var(--surface) 58%, rgba(78,205,196,0.08)); box-shadow: 0 18px 46px rgba(106,76,147,0.10); }
+
+.stuff-hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, transparent, rgba(255,255,255,0.34), transparent); background-size: 210px 100%; opacity: 0.42; animation: sheenMove 9s linear infinite; pointer-events: none; }
+
+.stuff-hero-inner { position: relative; z-index: 1; display: flex; justify-content: space-between; gap: 18px; align-items: flex-end; }
+
+.stuff-title { font-family: 'Syne', sans-serif; font-size: clamp(32px, 5vw, 58px); line-height: 0.95; letter-spacing: -1px; margin-bottom: 8px; }
+
+.stuff-sub { max-width: 620px; color: var(--text2); font-size: 13px; line-height: 1.7; }
+
+.stuff-count { min-width: 110px; text-align: right; }
+
+.stuff-count strong { display: block; font-family: 'Syne', sans-serif; font-size: 48px; line-height: 0.9; color: #6a4c93; }
+
+.stuff-count span { font-size: 11px; color: var(--text2); font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; }
+
+.stuff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+
+.stuff-card { position: relative; overflow: hidden; min-height: 176px; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; background: var(--surface); text-align: left; color: var(--text); font-family: 'Inter', sans-serif; cursor: pointer; transition: transform 0.16s, border-color 0.16s, box-shadow 0.16s; }
+
+.stuff-card:hover { transform: translateY(-2px); border-color: rgba(106,76,147,0.36); box-shadow: 0 18px 40px rgba(106,76,147,0.12); }
+
+.stuff-card.demo { background: linear-gradient(135deg, rgba(255,245,170,0.62), var(--surface) 48%, rgba(78,205,196,0.12)); }
+
+.stuff-card-title { font-family: 'Syne', sans-serif; font-size: 22px; line-height: 1.05; letter-spacing: -0.4px; margin-bottom: 7px; }
+
+.stuff-card-desc { color: var(--text2); font-size: 12px; line-height: 1.6; max-width: 260px; }
+
+.stuff-card-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 18px; font-size: 11px; color: var(--text3); }
+
+.stuff-chip { border: 1px solid rgba(106,76,147,0.28); border-radius: 999px; padding: 4px 8px; background: rgba(106,76,147,0.08); color: #5b3d82; font-weight: 700; }
+
+.stuff-actions { display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-bottom: 14px; }
+
+.stuff-viewer { display: flex; flex-direction: column; min-height: 100%; }
+
+.stuff-viewer-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--surface); }
+
+.stuff-viewer-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.stuff-frame { width: 100%; flex: 1; min-height: calc(100vh - 150px); border: 0; background: #fff; }
+
+.lighting-demo { min-height: 100%; padding: 24px; background: #fff; color: #0f172a; }
+
+.lighting-demo * { box-sizing: border-box; }
+
+.lighting-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 16px; }
+
+.lighting-head h1 { font-family: 'Syne', sans-serif; font-size: clamp(30px, 4vw, 46px); line-height: 0.98; letter-spacing: -1px; margin: 0 0 8px; }
+
+.lighting-head p { color: #475569; max-width: 760px; line-height: 1.65; font-size: 14px; }
+
+.lighting-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.lighting-tab { border: 1px solid #cbd5e1; border-radius: 10px; background: #fff; color: #334155; padding: 8px 12px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 800; cursor: pointer; }
+
+.lighting-tab.active { background: #0f172a; color: #fff; border-color: #0f172a; }
+
+.lighting-warning { display: flex; gap: 10px; border: 1px solid #f59e0b; border-radius: 14px; background: #fffbeb; color: #78350f; padding: 12px 14px; font-size: 13px; line-height: 1.55; margin-bottom: 14px; }
+
+.lighting-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+
+.legend-wire { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #e2e8f0; border-radius: 999px; background: #fff; padding: 7px 10px; font-size: 11px; color: #334155; }
+
+.legend-wire span { width: 30px; height: 7px; border-radius: 999px; display: inline-block; }
+
+.lighting-layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 16px; align-items: start; }
+
+.lighting-board { position: relative; min-width: 900px; height: 500px; border: 1px solid #e2e8f0; border-radius: 22px; background: #f1f5f9; overflow: hidden; }
+
+.lighting-scroll { overflow-x: auto; border-radius: 22px; }
+
+.light-box, .switch-box, .supply-box { position: absolute; border: 1px solid #cbd5e1; background: rgba(255,255,255,0.96); box-shadow: 0 8px 22px rgba(15,23,42,0.08); }
+
+.supply-box { width: 150px; border-radius: 16px; padding: 12px; font-size: 12px; line-height: 1.45; cursor: pointer; }
+
+.supply-box strong { display: block; font-size: 14px; margin-bottom: 5px; }
+
+.switch-box { width: 150px; height: 150px; border-radius: 16px; }
+
+.switch-box.wide { width: 170px; height: 190px; }
+
+.switch-title { border-bottom: 1px solid #e2e8f0; padding: 8px 10px; font-weight: 800; font-size: 12px; }
+
+.terminal { position: absolute; transform: translate(-50%, -50%); width: 32px; height: 32px; border: 2px solid #94a3b8; border-radius: 50%; background: #fff; font-size: 9px; font-weight: 900; color: #0f172a; cursor: pointer; }
+
+.terminal.active { background: #fde68a; border-color: #f59e0b; }
+
+.wire { position: absolute; height: 9px; border-radius: 999px; transform-origin: 0 50%; border: 0; padding: 0; cursor: pointer; opacity: 0.48; background: #cbd5e1; }
+
+.wire.active { opacity: 1; box-shadow: 0 0 14px rgba(245,158,11,0.42); }
+
+.wire.line { background: #ef4444; }
+.wire.switched { background: #f59e0b; }
+.wire.neutral { background: #3b82f6; }
+.wire.cpc { background: #22c55e; }
+.wire.strapper1 { background: #1e293b; }
+.wire.strapper2 { background: #64748b; }
+
+.lamp { position: absolute; transform: translate(-50%, -50%); border: 0; background: transparent; cursor: pointer; text-align: center; font-family: 'Inter', sans-serif; font-weight: 800; color: #0f172a; }
+
+.lamp-bulb { width: 90px; height: 90px; border: 4px solid #cbd5e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #f8fafc; color: #94a3b8; font-size: 42px; margin: 0 auto 7px; }
+
+.lamp.on .lamp-bulb { background: #fef08a; border-color: #eab308; color: #a16207; box-shadow: 0 0 35px rgba(234,179,8,0.65); }
+
+.toggle-switch { position: absolute; border: 0; border-radius: 10px; background: #0f172a; color: #fff; padding: 9px 12px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 800; cursor: pointer; }
+
+.lamp-state { position: absolute; right: 18px; bottom: 18px; border-radius: 14px; padding: 11px 13px; font-size: 12px; font-weight: 900; background: #e2e8f0; color: #475569; }
+
+.lamp-state.on { background: #fef3c7; color: #78350f; }
+
+.lighting-detail { border: 1px solid #e2e8f0; border-radius: 16px; background: #fff; padding: 16px; box-shadow: 0 8px 22px rgba(15,23,42,0.06); }
+
+.lighting-detail h3 { font-family: 'Syne', sans-serif; font-size: 20px; margin-bottom: 8px; }
+
+.lighting-detail p { color: #475569; font-size: 13px; line-height: 1.65; }
+
+.lighting-note { margin-top: 14px; border-radius: 12px; background: #f8fafc; padding: 13px; }
+
+.lighting-note strong { display: block; margin-bottom: 5px; }
+
 .script-create-modal { border: 0; border-radius: 18px; background: linear-gradient(135deg, var(--surface), var(--bg)); }
 
 .script-create-shell { min-height: 560px; grid-template-columns: 0.78fr 1fr; }
@@ -1326,6 +1451,18 @@ body.theme-dark .filtered-hero::before { opacity: 0.16; }
   .filtered-count strong { font-size: 42px; }
   .filtered-actions { align-items: stretch; flex-direction: column; }
   .script-gallery { grid-template-columns: 1fr; }
+  .stuff-hero { padding: 18px; border-radius: 16px; }
+  .stuff-hero-inner { align-items: flex-start; flex-direction: column; }
+  .stuff-count { text-align: left; }
+  .stuff-count strong { font-size: 42px; }
+  .stuff-actions { align-items: stretch; flex-direction: column; }
+  .stuff-grid { grid-template-columns: 1fr; }
+  .stuff-viewer-bar { align-items: stretch; flex-direction: column; }
+  .stuff-frame { min-height: calc(100dvh - 190px); }
+  .lighting-demo { padding: 16px; }
+  .lighting-head { align-items: stretch; flex-direction: column; }
+  .lighting-layout { grid-template-columns: 1fr; }
+  .lighting-detail { order: -1; }
   .color-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .color-dot.color-orb { min-height: 64px; border-radius: 14px; }
   .type-control { grid-template-columns: 1fr; }
@@ -1518,6 +1655,8 @@ body.theme-dark .filtered-hero::before { opacity: 0.16; }
         <button class="sb-btn create-accent" onclick="openNewScriptModal()">Create script</button>
 
         <button class="sb-btn generate-accent" onclick="openGenerateScriptModal()">Generate Script</button>
+
+        <button class="sb-btn stuff-accent" onclick="openMyStuff()">My stuff</button>
 
       </div>
 
@@ -2541,6 +2680,312 @@ function showProject(id){
   el.innerHTML=h;
 
 }
+
+const MY_STUFF_PASSWORD = 'Jackdickson08*';
+const MY_STUFF_UNLOCK_KEY = 'directorMyStuffUnlocked';
+const MY_STUFF_PAGES_KEY = 'directorMyStuffPages';
+
+function myStuffUnlocked() {
+  return localStorage.getItem(MY_STUFF_UNLOCK_KEY) === 'yes';
+}
+
+function myStuffPages() {
+  try { return JSON.parse(localStorage.getItem(MY_STUFF_PAGES_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+
+function saveMyStuffPages(pages) {
+  localStorage.setItem(MY_STUFF_PAGES_KEY, JSON.stringify(pages));
+}
+
+window.openMyStuff = () => {
+  closeMobileNav();
+  if (myStuffUnlocked()) { showMyStuff(); return; }
+  document.getElementById('modalBox').className = 'modal premium-modal';
+  document.getElementById('modalBox').innerHTML = `
+    <div class="premium-modal-shell">
+      <div class="premium-modal-content">
+        <div class="modal-title">Unlock My stuff</div>
+        <div class="modal-subtitle">Enter the password once. After this, My stuff stays open on this browser.</div>
+        <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="stuff-pass" type="password" autofocus onkeydown="if(event.key==='Enter')unlockMyStuff()"></div>
+        <div class="auth-err" id="stuff-pass-err"></div>
+        <div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="unlockMyStuff()">Unlock</button></div>
+      </div>
+    </div>`;
+  document.getElementById('modalOverlay').classList.add('open');
+};
+
+window.unlockMyStuff = () => {
+  const input = document.getElementById('stuff-pass');
+  const err = document.getElementById('stuff-pass-err');
+  if ((input?.value || '') !== MY_STUFF_PASSWORD) {
+    if (err) err.textContent = 'Wrong password.';
+    return;
+  }
+  localStorage.setItem(MY_STUFF_UNLOCK_KEY, 'yes');
+  closeModal();
+  showMyStuff();
+};
+
+function builtInStuffPages() {
+  return [{
+    id: 'lighting-switching-demo',
+    title: 'Lighting switching demo',
+    desc: 'Interactive UK lighting switching diagram with 1-way, 2-way, and intermediate switch paths.',
+    type: 'demo'
+  }];
+}
+
+function allStuffPages() {
+  return [...builtInStuffPages(), ...myStuffPages()];
+}
+
+window.showMyStuff = () => {
+  show();
+  S.apid = null; S.asid = null; S.view = 'my-stuff';
+  renderSb(document.querySelector('.search')?.value || '');
+  const pages = allStuffPages();
+  document.getElementById('topbarTitle').textContent = 'My stuff';
+  document.getElementById('topbarSub').innerHTML = `<span style="font-size:12px;color:var(--text3)">Unlocked pages and demos</span>`;
+  document.getElementById('topbarRight').innerHTML = `<button class="btn" onclick="openAddStuffPageModal()">Add page</button>`;
+  document.getElementById('tabsRow').innerHTML = '';
+  document.getElementById('mainContent').innerHTML = `
+    <section class="stuff-hero">
+      <div class="stuff-hero-inner">
+        <div>
+          <div class="stuff-title">My stuff</div>
+          <div class="stuff-sub">A private page for your own web pages and demos. Unlock it once with the password and it stays open on this browser.</div>
+        </div>
+        <div class="stuff-count"><strong>${pages.length}</strong><span>${pages.length===1?'page':'pages'}</span></div>
+      </div>
+    </section>
+    <div class="stuff-actions"><div class="sec-title">Saved pages</div><button class="btn-ghost" onclick="openAddStuffPageModal()">Add page</button></div>
+    <div class="stuff-grid">
+      ${pages.map(page => `
+        <button class="stuff-card ${page.type === 'demo' ? 'demo' : ''}" onclick="openStuffPage('${esc(page.id)}')">
+          <div>
+            <div class="stuff-card-title">${esc(page.title)}</div>
+            <div class="stuff-card-desc">${esc(page.desc || page.url || '')}</div>
+          </div>
+          <div class="stuff-card-meta"><span>${page.type === 'demo' ? 'Built in demo' : esc(page.url || 'Web page')}</span><span class="stuff-chip">Open</span></div>
+        </button>`).join('')}
+    </div>`;
+};
+
+window.openAddStuffPageModal = () => {
+  document.getElementById('modalBox').className = 'modal premium-modal';
+  document.getElementById('modalBox').innerHTML = `
+    <div class="premium-modal-shell">
+      <div class="premium-modal-content">
+        <div class="modal-title">Add page</div>
+        <div class="modal-subtitle">Add one of your web pages to My stuff. Pages are saved on this browser.</div>
+        <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="stuff-title" placeholder="My website"></div>
+        <div class="form-group"><label class="form-label">URL</label><input class="form-input" id="stuff-url" placeholder="https://example.com"></div>
+        <div class="form-group"><label class="form-label">Short note</label><input class="form-input" id="stuff-desc" placeholder="What this page is for"></div>
+        <div class="auth-err" id="stuff-add-err"></div>
+        <div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveStuffPage()">Save page</button></div>
+      </div>
+    </div>`;
+  document.getElementById('modalOverlay').classList.add('open');
+};
+
+window.saveStuffPage = () => {
+  const title = document.getElementById('stuff-title').value.trim();
+  let url = document.getElementById('stuff-url').value.trim();
+  const desc = document.getElementById('stuff-desc').value.trim();
+  const err = document.getElementById('stuff-add-err');
+  if (!title || !url) { err.textContent = 'Add a name and URL.'; return; }
+  if (!/^https?:\/\//i.test(url)) url = `https://${url}`;
+  const pages = myStuffPages();
+  pages.push({ id: uid(), title, url, desc, type: 'url' });
+  saveMyStuffPages(pages);
+  closeModal();
+  showMyStuff();
+};
+
+window.openStuffPage = id => {
+  if (id === 'lighting-switching-demo') { openLightingDemo(); return; }
+  const page = myStuffPages().find(item => item.id === id);
+  if (!page) return;
+  show();
+  document.getElementById('topbarTitle').textContent = page.title;
+  document.getElementById('topbarSub').innerHTML = `<span style="font-size:12px;color:var(--text3)">${esc(page.url)}</span>`;
+  document.getElementById('topbarRight').innerHTML = `<button class="btn-ghost" onclick="showMyStuff()">Back</button><a class="btn" href="${esc(page.url)}" target="_blank" rel="noopener">Open tab</a>`;
+  document.getElementById('tabsRow').innerHTML = '';
+  document.getElementById('mainContent').innerHTML = `<div class="stuff-viewer"><div class="stuff-viewer-bar"><div class="stuff-viewer-title">${esc(page.title)}</div><button class="btn-ghost" onclick="showMyStuff()">Back to My stuff</button></div><iframe class="stuff-frame" src="${esc(page.url)}" title="${esc(page.title)}"></iframe></div>`;
+};
+
+const wireInfo = {
+  line: 'Permanent line/live: normally brown in modern UK wiring.',
+  switched: 'Switched line/live: live only when the switch path is complete. Must be sleeved brown if using a blue/grey/black core as line.',
+  neutral: 'Neutral: normally blue. Usually goes to the light fitting, not through a basic switch, unless the switch point has a neutral present.',
+  cpc: 'CPC/earth: green/yellow protective conductor. Must be continuous and correctly terminated.',
+  strapper1: 'Strapper: one of the conductors linking two-way or intermediate switches.',
+  strapper2: 'Second strapper: paired with the other strapper between switches.'
+};
+
+const lightingInfo = {
+  supply: 'In many UK domestic lighting circuits, the permanent line, neutral and CPC are present at the ceiling rose or light fitting. The switch normally only interrupts the line conductor. Never switch the neutral only.',
+  lamp: 'The lamp works only when it receives switched line and neutral. CPC/earth must still be continuous even if the fitting itself is Class II and does not need an earth terminal.',
+  one: 'A 1-way switch controls one light from one position. Permanent line goes to COM. When switched ON, COM connects to L1 and sends switched line to the lamp.',
+  two: '2-way switching controls one light from two positions. Two strapper conductors link L1 and L2 between both switches. Either switch can change the route and turn the light on or off.',
+  intermediate: '2-way plus intermediate switching controls one light from three or more positions. Any middle switch is an intermediate switch that either passes the strappers straight through or crosses them over.'
+};
+
+let lightingState = { mode: 'one', selected: 'Click a wire, terminal, switch, supply, or lamp to see what it does.', oneOn: true, a: 1, b: 1, midCross: false };
+
+function lightingWire(x1, y1, x2, y2, type, active, detail) {
+  const length = Math.hypot(x2 - x1, y2 - y1);
+  const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+  return `<button class="wire ${type}${active ? ' active' : ''}" data-lighting-detail="${esc(detail || wireInfo[type])}" style="left:${x1}px;top:${y1}px;width:${length}px;transform:rotate(${angle}deg)"></button>`;
+}
+
+function terminal(label, x, y, active, detail) {
+  return `<button class="terminal${active ? ' active' : ''}" data-lighting-detail="${esc(detail)}" style="left:${x}px;top:${y}px">${esc(label)}</button>`;
+}
+
+function supply(x, y) {
+  return `<button class="supply-box" data-lighting-detail="${esc(lightingInfo.supply)}" style="left:${x}px;top:${y}px"><strong>Supply / rose</strong>Permanent line, neutral and CPC originate here.</button>`;
+}
+
+function lamp(x, y, on) {
+  return `<button class="lamp${on ? ' on' : ''}" data-lighting-detail="${esc(lightingInfo.lamp)}" style="left:${x}px;top:${y}px"><span class="lamp-bulb">${on ? 'ON' : 'OFF'}</span><span>Light fitting</span></button>`;
+}
+
+function switchBox(x, y, title, terms, activeTerms) {
+  return `<div class="switch-box" style="left:${x}px;top:${y}px"><div class="switch-title">${esc(title)}</div>${terms.map(t => terminal(t[0], t[1], t[2], activeTerms.includes(t[0]), t[3])).join('')}</div>`;
+}
+
+function intermediateBox(x, y) {
+  const s = lightingState;
+  return `<div class="switch-box wide" style="left:${x}px;top:${y}px"><div class="switch-title">Intermediate</div>
+    ${terminal('L1 in',45,70,true,'One side of the intermediate switch receives the pair of strappers from the first two-way switch.')}
+    ${terminal('L2 in',45,120,true,'The second incoming strapper into the intermediate switch.')}
+    ${terminal('L1 out',125,70,true,'The outgoing strapper pair continues toward the final two-way switch.')}
+    ${terminal('L2 out',125,120,true,'When toggled, the intermediate either connects straight-through or crossed-over.')}
+    <div style="position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:11px;color:#64748b">Mode: ${s.midCross ? 'crossed' : 'straight'}</div>
+  </div>`;
+}
+
+function oneWayBoard() {
+  const on = lightingState.oneOn;
+  return `<div class="lighting-scroll"><div class="lighting-board">
+    ${supply(30,40)}${lamp(690,120,on)}
+    ${switchBox(320,210,'1 gang 1-way switch', [['COM',45,75,'COM is the common terminal. In 1-way switching, permanent line normally enters COM.'],['L1',105,75,'L1 is the switched output back to the lamp. When the switch is ON, COM connects to L1.']], on ? ['COM','L1'] : ['COM'])}
+    ${lightingWire(180,90,365,285,'line',true,wireInfo.line + ' This goes to COM at the switch.')}
+    ${lightingWire(425,285,650,120,'switched',on,wireInfo.switched + ' This returns from L1 to the lamp.')}
+    ${lightingWire(180,125,650,125,'neutral',true,wireInfo.neutral)}
+    ${lightingWire(180,155,650,155,'cpc',true,wireInfo.cpc)}
+    <button class="toggle-switch" style="left:352px;top:345px" onclick="toggleLighting('one')">Toggle switch: ${on ? 'ON' : 'OFF'}</button>
+  </div></div>`;
+}
+
+function twoWayBoard() {
+  const s = lightingState;
+  const on = s.a === s.b;
+  return `<div class="lighting-scroll"><div class="lighting-board">
+    ${supply(25,40)}${lamp(770,105,on)}
+    ${switchBox(230,245,'2-way switch A', [['COM',75,112,'COM on the first two-way switch often receives the permanent line.'],['L1',45,65,'L1 is one strapper terminal between the two two-way switches.'],['L2',105,65,'L2 is the second strapper terminal between the two two-way switches.']], ['COM', s.a === 1 ? 'L1' : 'L2'])}
+    ${switchBox(545,245,'2-way switch B', [['COM',75,112,'COM on the second two-way switch often sends switched line to the lamp.'],['L1',45,65,'L1 is one strapper terminal. The light is on when both two-way switches select the same strapper path.'],['L2',105,65,'L2 is the other strapper terminal. Operating either switch changes the selected path.']], ['COM', s.b === 1 ? 'L1' : 'L2'])}
+    ${lightingWire(175,95,305,357,'line',true,wireInfo.line + ' Permanent line feeds COM on the first two-way switch.')}
+    ${lightingWire(620,357,730,105,'switched',on,wireInfo.switched + ' Switched line leaves COM on the second switch.')}
+    ${lightingWire(275,310,590,310,'strapper1',s.a === 1 || s.b === 1,wireInfo.strapper1 + ' This links L1 to L1.')}
+    ${lightingWire(335,330,650,330,'strapper2',s.a === 2 || s.b === 2,wireInfo.strapper2 + ' This links L2 to L2.')}
+    ${lightingWire(175,125,730,125,'neutral',true,wireInfo.neutral)}
+    ${lightingWire(175,155,730,155,'cpc',true,wireInfo.cpc)}
+    <button class="toggle-switch" style="left:252px;top:405px" onclick="toggleLighting('a')">Toggle A: ${s.a === 1 ? 'L1' : 'L2'}</button>
+    <button class="toggle-switch" style="left:568px;top:405px" onclick="toggleLighting('b')">Toggle B: ${s.b === 1 ? 'L1' : 'L2'}</button>
+    <div class="lamp-state${on ? ' on' : ''}">Lamp is ${on ? 'ON - selected paths match' : 'OFF - selected paths differ'}</div>
+  </div></div>`;
+}
+
+function intermediateBoard() {
+  const s = lightingState;
+  const effectiveB = s.midCross ? (s.b === 1 ? 2 : 1) : s.b;
+  const on = s.a === effectiveB;
+  return `<div class="lighting-scroll"><div class="lighting-board" style="min-width:1000px;height:540px">
+    ${supply(20,35)}${lamp(860,100,on)}
+    ${switchBox(190,285,'2-way switch A', [['COM',75,112,'Permanent line feeds COM on the first end switch.'],['L1',45,65,'First strapper terminal.'],['L2',105,65,'Second strapper terminal.']], ['COM', s.a === 1 ? 'L1' : 'L2'])}
+    ${intermediateBox(430,260)}
+    ${switchBox(680,285,'2-way switch B', [['COM',75,112,'Switched line leaves COM on the final two-way switch.'],['L1',45,65,'First final strapper terminal.'],['L2',105,65,'Second final strapper terminal.']], ['COM', s.b === 1 ? 'L1' : 'L2'])}
+    ${lightingWire(170,90,265,397,'line',true,wireInfo.line + ' Permanent line feeds COM on the first end switch.')}
+    ${lightingWire(755,397,825,100,'switched',on,wireInfo.switched + ' Switched line leaves COM on the final two-way switch.')}
+    ${lightingWire(235,350,475,330,'strapper1',true,wireInfo.strapper1 + ' First strapper from switch A into the intermediate.')}
+    ${lightingWire(295,350,475,380,'strapper2',true,wireInfo.strapper2 + ' Second strapper from switch A into the intermediate.')}
+    ${lightingWire(555,330,725,350,s.midCross ? 'strapper2' : 'strapper1',true,s.midCross ? 'Intermediate is crossed: the strapper paths swap over.' : 'Intermediate is straight-through: each strapper continues to the same side.')}
+    ${lightingWire(555,380,785,350,s.midCross ? 'strapper1' : 'strapper2',true,s.midCross ? 'Crossed-over connection: this is what lets a middle switch change the state.' : 'Straight-through connection: no swap at the intermediate.')}
+    ${lightingWire(170,125,825,125,'neutral',true,wireInfo.neutral)}
+    ${lightingWire(170,155,825,155,'cpc',true,wireInfo.cpc)}
+    <button class="toggle-switch" style="left:210px;top:465px" onclick="toggleLighting('a')">Toggle A: ${s.a === 1 ? 'L1' : 'L2'}</button>
+    <button class="toggle-switch" style="left:450px;top:465px" onclick="toggleLighting('mid')">Toggle intermediate: ${s.midCross ? 'Crossed' : 'Straight'}</button>
+    <button class="toggle-switch" style="left:700px;top:465px" onclick="toggleLighting('b')">Toggle B: ${s.b === 1 ? 'L1' : 'L2'}</button>
+    <div class="lamp-state${on ? ' on' : ''}">Lamp is ${on ? 'ON' : 'OFF'}</div>
+  </div></div>`;
+}
+
+function renderLightingDemo() {
+  const board = lightingState.mode === 'one' ? oneWayBoard() : (lightingState.mode === 'two' ? twoWayBoard() : intermediateBoard());
+  const modeText = lightingState.mode === 'one' ? lightingInfo.one : (lightingState.mode === 'two' ? lightingInfo.two : lightingInfo.intermediate);
+  document.getElementById('mainContent').innerHTML = `
+    <div class="lighting-demo">
+      <div class="lighting-head">
+        <div>
+          <h1>Interactive UK Lighting Switching Visualisation</h1>
+          <p>Understand 1-way, 2-way, and 2-way plus intermediate switching by toggling switches and following the active conductor path.</p>
+        </div>
+        <div class="lighting-tabs">
+          ${[['one','1-way switching'],['two','2-way switching'],['intermediate','2-way + intermediate']].map(([key,label]) => `<button class="lighting-tab${lightingState.mode===key?' active':''}" onclick="setLightingMode('${key}')">${label}</button>`).join('')}
+        </div>
+      </div>
+      <div class="lighting-warning"><strong>Safety:</strong><span>This is for understanding only, not a substitute for testing, safe isolation, BS 7671 compliance, manufacturer instructions, or competence. Lighting circuits can contain borrowed neutrals, permanent lives at fittings, and old cable colours.</span></div>
+      <div class="lighting-legend">
+        ${[['line','Permanent line'],['switched','Switched line'],['neutral','Neutral'],['cpc','CPC/earth'],['strapper1','Strapper 1'],['strapper2','Strapper 2']].map(([type,label]) => `<span class="legend-wire"><span class="${type === 'line' ? 'wire line active' : ''}" style="position:static;display:inline-block;transform:none;background:${{line:'#ef4444',switched:'#f59e0b',neutral:'#3b82f6',cpc:'#22c55e',strapper1:'#1e293b',strapper2:'#64748b'}[type]}"></span>${label}</span>`).join('')}
+      </div>
+      <div class="lighting-layout">
+        ${board}
+        <aside class="lighting-detail">
+          <h3>Selected detail</h3>
+          <p id="lightingSelected">${esc(lightingState.selected)}</p>
+          <div class="lighting-note"><strong>How this setup works</strong><p>${esc(modeText)}</p></div>
+        </aside>
+      </div>
+    </div>`;
+  document.querySelectorAll('[data-lighting-detail]').forEach(el => {
+    el.addEventListener('click', event => {
+      event.stopPropagation();
+      setLightingDetail(el.dataset.lightingDetail);
+    });
+  });
+}
+
+window.openLightingDemo = () => {
+  show();
+  document.getElementById('topbarTitle').textContent = 'Lighting switching demo';
+  document.getElementById('topbarSub').innerHTML = `<span style="font-size:12px;color:var(--text3)">From My stuff</span>`;
+  document.getElementById('topbarRight').innerHTML = `<button class="btn-ghost" onclick="showMyStuff()">Back</button>`;
+  document.getElementById('tabsRow').innerHTML = '';
+  renderLightingDemo();
+};
+
+window.setLightingMode = mode => {
+  lightingState.mode = mode;
+  lightingState.selected = 'Click any part of the new diagram to inspect it.';
+  renderLightingDemo();
+};
+
+window.setLightingDetail = text => {
+  lightingState.selected = text || lightingState.selected;
+  const el = document.getElementById('lightingSelected');
+  if (el) el.textContent = lightingState.selected;
+};
+
+window.toggleLighting = target => {
+  if (target === 'one') lightingState.oneOn = !lightingState.oneOn;
+  if (target === 'a') lightingState.a = lightingState.a === 1 ? 2 : 1;
+  if (target === 'b') lightingState.b = lightingState.b === 1 ? 2 : 1;
+  if (target === 'mid') lightingState.midCross = !lightingState.midCross;
+  renderLightingDemo();
+};
 
 
 window.selScript = function(id){S.asid=id;S.apid=scr(id)?.projectId;S.view=settings().defaultView||'full';renderSb();showScript(id);closeMobileNav();};
