@@ -28,6 +28,10 @@ export default async function handler(req, res) {
   const currentName = String(req.body?.currentName || "").trim().slice(0, 160);
   const currentScript = String(req.body?.currentScript || "").trim().slice(0, 12000);
   const platforms = Array.isArray(req.body?.platforms) ? req.body.platforms.map(p => String(p).slice(0, 30)).join(", ") : "TikTok, Instagram, YouTube, X";
+  const length = ["short", "medium", "long"].includes(req.body?.length) ? req.body.length : "short";
+  const tone = String(req.body?.tone || "punchy").trim().slice(0, 40);
+  const format = String(req.body?.format || "talking-head").trim().slice(0, 60);
+  const brainstorm = req.body?.brainstorm === true;
 
   if (mode === "custom" && !instructions && !currentName && !currentScript) {
     return send(res, 400, { error: "Tell Gemini what you want first." });
@@ -43,6 +47,10 @@ Return JSON only, with this exact shape:
 
 Context:
 - Platforms: ${platforms || "general social video"}.
+- Length: ${length === "short" ? "15-30 seconds" : length === "long" ? "60-120 seconds" : "30-60 seconds"}.
+- Tone: ${tone}.
+- Format: ${format}.
+- Brainstorm mode: ${brainstorm ? "yes, include a few concise concept options before the chosen script inside the script text" : "no, write the strongest complete script directly"}.
 - Current script name, if any: ${currentName || "none"}.
 - Current draft, if any: ${currentScript || "none"}.
 - Mode: ${mode === "custom" ? "follow the user's instructions closely" : "Gemini chooses the strongest title and script concept"}.
@@ -51,8 +59,9 @@ Context:
 Rules:
 - Make the title specific and under 80 characters.
 - The script should be original, practical, and ready for filming.
-- Include enough detail for shots, voiceover, on-screen text, transitions, and CTA.
-- Keep it concise enough for a short-form creator video unless the user asks otherwise.
+- Include enough detail for shots, direct-to-camera speech, voiceover, on-screen text, transitions, and CTA.
+- Match the requested length and format.
+- If the format is talking-head or talking to camera, write direct speech lines that can become "speech" blocks later.
 - Do not add markdown fences.`;
 
   try {
@@ -64,7 +73,7 @@ Rules:
         body: JSON.stringify({
           contents: [{ role: "user", parts: [{ text: prompt }] }],
           generationConfig: {
-            temperature: mode === "custom" ? 0.62 : 0.78,
+            temperature: brainstorm ? 0.82 : (mode === "custom" ? 0.62 : 0.78),
             responseMimeType: "application/json"
           }
         })
