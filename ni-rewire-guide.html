@@ -29,7 +29,7 @@ header h1{font-family:'DM Serif Display',serif;font-size:19px;letter-spacing:-0.
 .sidebar-toggle{background:none;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);padding:5px 10px;border-radius:4px;cursor:pointer;font-size:12px;transition:all .15s;}  
 .sidebar-toggle:hover{background:rgba(255,255,255,0.1);}  
 .app{display:flex;flex:1;overflow:hidden;height:calc(100vh - 54px);}  
-.sidebar{width:var(--sidebar);flex-shrink:0;background:#111;overflow-y:auto;display:flex;flex-direction:column;transition:width .25s ease,opacity .25s;border-right:1px solid #222;position:relative;z-index:50;}  
+.sidebar{width:var(--sidebar);flex-shrink:0;background:#111;overflow-y:scroll;height:calc(100vh - 54px);max-height:calc(100vh - 54px);display:flex;flex-direction:column;transition:width .25s ease,opacity .25s;border-right:1px solid #222;position:relative;z-index:50;-webkit-overflow-scrolling:touch;}  
 .sidebar.collapsed{width:0;opacity:0;overflow:hidden;}  
 .sidebar-search{padding:12px;border-bottom:1px solid #222;flex-shrink:0;}  
 .sidebar-search input{width:100%;background:#1e1e1e;border:1px solid #333;color:#ccc;padding:6px 10px;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:12px;outline:none;}  
@@ -183,13 +183,16 @@ header h1{font-size:16px;}
 :root{-sidebar:0px;}  
 /* Sidebar becomes an overlay drawer */  
 .sidebar{  
-position:fixed;top:54px;left:0;bottom:0;  
-width:260px !important;  
-z-index:200;  
-transform:translateX(-100%);  
-transition:transform .25s ease;  
-opacity:1 !important;  
-box-shadow:4px 0 20px rgba(0,0,0,0.4);  
+position:fixed;top:54px;left:0;bottom:0;
+width:260px !important;
+z-index:200;
+transform:translateX(-100%);
+transition:transform .25s ease;
+opacity:1 !important;
+box-shadow:4px 0 20px rgba(0,0,0,0.4);
+overflow-y:scroll;
+height:auto;
+max-height:none;
 }  
 .sidebar.mobile-open{transform:translateX(0);}  
 .sidebar.collapsed{transform:translateX(-100%);width:260px !important;}  
