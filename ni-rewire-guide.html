@@ -1956,373 +1956,6 @@ header{flex-wrap:wrap;}
     <button class="sw-btn" onclick="nav('howto-overview')">Overview</button>  
   </div>  
 </div>  
-</div><!-- /content-area -->  
-  
-<!-- ââ INFO PANEL ââ -->  
-  
-<div class="info-panel" id="info-panel">  
-  <div class="info-empty" id="info-empty"><div class="info-empty-icon">â</div><p>Click any component in the diagram to see detailed info and NI-specific guidance.</p></div>  
-  
-  <div class="info-content" id="ic-mains"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Power source</div><div class="info-title">230V AC Mains</div><div class="info-body">UK/NI domestic supply is <strong>230V AC at 50Hz</strong> delivered by NIE Networks via underground cables or overhead lines to the meter then consumer unit.</div><div class="info-detail">Typical Ze in NI: <strong>~0.35Î©</strong> on TN-C-S. Always verify Ze before sizing protection devices.</div><div class="info-ni"><strong>NI supply type:</strong> Most NI properties have a <strong>TN-C-S (PME)</strong> supply. The neutral and earth are combined in the distribution network. Critical for EV charger installations -- a separate earth electrode is required at the charger.</div></div>  
-  
-  <div class="info-content" id="ic-sw1"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">1-way switch</div><div class="info-title">Single-pole switch</div><div class="info-body">Two terminals -- breaks the <strong>live conductor only</strong>. The neutral runs directly to the lamp. Open = circuit broken. Closed = current flows.</div><div class="info-detail">Minimum rating: <strong>6A, 250V AC</strong>. Some LED-compatible switches specify a minimum load -- check when installing very low wattage LEDs.</div><div class="info-ni"><strong>NI rule:</strong> Like-for-like replacement at the same position -- no Building Control notification. Adding a new switch cable run is notifiable.</div><ul class="use-list"><li>Single-entry rooms: bedroom, study, hall</li><li>Any fixed light with one control point</li></ul></div>  
-  
-  <div class="info-content" id="ic-sw2way"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">2-way switch</div><div class="info-title">3-terminal changeover switch</div><div class="info-body">Three terminals: <strong>COM, L1, L2</strong>. A changeover switch -- COM is always connected to either L1 or L2. Two of these wired together allow either switch to control the lamp.</div><div class="info-ni"><strong>NI inspector check:</strong> All conductors in the switch cable must be sleeved brown -- they are all switched lives, not neutrals. Missing sleeves are a common fail.</div><ul class="use-list"><li>Staircase -- top and bottom</li><li>Hallway with two ends</li><li>Double-door rooms</li><li>Bedroom -- door and bedside</li></ul></div>  
-  
-  <div class="info-content" id="ic-inter-sw"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Intermediate switch</div><div class="info-title">4-terminal crossover switch</div><div class="info-body">Four terminals -- in one position passes traveller wires straight through. When toggled, <strong>crosses them over</strong> (swapping L1 and L2). Any switch in the chain can then toggle the lamp.</div><div class="info-detail">Add as many intermediate switches as needed -- they sit between two standard 2-way switches. Used in corridors with 3 or more entry/exit points.</div><div class="info-ni"><strong>NI use:</strong> Long hallways in larger NI homes, hotel-style corridor lighting. Each additional intermediate switch needs 3-core &amp; earth cable either side.</div></div>  
-  
-  <div class="info-content" id="ic-cu"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Consumer unit</div><div class="info-title">Consumer Unit (CU)</div><div class="info-body">The CU distributes power and provides protection. It must be accessible, correctly labelled, and in a non-combustible enclosure.</div><div class="info-ni"><strong>NI mandate:</strong> Steel/metal enclosure only for new installs. All-RCBO boards preferred by NI Building Control. Must not be in a bedroom on a new install. Must have a circuit schedule fixed inside the door.</div></div>  
-  
-  <div class="info-content" id="ic-incoming"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Meter tails</div><div class="info-title">Incoming meter tails</div><div class="info-body">Connect the electricity meter to the main switch. <strong>Not protected by any MCB</strong> -- the supply fuse (meter head) is the only protection. Standard size: <strong>25mmÂ²</strong>.</div><div class="info-ni"><strong>NI:</strong> Only NIE Networks or approved contractors can work on the meter head. Tails can be extended but must run in non-combustible sleeving. Label clearly.</div></div>  
-  
-  <div class="info-content" id="ic-mainswitch"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Main switch</div><div class="info-title">100A DP Main Switch</div><div class="info-body">Double-pole isolator -- breaks both live and neutral simultaneously. Rated 100A for standard domestic supplies. Must be labelled ON/OFF and accessible without tools.</div><div class="info-ni"><strong>NI:</strong> Must be part of the steel CU enclosure. Position at accessible height -- NI Building Control check this on inspection.</div></div>  
-  
-  <div class="info-content" id="ic-rcbo"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">RCBO</div><div class="info-title">RCBO -- MCB + RCD combined</div><div class="info-body">Provides both <strong>overcurrent protection</strong> (like an MCB) and <strong>earth fault protection</strong> (30mA RCD) in one device, for a single circuit.</div><div class="info-detail">A fault trips only that circuit -- not half the house. Slightly more expensive per way but far better reliability and convenience.</div><div class="info-ni"><strong>NI Building Control:</strong> Increasingly expect all-RCBO boards on new builds and full rewires. Dual-RCD boards still accepted but represent older practice.</div></div>  
-  
-  <div class="info-content" id="ic-rcd30ma"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">RCD</div><div class="info-title">30mA Residual Current Device</div><div class="info-body">Detects imbalance between live and neutral (current leaking through a person or fault). Trips in <strong>&lt;40ms at 5ÃIÎn</strong> -- fast enough to prevent electrocution.</div><div class="info-detail">30mA is the safe threshold -- lethal current is 50-100mA sustained. The MCB alone cannot provide this protection.</div><div class="info-ni"><strong>NI:</strong> All socket circuits and bathroom circuits must have 30mA RCD protection. Building Control check RCD trip times on the submitted EIC.</div></div>  
-  
-  <div class="info-content" id="ic-afdd"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">AFDD</div><div class="info-title">Arc Fault Detection Device</div><div class="info-body">Detects <strong>arcing faults</strong> -- loose connections or damaged cables creating sparks that can ignite materials before a normal MCB trips. A major cause of house fires.</div><div class="info-detail">Reg 421.1.7 <strong>recommends</strong> AFDDs for bedroom and kitchen circuits -- not yet mandatory but NI Building Control are increasingly expecting them.</div><div class="info-ni"><strong>NI cost:</strong> Approximately Â£40-80 per way. Often specified in writing by NI Building Control for kitchen socket circuits on new builds.</div></div>  
-  
-  <div class="info-content" id="ic-socket13a"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">13A socket</div><div class="info-title">BS 1363 Socket Outlet</div><div class="info-body">UK/NI standard three-pin socket. Each can deliver up to 13A (3kW) protected by the 13A fuse in the plug. Shuttered sockets mandatory for all new installations.</div><div class="info-ni"><strong>NI:</strong> All new sockets must be shuttered. External sockets must be IP44 minimum and RCD protected. No standard sockets in bathroom zones 0, 1, or 2.</div><ul class="use-list"><li>Ring final -- max 13A at any single point</li><li>Never overload with adapters</li><li>Label kitchen sockets if on a separate radial</li></ul></div>  
-  
-  <div class="info-content" id="ic-ccu"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Cooker control unit</div><div class="info-title">Cooker Control Unit (CCU)</div><div class="info-body">Combined <strong>double-pole isolating switch</strong> with optional 13A socket. Position 300-600mm horizontally from the cooker -- never directly above (heat and steam damage).</div><div class="info-ni"><strong>NI inspector:</strong> Will check CCU position, cable rating, and that the DP switch breaks both live and neutral. The optional socket is separately fused at 13A within the CCU.</div></div>  
-  
-  <div class="info-content" id="ic-ccu-unit"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Electric cooker</div><div class="info-title">Cooker / Range</div><div class="info-body">Typically <strong>10-13kW</strong> for freestanding, 6-8kW for built-in double ovens. Diversity calculation per BS 7671 Appendix 15 significantly reduces the design current from the nameplate rating.</div><div class="info-detail"><strong>Formula:</strong> 10A + 30% of remaining + 5A if socket in CCU. Example 10kW: 10+(33Ã0.3)+5 = 24.9A â 6mmÂ² + 32A RCBO sufficient.</div></div>  
-  
-  <div class="info-content" id="ic-pullcord"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Pull cord switch</div><div class="info-title">Ceiling pull cord isolator</div><div class="info-body"><strong>Double-pole</strong> ceiling switch -- breaks both live and neutral. Operated by plastic cord with no accessible metal. Mandatory in NI bathrooms.</div><div class="info-detail">For shower circuits: rated <strong>45A DP</strong> with neon indicator and mechanical flag. For lighting: standard 6A pull cord.</div><div class="info-ni"><strong>NI rule:</strong> No standard wall switches inside bathrooms -- this is a code requirement checked by Building Control on every bathroom inspection.</div></div>  
-  
-  <div class="info-content" id="ic-shower-unit"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Electric shower</div><div class="info-title">Instantaneous shower unit</div><div class="info-body">Heats water on demand -- <strong>7.5-10.8kW element</strong>. Requires a dedicated circuit. Current draw is 33-47A, making it the highest single load in most NI homes.</div><div class="info-detail">Cable sizing: 10mmÂ² T&E for 10.8kW. Always check the shower's installation guide -- some specify 6mmÂ² for lower-rated models.</div><div class="info-ni"><strong>NI IP minimum:</strong> Zone 1 (above tray): IPX4. Connections must be via a sealed cable entry -- never a socket or plug.</div></div>  
-  
-  <div class="info-content" id="ic-cable1mm"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Lighting cable</div><div class="info-title">1.0mmÂ² Twin &amp; Earth</div><div class="info-body">Standard lighting cable. Current rating: <strong>14A clipped direct</strong> -- more than adequate for 6A lighting MCB. Grey outer sheath.</div><div class="info-ni"><strong>NI warning:</strong> Older NI properties sometimes used 1.0mmÂ² for socket circuits -- this is undersized and must be replaced on a rewire. Never use on anything with more than a 6A MCB.</div></div>  
-  
-  <div class="info-content" id="ic-cable25mm"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Socket circuit cable</div><div class="info-title">2.5mmÂ² Twin &amp; Earth</div><div class="info-body">Standard ring final cable. Rated <strong>27A clipped direct</strong>. On a ring, the two cable runs share the load -- effectively 13.5A per run.</div><div class="info-detail">CPC (earth) in 2.5mmÂ² T&E is 1.5mmÂ² -- must be sleeved green/yellow at every termination. Check Table 54.7 BS 7671 for CPC sizing.</div></div>  
-  
-  <div class="info-content" id="ic-mcb6a"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">MCB</div><div class="info-title">6A Type B MCB</div><div class="info-body">For lighting circuits. <strong>Type B</strong> trips at 3-5Ã rating -- suitable for LED and resistive loads. Max Zs: <strong>7.67Î©</strong> for 0.4s disconnection (Table 41.3).</div><div class="info-ni"><strong>NI check:</strong> Building Control verify Zs is within limits on the EIC test schedule. On older properties with high Ze, an RCBO may be needed to meet disconnection times.</div></div>  
-  
-  <div class="info-content" id="ic-main-bond"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Main bonding</div><div class="info-title">Main Protective Bonding</div><div class="info-body">All extraneous conductive parts entering the building (gas, water, oil pipes) must connect to the MET with minimum <strong>10mmÂ²</strong> conductor.</div><div class="info-ni"><strong>NI:</strong> Gas bonding within 600mm of meter outlet. Water within 600mm of entry point. All must carry label: "Safety electrical connection -- do not remove." Green/yellow sleeving mandatory.</div></div>  
-  
-  <div class="info-content" id="ic-supp-bond"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Supplementary bonding</div><div class="info-title">Supplementary Bonding</div><div class="info-body">Connects simultaneously-touchable metal parts in bathrooms. Since BS 7671:2018+A2:2022: <strong>not required</strong> if ALL bathroom circuits have 30mA RCD protection AND main bonding is satisfactory.</div><div class="info-ni"><strong>NI Building Control:</strong> Will verify RCD coverage of ALL circuits entering the bathroom. If any circuit lacks RCD protection, supplementary bonding remains mandatory for that area.</div></div>  
-  
-  <div class="info-content" id="ic-lamp"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Luminaire / load</div><div class="info-title">Lamp</div><div class="info-body">The load -- converts electrical energy to light. Modern LED lamps draw 4-15W. Max load on a 6A lighting circuit: <strong>1,380W</strong> (use 80% in practice).</div><div class="info-ni"><strong>NI IP requirements:</strong> Zone 0: IP67+. Zone 1: IPX4. Zone 2: IPX4. External: IP44 minimum -- IP65 recommended for NI climate.</div></div>  
-</div><!-- /info-panel -->  
-</div><!-- /main -->  
-</div><!-- /app -->  
-<!-- ââ REGS OVERLAY ââ -->  
-<div class="regs-overlay" id="regs-overlay" onclick="if(event.target===this)closeRegs()">  
-  <div class="regs-modal">  
-    <div class="regs-header"><h2>NI Electrical Regulations &amp; Checklist</h2><button class="regs-close" onclick="closeRegs()">â Close</button></div>  
-    <div class="regs-body">  
-      <div class="regs-tabs">  
-        <button class="regs-tab active" onclick="regsTab(this,'rg-overview')">NI overview</button>  
-        <button class="regs-tab" onclick="regsTab(this,'rg-notify')">Notification</button>  
-        <button class="regs-tab" onclick="regsTab(this,'rg-rewire')">Rewire checklist</button>  
-        <button class="regs-tab" onclick="regsTab(this,'rg-colours')">Cable colours</button>  
-        <button class="regs-tab" onclick="regsTab(this,'rg-testing')">Test values</button>  
-      </div>  
-      <div class="regs-section active" id="rg-overview">  
-        <div class="regs-card"><div class="regs-card-title"><span class="reg-num">Building Regs (NI) 2012</span> Regulatory framework</div><div class="regs-card-body">Electrical work falls under <strong>Technical Booklet P</strong> (electrical safety) and <strong>Technical Booklet E</strong> (fire -- smoke alarms). Unlike England/Wales, NI has <strong>no competent person self-certification scheme</strong>. All notifiable work requires District Council Building Control approval.</div></div>  
-        <div class="regs-card"><div class="regs-card-title"><span class="reg-num">BS 7671:2018+A2:2022</span> 18th Edition Wiring Regulations</div><div class="regs-card-body">Amendment 2 (2022) updates: AFDD recommendations (Reg 421.1.7), supplementary bonding relaxation with 30mA RCD, EV charging (Reg 722), and solar PV. Always use the current edition -- earlier editions not acceptable for new NI installations.</div></div>  
-        <div class="regs-card"><div class="regs-card-title"><span class="reg-num">NIE Networks</span> Distribution network operator</div><div class="regs-card-body">Northern Ireland Electricity Networks delivers power. Supply type: <strong>TN-C-S (PME)</strong> for most NI domestic properties. The PME earth condition is critical for EV chargers and outbuilding installations. G98/G99 notifications must go to NIE for solar PV systems.</div></div>  
-        <div class="regs-card"><div class="regs-card-title"><span class="reg-num">District Councils</span> Building Control authority (11 councils)</div><div class="regs-card-body">NI Building Control is run by 11 district councils -- use the council for the property's location. Examples: Belfast City Council, Antrim &amp; Newtownabbey, Causeway Coast &amp; Glens, Derry City &amp; Strabane, Fermanagh &amp; Omagh, Mid Ulster, Armagh City Banbridge &amp; Craigavon, Ards &amp; North Down, Mid &amp; East Antrim, Lisburn &amp; Castlereagh, Newry Mourne &amp; Down.</div></div>  
-      </div>  
-      <div class="regs-section" id="rg-notify">  
-        <div class="regs-card"><div class="regs-card-title">Work that REQUIRES Building Control notification</div><div class="regs-card-body"><ul><li>Full or partial rewire of a dwelling</li><li>New consumer unit or significant CU alteration</li><li>Addition of any new circuit (shower, cooker, ring, lighting)</li><li>Work in a special location (bathroom, pool, sauna)</li><li>Any outdoor electrical installation</li><li>Solar PV, battery storage, EV charger installation</li><li>New or altered fire detection system (Grade D)</li><li>Replacement of consumer unit or main switch</li></ul></div></div>  
-        <div class="regs-card"><div class="regs-card-title">Work that does NOT require notification</div><div class="regs-card-body"><ul><li>Like-for-like replacement of switches or sockets at same position</li><li>Replacing a damaged cable on an existing circuit</li><li>Like-for-like MCB replacement in existing CU</li><li>Minor repairs to existing accessories</li><li>Low-voltage garden lighting (transformer/bell-wire)</li><li>Replacing a thermostat or programmer (same position)</li></ul></div></div>  
-        <div class="regs-card"><div class="regs-card-title">NI notification process -- step by step</div><div class="regs-card-body"><strong>Step 1:</strong> Submit BC1 (Building Notice) to District Council Building Control before starting, or within 3 working days of commencement.<br><br><strong>Step 2:</strong> Complete all work and testing. Prepare the Electrical Installation Certificate (EIC) -- signed by the qualified person.<br><br><strong>Step 3:</strong> Submit EIC and test results to Building Control. They may inspect or accept the EIC depending on scope.<br><br><strong>Step 4:</strong> Building Control issues BC5 completion certificate -- required for conveyancing and insurance.</div></div>  
-      </div>  
-      <div class="regs-section" id="rg-rewire">  
-        <p style="font-size:12px;color:var(--dead);margin-bottom:12px">Tick each item as you complete it -- progress tracked below.</p>  
-        <div class="progress-bar"><div class="progress-fill" id="checklist-progress" style="width:0%"></div></div>  
-        <ul class="checklist" id="main-checklist">  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span><strong>BC1 Building Notice</strong> submitted to District Council Building Control before starting</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Consumer unit -- steel enclosure, correctly sized with spare ways</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Main switch 100A DP Â· meter tails 25mmÂ² in non-combustible sheath</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>All circuits on individual RCBO or MCB -- rated correctly for cable and load</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>All socket circuits 30mA RCD protected (RCBO per circuit preferred)</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>All bathroom circuits 30mA RCD protected</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Kitchen sockets -- AFDD considered / installed (Reg 421.1.7)</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Lighting circuits -- 1.0mmÂ² T&E, 6A MCB, all switch cables sleeved brown</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Ring final circuits -- 2.5mmÂ² T&E, 32A RCBO, ring integrity confirmed by test</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Dedicated cooker circuit -- cable sized per diversity calculation, CCU positioned correctly</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Shower circuit -- 10mmÂ² T&E, 40A RCBO 30mA, 45A DP pull cord on ceiling</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Bathroom zones confirmed -- correct IP ratings throughout, no prohibited equipment</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>No standard wall switches or sockets inside bathroom zones 0, 1, 2</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Main protective bonding -- gas, water, oil pipes to MET (10mmÂ² minimum)</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Earthing conductor MET to CU -- 16mmÂ² minimum Â· correctly sleeved</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>All earth conductors green/yellow sleeved at every termination point</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>All cables in safe zones OR protected by conduit / 30mA RCD</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>All cables adequately supported and clipped at correct intervals</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Smoke alarms -- Grade D LD2 minimum, interlinked, heat alarm in kitchen</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>CO alarm fitted where gas, oil, or solid fuel appliance is installed</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>EV charger -- PME earthing addressed, separate earth electrode if needed</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Outbuildings -- SWA armoured cable, own CU, TT earthing with earth rod</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Mixed old/new wiring -- warning label fitted at CU and junction points</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>All testing complete -- IR, continuity, polarity, Zs, RCD trip times, Ipf</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>EIC prepared, signed, and all test results attached</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Circuit schedule completed and permanently fixed inside CU door</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>EIC and test schedule submitted to District Council Building Control</span></li>  
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>BC5 completion certificate received from District Council</span></li>  
-        </ul>  
-      </div>  
-      <div class="regs-section" id="rg-colours">  
-        <div class="regs-card"><div class="regs-card-title">Harmonised cable colours (post April 2006)</div><div class="regs-card-body">  
-          <table style="width:100%;font-size:12px;border-collapse:collapse">  
-            <tr><th style="text-align:left;padding:5px 8px;background:var(--cream);font-family:'DM Mono',monospace;font-size:10px">Conductor</th><th style="text-align:left;padding:5px 8px;background:var(--cream);font-family:'DM Mono',monospace;font-size:10px">New (post 2006)</th><th style="text-align:left;padding:5px 8px;background:var(--cream);font-family:'DM Mono',monospace;font-size:10px">Old (pre 2006)</th><th style="text-align:left;padding:5px 8px;background:var(--cream);font-family:'DM Mono',monospace;font-size:10px">Colour</th></tr>  
-            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Single-phase live</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>Brown</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Red</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><span class="swatch" style="background:#c0392b"></span></td></tr>  
-            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Neutral</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>Blue</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Black</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><span class="swatch" style="background:#2980b9"></span></td></tr>  
-            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Earth / CPC</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>Green/Yellow</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Green/Yellow (same)</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><span class="swatch" style="background:linear-gradient(45deg,#27ae60 50%,#f5c842 50%)"></span></td></tr>  
-            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Switched live</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>Brown sleeve</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Red sleeve on black</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><span class="swatch" style="background:#e67e22"></span></td></tr>  
-            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">3-phase L1</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>Brown</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Red</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><span class="swatch" style="background:#c0392b"></span></td></tr>  
-            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">3-phase L2</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>Black</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Yellow</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><span class="swatch" style="background:#1a1a1a;border:1px solid #555"></span></td></tr>  
-            <tr><td style="padding:6px 8px">3-phase L3</td><td style="padding:6px 8px"><strong>Grey</strong></td><td style="padding:6px 8px">Blue</td><td style="padding:6px 8px"><span class="swatch" style="background:#888"></span></td></tr>  
-          </table>  
-        </div></div>  
-        <div class="regs-card"><div class="regs-card-title">Mixed old/new wiring -- NI mandatory warning label</div><div class="regs-card-body">When connecting new wiring to pre-2006 wiring, a warning label must be fitted at the CU and at junction points: <em>"Caution: This installation has wiring colours to two versions of BS 7671"</em>. All conductors must be individually identified with sleeves. NI Building Control inspectors check for this on every rewire that involves any existing wiring.</div></div>  
-      </div>  
-      <div class="regs-section" id="rg-testing">  
-        <div class="regs-card"><div class="regs-card-title">Key test limits -- NI full rewire</div><div class="regs-card-body">  
-          <table style="width:100%;font-size:12px;border-collapse:collapse">  
-            <tr><th style="text-align:left;padding:5px 8px;background:var(--cream);font-family:'DM Mono',monospace;font-size:10px">Test</th><th style="text-align:left;padding:5px 8px;background:var(--cream);font-family:'DM Mono',monospace;font-size:10px">Limit</th><th style="text-align:left;padding:5px 8px;background:var(--cream);font-family:'DM Mono',monospace;font-size:10px">Reference</th></tr>  
-            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Insulation resistance (IR)</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>â¥1MÎ© at 500V DC</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Table 64</td></tr>  
-            <tr style="background:rgba(212,130,10,0.04)"><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">RCD trip at IÎn (30mA)</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>&lt;300ms</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Appendix 3</td></tr>  
-            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">RCD trip at 5ÃIÎn (150mA)</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>&lt;40ms</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Appendix 3</td></tr>  
-            <tr style="background:rgba(212,130,10,0.04)"><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Max Zs -- 32A Type B MCB/RCBO</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>â¤1.44Î©</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Table 41.3</td></tr>  
-            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Max Zs -- 6A Type B MCB/RCBO</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>â¤7.67Î©</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Table 41.3</td></tr>  
-            <tr style="background:rgba(212,130,10,0.04)"><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Max Zs -- 40A RCBO (shower)</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>â¤1.15Î©</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Table 41.3</td></tr>  
-            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Typical NI Ze (TN-C-S)</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>~0.35Î©</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Verify with NIE</td></tr>  
-            <tr style="background:rgba(212,130,10,0.04)"><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Polarity check</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>Pass/fail -- L to L only</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">634.3</td></tr>  
-            <tr><td style="padding:6px 8px">CPC continuity (R1+R2)</td><td style="padding:6px 8px"><strong>Record &amp; compare to calculated</strong></td><td style="padding:6px 8px">643.2</td></tr>  
-          </table>  
-        </div></div>  
-        <div class="regs-card"><div class="regs-card-title">EIC -- what must be included</div><div class="regs-card-body"><ul><li>Full address and installation description</li><li>Supply characteristics: Ze, Ipf, supply type (TN-C-S etc.)</li><li>Schedule of circuits with cable sizes, MCB ratings, and all test results</li><li>Declaration signed by person who designed, constructed, inspected &amp; tested</li><li>Any departures from BS 7671 noted and justified</li><li>Warning labels noted (mixed colours, etc.)</li><li>Limitation of the inspection and test if applicable</li></ul></div></div>  
-      </div>  
-    </div>  
-  </div>  
-</div>  
-<script>  
-// ââ NAV ââ  
-function nav(id){  
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));  
-  const v=document.getElementById('view-'+id);  
-  if(v)v.classList.add('active');  
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));  
-  document.querySelectorAll('.nav-item').forEach(b=>{if(b.getAttribute('onclick')==="nav('"+id+"')")b.classList.add('active');});  
-  clearInfo();  
-  document.getElementById('content-area').scrollTop=0;  
-  if(isMobile())closeSidebar();  
-}  
-function isMobile(){return window.innerWidth<=768;}  
-function toggleSidebar(){  
-  const sb=document.getElementById('sidebar');  
-  const bd=document.getElementById('sidebar-backdrop');  
-  if(isMobile()){  
-    const open=sb.classList.contains('mobile-open');  
-    if(open){closeSidebar();}  
-    else{sb.classList.add('mobile-open');sb.classList.remove('collapsed');bd.classList.add('visible');document.body.style.overflow='hidden';}  
-  } else {  
-    sb.classList.toggle('collapsed');  
-  }  
-}  
-function closeSidebar(){  
-  const sb=document.getElementById('sidebar');  
-  const bd=document.getElementById('sidebar-backdrop');  
-  sb.classList.remove('mobile-open');  
-  bd.classList.remove('visible');  
-  document.body.style.overflow='';  
-}  
-function toggleCat(name){  
-  const g=document.getElementById('cat-'+name);g.classList.toggle('open');  
-  g.querySelector('.cat-body').classList.toggle('open');  
-}  
-function searchNav(q){  
-  q=q.toLowerCase().trim();  
-  document.querySelectorAll('.nav-item').forEach(b=>{  
-    b.classList.toggle('search-hide',q.length>0&&!b.textContent.toLowerCase().includes(q));  
-  });  
-  if(q)document.querySelectorAll('.cat-body').forEach(b=>b.classList.add('open'));  
-}  
-  
-// ââ INFO PANEL ââ  
-const infoMap={  
-mains:'ic-mains',sw1:'ic-sw1',sw2way:'ic-sw2way','inter-sw':'ic-inter-sw',  
-cu:'ic-cu',incoming:'ic-incoming',mainswitch:'ic-mainswitch',  
-rcbo:'ic-rcbo',rcd30ma:'ic-rcd30ma',afdd:'ic-afdd',socket13a:'ic-socket13a',  
-ccu:'ic-ccu','ccu-unit':'ic-ccu-unit',pullcord:'ic-pullcord',  
-'shower-unit':'ic-shower-unit',lamp:'ic-lamp',  
-cable1mm:'ic-cable1mm',cable25mm:'ic-cable25mm',mcb6a:'ic-mcb6a',  
-'main-bond':'ic-main-bond','supp-bond':'ic-supp-bond'  
-};  
-function showInfo(key){  
-document.querySelectorAll('.info-content').forEach(e=>e.classList.remove('active'));  
-document.getElementById('info-empty').style.display='none';  
-const id=infoMap[key];  
-if(id){const el=document.getElementById(id);if(el)el.classList.add('active');}  
-else{document.getElementById('info-empty').style.display='';}  
-}  
-function clearInfo(){  
-document.querySelectorAll('.info-content').forEach(e=>e.classList.remove('active'));  
-document.getElementById('info-empty').style.display='';  
-}  
-  
-// ââ REGS OVERLAY ââ  
-function openRegs(){document.getElementById('regs-overlay').classList.add('open');}  
-function closeRegs(){document.getElementById('regs-overlay').classList.remove('open');}  
-function regsTab(btn,id){  
-document.querySelectorAll('.regs-tab').forEach(t=>t.classList.remove('active'));  
-document.querySelectorAll('.regs-section').forEach(s=>s.classList.remove('active'));  
-btn.classList.add('active');document.getElementById(id).classList.add('active');  
-}  
-  
-// ââ CHECKLIST ââ  
-function toggleCheck(box){  
-box.classList.toggle('checked');  
-box.textContent=box.classList.contains('checked')?'â':'';  
-const total=document.querySelectorAll('#main-checklist .check-box').length;  
-const done=document.querySelectorAll('#main-checklist .check-box.checked').length;  
-document.getElementById('checklist-progress').style.width=Math.round((done/total)*100)+'%';  
-}  
-  
-// ââ HELPERS ââ  
-function setBulb(pre,on){  
-const LIVE='#c0392b',DEAD='#a0998e',WARM='#f39c12';  
-const b=document.getElementById('b-'+pre);  
-const t=document.getElementById('t-'+pre);  
-const bulb=document.getElementById('bulb-'+pre);  
-const glow=document.getElementById('glow-'+pre);  
-if(b){b.className='bulb-dot'+(on?' on':'');}  
-if(t){t.textContent=on?'Light is ON':'Light is OFF';}  
-if(bulb)bulb.setAttribute('stroke',on?LIVE:DEAD);  
-if(glow)glow.setAttribute('fill',on?'rgba(246,224,94,0.45)':'rgba(246,224,94,0)');  
-['f1-','f2-','f3-'].forEach(f=>{  
-const el=document.getElementById(f+pre);  
-if(el)el.setAttribute('stroke',on?WARM:DEAD);  
-});  
-}  
-  
-// ââ 1-WAY ââ  
-let s1=false;  
-function toggle1w(){  
-s1=!s1;const L='#c0392b',D='#a0998e';  
-document.getElementById('w-1w-post').setAttribute('stroke',s1?L:D);  
-document.getElementById('w-1w-post').setAttribute('stroke-dasharray',s1?'none':'6 3');  
-document.getElementById('arm-1w').setAttribute('y2',s1?'91':'76');  
-document.getElementById('term-1w').setAttribute('fill',s1?L:D);  
-document.getElementById('swlbl-1w').textContent=s1?'CLOSED':'OPEN';  
-document.getElementById('swlbl-1w').setAttribute('fill',s1?'#27ae60':D);  
-setBulb('1w',s1);  
-}  
-  
-// ââ 2-WAY ââ  
-let sw2=[0,0];  
-function is2On(){return sw2[0]===sw2[1];}  
-function tog2w(i){sw2[i]=sw2[i]===0?1:0;draw2w();}  
-function draw2w(){  
-const on=is2On(),L='#c0392b',D='#a0998e',T='#e67e22';  
-const aY=sw2[0]===0?74:134;const bY=sw2[1]===0?74:134;  
-document.getElementById('arm-2wa').setAttribute('x2','278');  
-document.getElementById('arm-2wa').setAttribute('y2',String(aY));  
-document.getElementById('lbl-2wa').textContent=sw2[0]===0?'â L1':'â L2';  
-document.getElementById('arm-2wb').setAttribute('x1','387');  
-document.getElementById('arm-2wb').setAttribute('y1',String(bY));  
-document.getElementById('lbl-2wb').textContent=sw2[1]===0?'â L1':'â L2';  
-const t1=sw2[0]===0;  
-document.getElementById('trav1-2w').setAttribute('stroke',t1?T:D);  
-document.getElementById('trav1-2w').setAttribute('stroke-dasharray',t1?'none':'5 3');  
-document.getElementById('trav2-2w').setAttribute('stroke',t1?D:T);  
-document.getElementById('trav2-2w').setAttribute('stroke-dasharray',t1?'5 3':'none');  
-document.getElementById('post-2w').setAttribute('stroke',on?L:D);  
-document.getElementById('post-2w').setAttribute('stroke-dasharray',on?'none':'5 3');  
-setBulb('2w',on);  
-document.getElementById('t-2w').textContent=on?'Light is ON':'Light is OFF';  
-}  
-draw2w();  
-  
-// ââ INTERMEDIATE ââ  
-let swInt=[0,0,0];  
-function intOn(){const m=swInt[1]===0?swInt[0]:(swInt[0]===0?1:0);return m===swInt[2];}  
-function togInt(i){swInt[i]=swInt[i]===0?1:0;drawInt();}  
-function drawInt(){  
-const on=intOn(),L='#c0392b',D='#a0998e',T='#e67e22';  
-const aY=swInt[0]===0?76:132;  
-document.getElementById('arm-ia').setAttribute('x2','214');  
-document.getElementById('arm-ia').setAttribute('y2',String(aY));  
-document.getElementById('lbl-ia').textContent=swInt[0]===0?'â L1':'â L2';  
-const aTop=swInt[0]===0;  
-document.getElementById('ita1').setAttribute('stroke',aTop?T:D);  
-document.getElementById('ita1').setAttribute('stroke-dasharray',aTop?'none':'5 3');  
-document.getElementById('ita2').setAttribute('stroke',aTop?D:T);  
-document.getElementById('ita2').setAttribute('stroke-dasharray',aTop?'5 3':'none');  
-const cross=swInt[1]===1;  
-const c1=document.getElementById('im-c1');  
-const c2=document.getElementById('im-c2');  
-if(cross){  
-c1.setAttribute('x1','307');c1.setAttribute('y1','76');c1.setAttribute('x2','373');c1.setAttribute('y2','132');  
-c2.setAttribute('x1','307');c2.setAttribute('y1','132');c2.setAttribute('x2','373');c2.setAttribute('y2','76');  
-}else{  
-c1.setAttribute('x1','307');c1.setAttribute('y1','76');c1.setAttribute('x2','373');c1.setAttribute('y2','76');  
-c2.setAttribute('x1','307');c2.setAttribute('y1','132');c2.setAttribute('x2','373');c2.setAttribute('y2','132');  
-}  
-document.getElementById('lbl-im').textContent=cross?'crossed':'straight';  
-const topEx=cross?!aTop:aTop;  
-c1.setAttribute('stroke',aTop?T:D);c2.setAttribute('stroke',aTop?D:T);  
-document.getElementById('itb1').setAttribute('stroke',topEx?T:D);  
-document.getElementById('itb1').setAttribute('stroke-dasharray',topEx?'none':'5 3');  
-document.getElementById('itb2').setAttribute('stroke',topEx?D:T);  
-document.getElementById('itb2').setAttribute('stroke-dasharray',topEx?'5 3':'none');  
-const bY=swInt[2]===0?76:132;  
-document.getElementById('arm-ib').setAttribute('x1','464');  
-document.getElementById('arm-ib').setAttribute('y1',String(bY));  
-document.getElementById('lbl-ib').textContent=swInt[2]===0?'â L1':'â L2';  
-document.getElementById('post-int').setAttribute('stroke',on?L:D);  
-document.getElementById('post-int').setAttribute('stroke-dasharray',on?'none':'5 3');  
-const bulb=document.getElementById('bulb-int');  
-const glow=document.getElementById('glow-int');  
-if(bulb)bulb.setAttribute('stroke',on?L:D);  
-if(glow)glow.setAttribute('fill',on?'rgba(246,224,94,0.45)':'rgba(246,224,94,0)');  
-['f1-int','f2-int','f3-int'].forEach(id=>{  
-const el=document.getElementById(id);if(el)el.setAttribute('stroke',on?'#f39c12':D);  
-});  
-document.getElementById('b-int').className='bulb-dot'+(on?' on':'');  
-document.getElementById('t-int').textContent=on?'Light is ON':'Light is OFF';  
-}  
-drawInt();  
-  
-// ââ CCU (COOKER) ââ  
-let ccuOn=false;  
-function togCCU(){  
-ccuOn=!ccuOn;const L='#c0392b',D='#a0998e';  
-document.getElementById('ccu-wire').setAttribute('stroke',ccuOn?L:D);  
-document.getElementById('ccu-wire').setAttribute('stroke-dasharray',ccuOn?'none':'6 3');  
-document.getElementById('ccu-out').setAttribute('fill',ccuOn?L:D);  
-document.getElementById('ccu-lbl').textContent=ccuOn?'ON':'OFF';  
-document.getElementById('ccu-lbl').setAttribute('fill',ccuOn?'#27ae60':D);  
-const col=ccuOn?'#e67e22':D;  
-['ck-r1','ck-r2','ck-r3','ck-r4'].forEach(id=>{  
-const el=document.getElementById(id);if(el)el.setAttribute('stroke',col);  
-});  
-const dot=document.getElementById('b-ccu');  
-const txt=document.getElementById('t-ccu');  
-if(dot){dot.style.background=ccuOn?'#e67e22':'#a0998e';dot.style.borderColor=ccuOn?'#d35400':'#888';}  
-if(txt)txt.textContent=ccuOn?'Cooker is LIVE':'Cooker is ISOLATED';  
-}  
-  
-// ââ SHOWER ââ  
-let shOn=false;  
-function togShower(){  
-shOn=!shOn;const L='#c0392b',D='#a0998e';  
-document.getElementById('sh-wire').setAttribute('stroke',shOn?L:D);  
-document.getElementById('sh-wire').setAttribute('stroke-dasharray',shOn?'none':'6 3');  
-document.getElementById('sh-out').setAttribute('fill',shOn?L:D);  
-const dot=document.getElementById('b-sh');  
-const txt=document.getElementById('t-sh');  
-if(dot){dot.style.background=shOn?'#2980b9':'#888';dot.style.borderColor=shOn?'#1e6b8c':'#aaa';if(shOn)dot.style.boxShadow='0 0 10px rgba(41,128,185,0.5)';else dot.style.boxShadow='';}  
-if(txt)txt.textContent=shOn?'Shower is LIVE (running)':'Shower is ISOLATED';  
-}  
-</script>  
-  
-  
-<!-- PART 4 SECOND FIX -->  
-  
 <div class="view" id="view-howto-secondfix">  
   <div class="phase-bar">  
     <div class="phase-seg done" style="background:var(--amber)"></div>  
@@ -3541,5 +3174,373 @@ document.addEventListener('touchend',e=>{
   }  
 },{passive:true});  
 </script>
+</div><!-- /content-area -->  
+  
+<!-- ââ INFO PANEL ââ -->  
+  
+<div class="info-panel" id="info-panel">  
+  <div class="info-empty" id="info-empty"><div class="info-empty-icon">â</div><p>Click any component in the diagram to see detailed info and NI-specific guidance.</p></div>  
+  
+  <div class="info-content" id="ic-mains"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Power source</div><div class="info-title">230V AC Mains</div><div class="info-body">UK/NI domestic supply is <strong>230V AC at 50Hz</strong> delivered by NIE Networks via underground cables or overhead lines to the meter then consumer unit.</div><div class="info-detail">Typical Ze in NI: <strong>~0.35Î©</strong> on TN-C-S. Always verify Ze before sizing protection devices.</div><div class="info-ni"><strong>NI supply type:</strong> Most NI properties have a <strong>TN-C-S (PME)</strong> supply. The neutral and earth are combined in the distribution network. Critical for EV charger installations -- a separate earth electrode is required at the charger.</div></div>  
+  
+  <div class="info-content" id="ic-sw1"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">1-way switch</div><div class="info-title">Single-pole switch</div><div class="info-body">Two terminals -- breaks the <strong>live conductor only</strong>. The neutral runs directly to the lamp. Open = circuit broken. Closed = current flows.</div><div class="info-detail">Minimum rating: <strong>6A, 250V AC</strong>. Some LED-compatible switches specify a minimum load -- check when installing very low wattage LEDs.</div><div class="info-ni"><strong>NI rule:</strong> Like-for-like replacement at the same position -- no Building Control notification. Adding a new switch cable run is notifiable.</div><ul class="use-list"><li>Single-entry rooms: bedroom, study, hall</li><li>Any fixed light with one control point</li></ul></div>  
+  
+  <div class="info-content" id="ic-sw2way"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">2-way switch</div><div class="info-title">3-terminal changeover switch</div><div class="info-body">Three terminals: <strong>COM, L1, L2</strong>. A changeover switch -- COM is always connected to either L1 or L2. Two of these wired together allow either switch to control the lamp.</div><div class="info-ni"><strong>NI inspector check:</strong> All conductors in the switch cable must be sleeved brown -- they are all switched lives, not neutrals. Missing sleeves are a common fail.</div><ul class="use-list"><li>Staircase -- top and bottom</li><li>Hallway with two ends</li><li>Double-door rooms</li><li>Bedroom -- door and bedside</li></ul></div>  
+  
+  <div class="info-content" id="ic-inter-sw"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Intermediate switch</div><div class="info-title">4-terminal crossover switch</div><div class="info-body">Four terminals -- in one position passes traveller wires straight through. When toggled, <strong>crosses them over</strong> (swapping L1 and L2). Any switch in the chain can then toggle the lamp.</div><div class="info-detail">Add as many intermediate switches as needed -- they sit between two standard 2-way switches. Used in corridors with 3 or more entry/exit points.</div><div class="info-ni"><strong>NI use:</strong> Long hallways in larger NI homes, hotel-style corridor lighting. Each additional intermediate switch needs 3-core &amp; earth cable either side.</div></div>  
+  
+  <div class="info-content" id="ic-cu"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Consumer unit</div><div class="info-title">Consumer Unit (CU)</div><div class="info-body">The CU distributes power and provides protection. It must be accessible, correctly labelled, and in a non-combustible enclosure.</div><div class="info-ni"><strong>NI mandate:</strong> Steel/metal enclosure only for new installs. All-RCBO boards preferred by NI Building Control. Must not be in a bedroom on a new install. Must have a circuit schedule fixed inside the door.</div></div>  
+  
+  <div class="info-content" id="ic-incoming"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Meter tails</div><div class="info-title">Incoming meter tails</div><div class="info-body">Connect the electricity meter to the main switch. <strong>Not protected by any MCB</strong> -- the supply fuse (meter head) is the only protection. Standard size: <strong>25mmÂ²</strong>.</div><div class="info-ni"><strong>NI:</strong> Only NIE Networks or approved contractors can work on the meter head. Tails can be extended but must run in non-combustible sleeving. Label clearly.</div></div>  
+  
+  <div class="info-content" id="ic-mainswitch"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Main switch</div><div class="info-title">100A DP Main Switch</div><div class="info-body">Double-pole isolator -- breaks both live and neutral simultaneously. Rated 100A for standard domestic supplies. Must be labelled ON/OFF and accessible without tools.</div><div class="info-ni"><strong>NI:</strong> Must be part of the steel CU enclosure. Position at accessible height -- NI Building Control check this on inspection.</div></div>  
+  
+  <div class="info-content" id="ic-rcbo"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">RCBO</div><div class="info-title">RCBO -- MCB + RCD combined</div><div class="info-body">Provides both <strong>overcurrent protection</strong> (like an MCB) and <strong>earth fault protection</strong> (30mA RCD) in one device, for a single circuit.</div><div class="info-detail">A fault trips only that circuit -- not half the house. Slightly more expensive per way but far better reliability and convenience.</div><div class="info-ni"><strong>NI Building Control:</strong> Increasingly expect all-RCBO boards on new builds and full rewires. Dual-RCD boards still accepted but represent older practice.</div></div>  
+  
+  <div class="info-content" id="ic-rcd30ma"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">RCD</div><div class="info-title">30mA Residual Current Device</div><div class="info-body">Detects imbalance between live and neutral (current leaking through a person or fault). Trips in <strong>&lt;40ms at 5ÃIÎn</strong> -- fast enough to prevent electrocution.</div><div class="info-detail">30mA is the safe threshold -- lethal current is 50-100mA sustained. The MCB alone cannot provide this protection.</div><div class="info-ni"><strong>NI:</strong> All socket circuits and bathroom circuits must have 30mA RCD protection. Building Control check RCD trip times on the submitted EIC.</div></div>  
+  
+  <div class="info-content" id="ic-afdd"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">AFDD</div><div class="info-title">Arc Fault Detection Device</div><div class="info-body">Detects <strong>arcing faults</strong> -- loose connections or damaged cables creating sparks that can ignite materials before a normal MCB trips. A major cause of house fires.</div><div class="info-detail">Reg 421.1.7 <strong>recommends</strong> AFDDs for bedroom and kitchen circuits -- not yet mandatory but NI Building Control are increasingly expecting them.</div><div class="info-ni"><strong>NI cost:</strong> Approximately Â£40-80 per way. Often specified in writing by NI Building Control for kitchen socket circuits on new builds.</div></div>  
+  
+  <div class="info-content" id="ic-socket13a"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">13A socket</div><div class="info-title">BS 1363 Socket Outlet</div><div class="info-body">UK/NI standard three-pin socket. Each can deliver up to 13A (3kW) protected by the 13A fuse in the plug. Shuttered sockets mandatory for all new installations.</div><div class="info-ni"><strong>NI:</strong> All new sockets must be shuttered. External sockets must be IP44 minimum and RCD protected. No standard sockets in bathroom zones 0, 1, or 2.</div><ul class="use-list"><li>Ring final -- max 13A at any single point</li><li>Never overload with adapters</li><li>Label kitchen sockets if on a separate radial</li></ul></div>  
+  
+  <div class="info-content" id="ic-ccu"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Cooker control unit</div><div class="info-title">Cooker Control Unit (CCU)</div><div class="info-body">Combined <strong>double-pole isolating switch</strong> with optional 13A socket. Position 300-600mm horizontally from the cooker -- never directly above (heat and steam damage).</div><div class="info-ni"><strong>NI inspector:</strong> Will check CCU position, cable rating, and that the DP switch breaks both live and neutral. The optional socket is separately fused at 13A within the CCU.</div></div>  
+  
+  <div class="info-content" id="ic-ccu-unit"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Electric cooker</div><div class="info-title">Cooker / Range</div><div class="info-body">Typically <strong>10-13kW</strong> for freestanding, 6-8kW for built-in double ovens. Diversity calculation per BS 7671 Appendix 15 significantly reduces the design current from the nameplate rating.</div><div class="info-detail"><strong>Formula:</strong> 10A + 30% of remaining + 5A if socket in CCU. Example 10kW: 10+(33Ã0.3)+5 = 24.9A â 6mmÂ² + 32A RCBO sufficient.</div></div>  
+  
+  <div class="info-content" id="ic-pullcord"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Pull cord switch</div><div class="info-title">Ceiling pull cord isolator</div><div class="info-body"><strong>Double-pole</strong> ceiling switch -- breaks both live and neutral. Operated by plastic cord with no accessible metal. Mandatory in NI bathrooms.</div><div class="info-detail">For shower circuits: rated <strong>45A DP</strong> with neon indicator and mechanical flag. For lighting: standard 6A pull cord.</div><div class="info-ni"><strong>NI rule:</strong> No standard wall switches inside bathrooms -- this is a code requirement checked by Building Control on every bathroom inspection.</div></div>  
+  
+  <div class="info-content" id="ic-shower-unit"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Electric shower</div><div class="info-title">Instantaneous shower unit</div><div class="info-body">Heats water on demand -- <strong>7.5-10.8kW element</strong>. Requires a dedicated circuit. Current draw is 33-47A, making it the highest single load in most NI homes.</div><div class="info-detail">Cable sizing: 10mmÂ² T&E for 10.8kW. Always check the shower's installation guide -- some specify 6mmÂ² for lower-rated models.</div><div class="info-ni"><strong>NI IP minimum:</strong> Zone 1 (above tray): IPX4. Connections must be via a sealed cable entry -- never a socket or plug.</div></div>  
+  
+  <div class="info-content" id="ic-cable1mm"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Lighting cable</div><div class="info-title">1.0mmÂ² Twin &amp; Earth</div><div class="info-body">Standard lighting cable. Current rating: <strong>14A clipped direct</strong> -- more than adequate for 6A lighting MCB. Grey outer sheath.</div><div class="info-ni"><strong>NI warning:</strong> Older NI properties sometimes used 1.0mmÂ² for socket circuits -- this is undersized and must be replaced on a rewire. Never use on anything with more than a 6A MCB.</div></div>  
+  
+  <div class="info-content" id="ic-cable25mm"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Socket circuit cable</div><div class="info-title">2.5mmÂ² Twin &amp; Earth</div><div class="info-body">Standard ring final cable. Rated <strong>27A clipped direct</strong>. On a ring, the two cable runs share the load -- effectively 13.5A per run.</div><div class="info-detail">CPC (earth) in 2.5mmÂ² T&E is 1.5mmÂ² -- must be sleeved green/yellow at every termination. Check Table 54.7 BS 7671 for CPC sizing.</div></div>  
+  
+  <div class="info-content" id="ic-mcb6a"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">MCB</div><div class="info-title">6A Type B MCB</div><div class="info-body">For lighting circuits. <strong>Type B</strong> trips at 3-5Ã rating -- suitable for LED and resistive loads. Max Zs: <strong>7.67Î©</strong> for 0.4s disconnection (Table 41.3).</div><div class="info-ni"><strong>NI check:</strong> Building Control verify Zs is within limits on the EIC test schedule. On older properties with high Ze, an RCBO may be needed to meet disconnection times.</div></div>  
+  
+  <div class="info-content" id="ic-main-bond"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Main bonding</div><div class="info-title">Main Protective Bonding</div><div class="info-body">All extraneous conductive parts entering the building (gas, water, oil pipes) must connect to the MET with minimum <strong>10mmÂ²</strong> conductor.</div><div class="info-ni"><strong>NI:</strong> Gas bonding within 600mm of meter outlet. Water within 600mm of entry point. All must carry label: "Safety electrical connection -- do not remove." Green/yellow sleeving mandatory.</div></div>  
+  
+  <div class="info-content" id="ic-supp-bond"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Supplementary bonding</div><div class="info-title">Supplementary Bonding</div><div class="info-body">Connects simultaneously-touchable metal parts in bathrooms. Since BS 7671:2018+A2:2022: <strong>not required</strong> if ALL bathroom circuits have 30mA RCD protection AND main bonding is satisfactory.</div><div class="info-ni"><strong>NI Building Control:</strong> Will verify RCD coverage of ALL circuits entering the bathroom. If any circuit lacks RCD protection, supplementary bonding remains mandatory for that area.</div></div>  
+  
+  <div class="info-content" id="ic-lamp"><button class="info-close" onclick="clearInfo()">Ã</button><div class="info-tag">Luminaire / load</div><div class="info-title">Lamp</div><div class="info-body">The load -- converts electrical energy to light. Modern LED lamps draw 4-15W. Max load on a 6A lighting circuit: <strong>1,380W</strong> (use 80% in practice).</div><div class="info-ni"><strong>NI IP requirements:</strong> Zone 0: IP67+. Zone 1: IPX4. Zone 2: IPX4. External: IP44 minimum -- IP65 recommended for NI climate.</div></div>  
+</div><!-- /info-panel -->  
+</div><!-- /main -->  
+</div><!-- /app -->  
+<!-- ââ REGS OVERLAY ââ -->  
+<div class="regs-overlay" id="regs-overlay" onclick="if(event.target===this)closeRegs()">  
+  <div class="regs-modal">  
+    <div class="regs-header"><h2>NI Electrical Regulations &amp; Checklist</h2><button class="regs-close" onclick="closeRegs()">â Close</button></div>  
+    <div class="regs-body">  
+      <div class="regs-tabs">  
+        <button class="regs-tab active" onclick="regsTab(this,'rg-overview')">NI overview</button>  
+        <button class="regs-tab" onclick="regsTab(this,'rg-notify')">Notification</button>  
+        <button class="regs-tab" onclick="regsTab(this,'rg-rewire')">Rewire checklist</button>  
+        <button class="regs-tab" onclick="regsTab(this,'rg-colours')">Cable colours</button>  
+        <button class="regs-tab" onclick="regsTab(this,'rg-testing')">Test values</button>  
+      </div>  
+      <div class="regs-section active" id="rg-overview">  
+        <div class="regs-card"><div class="regs-card-title"><span class="reg-num">Building Regs (NI) 2012</span> Regulatory framework</div><div class="regs-card-body">Electrical work falls under <strong>Technical Booklet P</strong> (electrical safety) and <strong>Technical Booklet E</strong> (fire -- smoke alarms). Unlike England/Wales, NI has <strong>no competent person self-certification scheme</strong>. All notifiable work requires District Council Building Control approval.</div></div>  
+        <div class="regs-card"><div class="regs-card-title"><span class="reg-num">BS 7671:2018+A2:2022</span> 18th Edition Wiring Regulations</div><div class="regs-card-body">Amendment 2 (2022) updates: AFDD recommendations (Reg 421.1.7), supplementary bonding relaxation with 30mA RCD, EV charging (Reg 722), and solar PV. Always use the current edition -- earlier editions not acceptable for new NI installations.</div></div>  
+        <div class="regs-card"><div class="regs-card-title"><span class="reg-num">NIE Networks</span> Distribution network operator</div><div class="regs-card-body">Northern Ireland Electricity Networks delivers power. Supply type: <strong>TN-C-S (PME)</strong> for most NI domestic properties. The PME earth condition is critical for EV chargers and outbuilding installations. G98/G99 notifications must go to NIE for solar PV systems.</div></div>  
+        <div class="regs-card"><div class="regs-card-title"><span class="reg-num">District Councils</span> Building Control authority (11 councils)</div><div class="regs-card-body">NI Building Control is run by 11 district councils -- use the council for the property's location. Examples: Belfast City Council, Antrim &amp; Newtownabbey, Causeway Coast &amp; Glens, Derry City &amp; Strabane, Fermanagh &amp; Omagh, Mid Ulster, Armagh City Banbridge &amp; Craigavon, Ards &amp; North Down, Mid &amp; East Antrim, Lisburn &amp; Castlereagh, Newry Mourne &amp; Down.</div></div>  
+      </div>  
+      <div class="regs-section" id="rg-notify">  
+        <div class="regs-card"><div class="regs-card-title">Work that REQUIRES Building Control notification</div><div class="regs-card-body"><ul><li>Full or partial rewire of a dwelling</li><li>New consumer unit or significant CU alteration</li><li>Addition of any new circuit (shower, cooker, ring, lighting)</li><li>Work in a special location (bathroom, pool, sauna)</li><li>Any outdoor electrical installation</li><li>Solar PV, battery storage, EV charger installation</li><li>New or altered fire detection system (Grade D)</li><li>Replacement of consumer unit or main switch</li></ul></div></div>  
+        <div class="regs-card"><div class="regs-card-title">Work that does NOT require notification</div><div class="regs-card-body"><ul><li>Like-for-like replacement of switches or sockets at same position</li><li>Replacing a damaged cable on an existing circuit</li><li>Like-for-like MCB replacement in existing CU</li><li>Minor repairs to existing accessories</li><li>Low-voltage garden lighting (transformer/bell-wire)</li><li>Replacing a thermostat or programmer (same position)</li></ul></div></div>  
+        <div class="regs-card"><div class="regs-card-title">NI notification process -- step by step</div><div class="regs-card-body"><strong>Step 1:</strong> Submit BC1 (Building Notice) to District Council Building Control before starting, or within 3 working days of commencement.<br><br><strong>Step 2:</strong> Complete all work and testing. Prepare the Electrical Installation Certificate (EIC) -- signed by the qualified person.<br><br><strong>Step 3:</strong> Submit EIC and test results to Building Control. They may inspect or accept the EIC depending on scope.<br><br><strong>Step 4:</strong> Building Control issues BC5 completion certificate -- required for conveyancing and insurance.</div></div>  
+      </div>  
+      <div class="regs-section" id="rg-rewire">  
+        <p style="font-size:12px;color:var(--dead);margin-bottom:12px">Tick each item as you complete it -- progress tracked below.</p>  
+        <div class="progress-bar"><div class="progress-fill" id="checklist-progress" style="width:0%"></div></div>  
+        <ul class="checklist" id="main-checklist">  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span><strong>BC1 Building Notice</strong> submitted to District Council Building Control before starting</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Consumer unit -- steel enclosure, correctly sized with spare ways</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Main switch 100A DP Â· meter tails 25mmÂ² in non-combustible sheath</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>All circuits on individual RCBO or MCB -- rated correctly for cable and load</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>All socket circuits 30mA RCD protected (RCBO per circuit preferred)</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>All bathroom circuits 30mA RCD protected</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Kitchen sockets -- AFDD considered / installed (Reg 421.1.7)</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Lighting circuits -- 1.0mmÂ² T&E, 6A MCB, all switch cables sleeved brown</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Ring final circuits -- 2.5mmÂ² T&E, 32A RCBO, ring integrity confirmed by test</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Dedicated cooker circuit -- cable sized per diversity calculation, CCU positioned correctly</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Shower circuit -- 10mmÂ² T&E, 40A RCBO 30mA, 45A DP pull cord on ceiling</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Bathroom zones confirmed -- correct IP ratings throughout, no prohibited equipment</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>No standard wall switches or sockets inside bathroom zones 0, 1, 2</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Main protective bonding -- gas, water, oil pipes to MET (10mmÂ² minimum)</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Earthing conductor MET to CU -- 16mmÂ² minimum Â· correctly sleeved</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>All earth conductors green/yellow sleeved at every termination point</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>All cables in safe zones OR protected by conduit / 30mA RCD</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>All cables adequately supported and clipped at correct intervals</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Smoke alarms -- Grade D LD2 minimum, interlinked, heat alarm in kitchen</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>CO alarm fitted where gas, oil, or solid fuel appliance is installed</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>EV charger -- PME earthing addressed, separate earth electrode if needed</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Outbuildings -- SWA armoured cable, own CU, TT earthing with earth rod</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Mixed old/new wiring -- warning label fitted at CU and junction points</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>All testing complete -- IR, continuity, polarity, Zs, RCD trip times, Ipf</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>EIC prepared, signed, and all test results attached</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>Circuit schedule completed and permanently fixed inside CU door</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>EIC and test schedule submitted to District Council Building Control</span></li>  
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span>BC5 completion certificate received from District Council</span></li>  
+        </ul>  
+      </div>  
+      <div class="regs-section" id="rg-colours">  
+        <div class="regs-card"><div class="regs-card-title">Harmonised cable colours (post April 2006)</div><div class="regs-card-body">  
+          <table style="width:100%;font-size:12px;border-collapse:collapse">  
+            <tr><th style="text-align:left;padding:5px 8px;background:var(--cream);font-family:'DM Mono',monospace;font-size:10px">Conductor</th><th style="text-align:left;padding:5px 8px;background:var(--cream);font-family:'DM Mono',monospace;font-size:10px">New (post 2006)</th><th style="text-align:left;padding:5px 8px;background:var(--cream);font-family:'DM Mono',monospace;font-size:10px">Old (pre 2006)</th><th style="text-align:left;padding:5px 8px;background:var(--cream);font-family:'DM Mono',monospace;font-size:10px">Colour</th></tr>  
+            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Single-phase live</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>Brown</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Red</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><span class="swatch" style="background:#c0392b"></span></td></tr>  
+            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Neutral</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>Blue</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Black</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><span class="swatch" style="background:#2980b9"></span></td></tr>  
+            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Earth / CPC</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>Green/Yellow</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Green/Yellow (same)</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><span class="swatch" style="background:linear-gradient(45deg,#27ae60 50%,#f5c842 50%)"></span></td></tr>  
+            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Switched live</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>Brown sleeve</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Red sleeve on black</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><span class="swatch" style="background:#e67e22"></span></td></tr>  
+            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">3-phase L1</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>Brown</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Red</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><span class="swatch" style="background:#c0392b"></span></td></tr>  
+            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">3-phase L2</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>Black</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Yellow</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><span class="swatch" style="background:#1a1a1a;border:1px solid #555"></span></td></tr>  
+            <tr><td style="padding:6px 8px">3-phase L3</td><td style="padding:6px 8px"><strong>Grey</strong></td><td style="padding:6px 8px">Blue</td><td style="padding:6px 8px"><span class="swatch" style="background:#888"></span></td></tr>  
+          </table>  
+        </div></div>  
+        <div class="regs-card"><div class="regs-card-title">Mixed old/new wiring -- NI mandatory warning label</div><div class="regs-card-body">When connecting new wiring to pre-2006 wiring, a warning label must be fitted at the CU and at junction points: <em>"Caution: This installation has wiring colours to two versions of BS 7671"</em>. All conductors must be individually identified with sleeves. NI Building Control inspectors check for this on every rewire that involves any existing wiring.</div></div>  
+      </div>  
+      <div class="regs-section" id="rg-testing">  
+        <div class="regs-card"><div class="regs-card-title">Key test limits -- NI full rewire</div><div class="regs-card-body">  
+          <table style="width:100%;font-size:12px;border-collapse:collapse">  
+            <tr><th style="text-align:left;padding:5px 8px;background:var(--cream);font-family:'DM Mono',monospace;font-size:10px">Test</th><th style="text-align:left;padding:5px 8px;background:var(--cream);font-family:'DM Mono',monospace;font-size:10px">Limit</th><th style="text-align:left;padding:5px 8px;background:var(--cream);font-family:'DM Mono',monospace;font-size:10px">Reference</th></tr>  
+            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Insulation resistance (IR)</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>â¥1MÎ© at 500V DC</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Table 64</td></tr>  
+            <tr style="background:rgba(212,130,10,0.04)"><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">RCD trip at IÎn (30mA)</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>&lt;300ms</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Appendix 3</td></tr>  
+            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">RCD trip at 5ÃIÎn (150mA)</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>&lt;40ms</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Appendix 3</td></tr>  
+            <tr style="background:rgba(212,130,10,0.04)"><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Max Zs -- 32A Type B MCB/RCBO</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>â¤1.44Î©</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Table 41.3</td></tr>  
+            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Max Zs -- 6A Type B MCB/RCBO</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>â¤7.67Î©</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Table 41.3</td></tr>  
+            <tr style="background:rgba(212,130,10,0.04)"><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Max Zs -- 40A RCBO (shower)</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>â¤1.15Î©</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Table 41.3</td></tr>  
+            <tr><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Typical NI Ze (TN-C-S)</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>~0.35Î©</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Verify with NIE</td></tr>  
+            <tr style="background:rgba(212,130,10,0.04)"><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">Polarity check</td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)"><strong>Pass/fail -- L to L only</strong></td><td style="padding:6px 8px;border-bottom:1px solid var(--cream)">634.3</td></tr>  
+            <tr><td style="padding:6px 8px">CPC continuity (R1+R2)</td><td style="padding:6px 8px"><strong>Record &amp; compare to calculated</strong></td><td style="padding:6px 8px">643.2</td></tr>  
+          </table>  
+        </div></div>  
+        <div class="regs-card"><div class="regs-card-title">EIC -- what must be included</div><div class="regs-card-body"><ul><li>Full address and installation description</li><li>Supply characteristics: Ze, Ipf, supply type (TN-C-S etc.)</li><li>Schedule of circuits with cable sizes, MCB ratings, and all test results</li><li>Declaration signed by person who designed, constructed, inspected &amp; tested</li><li>Any departures from BS 7671 noted and justified</li><li>Warning labels noted (mixed colours, etc.)</li><li>Limitation of the inspection and test if applicable</li></ul></div></div>  
+      </div>  
+    </div>  
+  </div>  
+</div>  
+<script>  
+// ââ NAV ââ  
+function nav(id){  
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));  
+  const v=document.getElementById('view-'+id);  
+  if(v)v.classList.add('active');  
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));  
+  document.querySelectorAll('.nav-item').forEach(b=>{if(b.getAttribute('onclick')==="nav('"+id+"')")b.classList.add('active');});  
+  clearInfo();  
+  document.getElementById('content-area').scrollTop=0;  
+  if(isMobile())closeSidebar();  
+}  
+function isMobile(){return window.innerWidth<=768;}  
+function toggleSidebar(){  
+  const sb=document.getElementById('sidebar');  
+  const bd=document.getElementById('sidebar-backdrop');  
+  if(isMobile()){  
+    const open=sb.classList.contains('mobile-open');  
+    if(open){closeSidebar();}  
+    else{sb.classList.add('mobile-open');sb.classList.remove('collapsed');bd.classList.add('visible');document.body.style.overflow='hidden';}  
+  } else {  
+    sb.classList.toggle('collapsed');  
+  }  
+}  
+function closeSidebar(){  
+  const sb=document.getElementById('sidebar');  
+  const bd=document.getElementById('sidebar-backdrop');  
+  sb.classList.remove('mobile-open');  
+  bd.classList.remove('visible');  
+  document.body.style.overflow='';  
+}  
+function toggleCat(name){  
+  const g=document.getElementById('cat-'+name);g.classList.toggle('open');  
+  g.querySelector('.cat-body').classList.toggle('open');  
+}  
+function searchNav(q){  
+  q=q.toLowerCase().trim();  
+  document.querySelectorAll('.nav-item').forEach(b=>{  
+    b.classList.toggle('search-hide',q.length>0&&!b.textContent.toLowerCase().includes(q));  
+  });  
+  if(q)document.querySelectorAll('.cat-body').forEach(b=>b.classList.add('open'));  
+}  
+  
+// ââ INFO PANEL ââ  
+const infoMap={  
+mains:'ic-mains',sw1:'ic-sw1',sw2way:'ic-sw2way','inter-sw':'ic-inter-sw',  
+cu:'ic-cu',incoming:'ic-incoming',mainswitch:'ic-mainswitch',  
+rcbo:'ic-rcbo',rcd30ma:'ic-rcd30ma',afdd:'ic-afdd',socket13a:'ic-socket13a',  
+ccu:'ic-ccu','ccu-unit':'ic-ccu-unit',pullcord:'ic-pullcord',  
+'shower-unit':'ic-shower-unit',lamp:'ic-lamp',  
+cable1mm:'ic-cable1mm',cable25mm:'ic-cable25mm',mcb6a:'ic-mcb6a',  
+'main-bond':'ic-main-bond','supp-bond':'ic-supp-bond'  
+};  
+function showInfo(key){  
+document.querySelectorAll('.info-content').forEach(e=>e.classList.remove('active'));  
+document.getElementById('info-empty').style.display='none';  
+const id=infoMap[key];  
+if(id){const el=document.getElementById(id);if(el)el.classList.add('active');}  
+else{document.getElementById('info-empty').style.display='';}  
+}  
+function clearInfo(){  
+document.querySelectorAll('.info-content').forEach(e=>e.classList.remove('active'));  
+document.getElementById('info-empty').style.display='';  
+}  
+  
+// ââ REGS OVERLAY ââ  
+function openRegs(){document.getElementById('regs-overlay').classList.add('open');}  
+function closeRegs(){document.getElementById('regs-overlay').classList.remove('open');}  
+function regsTab(btn,id){  
+document.querySelectorAll('.regs-tab').forEach(t=>t.classList.remove('active'));  
+document.querySelectorAll('.regs-section').forEach(s=>s.classList.remove('active'));  
+btn.classList.add('active');document.getElementById(id).classList.add('active');  
+}  
+  
+// ââ CHECKLIST ââ  
+function toggleCheck(box){  
+box.classList.toggle('checked');  
+box.textContent=box.classList.contains('checked')?'â':'';  
+const total=document.querySelectorAll('#main-checklist .check-box').length;  
+const done=document.querySelectorAll('#main-checklist .check-box.checked').length;  
+document.getElementById('checklist-progress').style.width=Math.round((done/total)*100)+'%';  
+}  
+  
+// ââ HELPERS ââ  
+function setBulb(pre,on){  
+const LIVE='#c0392b',DEAD='#a0998e',WARM='#f39c12';  
+const b=document.getElementById('b-'+pre);  
+const t=document.getElementById('t-'+pre);  
+const bulb=document.getElementById('bulb-'+pre);  
+const glow=document.getElementById('glow-'+pre);  
+if(b){b.className='bulb-dot'+(on?' on':'');}  
+if(t){t.textContent=on?'Light is ON':'Light is OFF';}  
+if(bulb)bulb.setAttribute('stroke',on?LIVE:DEAD);  
+if(glow)glow.setAttribute('fill',on?'rgba(246,224,94,0.45)':'rgba(246,224,94,0)');  
+['f1-','f2-','f3-'].forEach(f=>{  
+const el=document.getElementById(f+pre);  
+if(el)el.setAttribute('stroke',on?WARM:DEAD);  
+});  
+}  
+  
+// ââ 1-WAY ââ  
+let s1=false;  
+function toggle1w(){  
+s1=!s1;const L='#c0392b',D='#a0998e';  
+document.getElementById('w-1w-post').setAttribute('stroke',s1?L:D);  
+document.getElementById('w-1w-post').setAttribute('stroke-dasharray',s1?'none':'6 3');  
+document.getElementById('arm-1w').setAttribute('y2',s1?'91':'76');  
+document.getElementById('term-1w').setAttribute('fill',s1?L:D);  
+document.getElementById('swlbl-1w').textContent=s1?'CLOSED':'OPEN';  
+document.getElementById('swlbl-1w').setAttribute('fill',s1?'#27ae60':D);  
+setBulb('1w',s1);  
+}  
+  
+// ââ 2-WAY ââ  
+let sw2=[0,0];  
+function is2On(){return sw2[0]===sw2[1];}  
+function tog2w(i){sw2[i]=sw2[i]===0?1:0;draw2w();}  
+function draw2w(){  
+const on=is2On(),L='#c0392b',D='#a0998e',T='#e67e22';  
+const aY=sw2[0]===0?74:134;const bY=sw2[1]===0?74:134;  
+document.getElementById('arm-2wa').setAttribute('x2','278');  
+document.getElementById('arm-2wa').setAttribute('y2',String(aY));  
+document.getElementById('lbl-2wa').textContent=sw2[0]===0?'â L1':'â L2';  
+document.getElementById('arm-2wb').setAttribute('x1','387');  
+document.getElementById('arm-2wb').setAttribute('y1',String(bY));  
+document.getElementById('lbl-2wb').textContent=sw2[1]===0?'â L1':'â L2';  
+const t1=sw2[0]===0;  
+document.getElementById('trav1-2w').setAttribute('stroke',t1?T:D);  
+document.getElementById('trav1-2w').setAttribute('stroke-dasharray',t1?'none':'5 3');  
+document.getElementById('trav2-2w').setAttribute('stroke',t1?D:T);  
+document.getElementById('trav2-2w').setAttribute('stroke-dasharray',t1?'5 3':'none');  
+document.getElementById('post-2w').setAttribute('stroke',on?L:D);  
+document.getElementById('post-2w').setAttribute('stroke-dasharray',on?'none':'5 3');  
+setBulb('2w',on);  
+document.getElementById('t-2w').textContent=on?'Light is ON':'Light is OFF';  
+}  
+draw2w();  
+  
+// ââ INTERMEDIATE ââ  
+let swInt=[0,0,0];  
+function intOn(){const m=swInt[1]===0?swInt[0]:(swInt[0]===0?1:0);return m===swInt[2];}  
+function togInt(i){swInt[i]=swInt[i]===0?1:0;drawInt();}  
+function drawInt(){  
+const on=intOn(),L='#c0392b',D='#a0998e',T='#e67e22';  
+const aY=swInt[0]===0?76:132;  
+document.getElementById('arm-ia').setAttribute('x2','214');  
+document.getElementById('arm-ia').setAttribute('y2',String(aY));  
+document.getElementById('lbl-ia').textContent=swInt[0]===0?'â L1':'â L2';  
+const aTop=swInt[0]===0;  
+document.getElementById('ita1').setAttribute('stroke',aTop?T:D);  
+document.getElementById('ita1').setAttribute('stroke-dasharray',aTop?'none':'5 3');  
+document.getElementById('ita2').setAttribute('stroke',aTop?D:T);  
+document.getElementById('ita2').setAttribute('stroke-dasharray',aTop?'5 3':'none');  
+const cross=swInt[1]===1;  
+const c1=document.getElementById('im-c1');  
+const c2=document.getElementById('im-c2');  
+if(cross){  
+c1.setAttribute('x1','307');c1.setAttribute('y1','76');c1.setAttribute('x2','373');c1.setAttribute('y2','132');  
+c2.setAttribute('x1','307');c2.setAttribute('y1','132');c2.setAttribute('x2','373');c2.setAttribute('y2','76');  
+}else{  
+c1.setAttribute('x1','307');c1.setAttribute('y1','76');c1.setAttribute('x2','373');c1.setAttribute('y2','76');  
+c2.setAttribute('x1','307');c2.setAttribute('y1','132');c2.setAttribute('x2','373');c2.setAttribute('y2','132');  
+}  
+document.getElementById('lbl-im').textContent=cross?'crossed':'straight';  
+const topEx=cross?!aTop:aTop;  
+c1.setAttribute('stroke',aTop?T:D);c2.setAttribute('stroke',aTop?D:T);  
+document.getElementById('itb1').setAttribute('stroke',topEx?T:D);  
+document.getElementById('itb1').setAttribute('stroke-dasharray',topEx?'none':'5 3');  
+document.getElementById('itb2').setAttribute('stroke',topEx?D:T);  
+document.getElementById('itb2').setAttribute('stroke-dasharray',topEx?'5 3':'none');  
+const bY=swInt[2]===0?76:132;  
+document.getElementById('arm-ib').setAttribute('x1','464');  
+document.getElementById('arm-ib').setAttribute('y1',String(bY));  
+document.getElementById('lbl-ib').textContent=swInt[2]===0?'â L1':'â L2';  
+document.getElementById('post-int').setAttribute('stroke',on?L:D);  
+document.getElementById('post-int').setAttribute('stroke-dasharray',on?'none':'5 3');  
+const bulb=document.getElementById('bulb-int');  
+const glow=document.getElementById('glow-int');  
+if(bulb)bulb.setAttribute('stroke',on?L:D);  
+if(glow)glow.setAttribute('fill',on?'rgba(246,224,94,0.45)':'rgba(246,224,94,0)');  
+['f1-int','f2-int','f3-int'].forEach(id=>{  
+const el=document.getElementById(id);if(el)el.setAttribute('stroke',on?'#f39c12':D);  
+});  
+document.getElementById('b-int').className='bulb-dot'+(on?' on':'');  
+document.getElementById('t-int').textContent=on?'Light is ON':'Light is OFF';  
+}  
+drawInt();  
+  
+// ââ CCU (COOKER) ââ  
+let ccuOn=false;  
+function togCCU(){  
+ccuOn=!ccuOn;const L='#c0392b',D='#a0998e';  
+document.getElementById('ccu-wire').setAttribute('stroke',ccuOn?L:D);  
+document.getElementById('ccu-wire').setAttribute('stroke-dasharray',ccuOn?'none':'6 3');  
+document.getElementById('ccu-out').setAttribute('fill',ccuOn?L:D);  
+document.getElementById('ccu-lbl').textContent=ccuOn?'ON':'OFF';  
+document.getElementById('ccu-lbl').setAttribute('fill',ccuOn?'#27ae60':D);  
+const col=ccuOn?'#e67e22':D;  
+['ck-r1','ck-r2','ck-r3','ck-r4'].forEach(id=>{  
+const el=document.getElementById(id);if(el)el.setAttribute('stroke',col);  
+});  
+const dot=document.getElementById('b-ccu');  
+const txt=document.getElementById('t-ccu');  
+if(dot){dot.style.background=ccuOn?'#e67e22':'#a0998e';dot.style.borderColor=ccuOn?'#d35400':'#888';}  
+if(txt)txt.textContent=ccuOn?'Cooker is LIVE':'Cooker is ISOLATED';  
+}  
+  
+// ââ SHOWER ââ  
+let shOn=false;  
+function togShower(){  
+shOn=!shOn;const L='#c0392b',D='#a0998e';  
+document.getElementById('sh-wire').setAttribute('stroke',shOn?L:D);  
+document.getElementById('sh-wire').setAttribute('stroke-dasharray',shOn?'none':'6 3');  
+document.getElementById('sh-out').setAttribute('fill',shOn?L:D);  
+const dot=document.getElementById('b-sh');  
+const txt=document.getElementById('t-sh');  
+if(dot){dot.style.background=shOn?'#2980b9':'#888';dot.style.borderColor=shOn?'#1e6b8c':'#aaa';if(shOn)dot.style.boxShadow='0 0 10px rgba(41,128,185,0.5)';else dot.style.boxShadow='';}  
+if(txt)txt.textContent=shOn?'Shower is LIVE (running)':'Shower is ISOLATED';  
+}  
+</script>  
+  
+  
+<!-- PART 4 SECOND FIX -->  
+  
+
 </body>
 </html>
