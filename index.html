@@ -2758,6 +2758,12 @@ function builtInStuffPages() {
     title: 'Lighting switching demo',
     desc: 'Interactive UK lighting switching diagram with 1-way, 2-way, and intermediate switch paths.',
     type: 'demo'
+  }, {
+    id: 'ni-rewire-guide',
+    title: 'NI House Rewire Guide',
+    desc: 'Interactive full house rewire reference for Northern Ireland. BS 7671:2018+A2:2022 circuits, diagrams, and Building Control checklist.',
+    type: 'url',
+    url: '/ni-rewire-guide.html'
   }];
 }
 
@@ -2830,7 +2836,7 @@ window.saveStuffPage = () => {
 
 window.openStuffPage = id => {
   if (id === 'lighting-switching-demo') { openLightingDemo(); return; }
-  const page = myStuffPages().find(item => item.id === id);
+  const page = allStuffPages().find(item => item.id === id);
   if (!page) return;
   show();
   document.getElementById('topbarTitle').textContent = page.title;
