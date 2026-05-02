@@ -1105,6 +1105,11 @@ body.theme-dark .filtered-hero::before { opacity: 0.16; }
 
 .stuff-frame { width: 100%; flex: 1; min-height: calc(100vh - 150px); border: 0; background: #fff; }
 
+.stuff-fullscreen { position: fixed; inset: 0; z-index: 500; background: #fff; }
+.stuff-fullscreen .stuff-frame { width: 100%; height: 100%; min-height: 0; display: block; }
+.stuff-fullscreen-back { position: fixed; top: 12px; right: 12px; z-index: 501; background: rgba(0,0,0,0.55); color: #fff; border: none; border-radius: 8px; padding: 7px 14px; font-size: 13px; font-family: 'Inter',sans-serif; cursor: pointer; backdrop-filter: blur(6px); transition: background 0.15s; }
+.stuff-fullscreen-back:hover { background: rgba(0,0,0,0.8); }
+
 .lighting-demo { min-height: 100%; padding: 24px; background: #fff; color: #0f172a; }
 
 .lighting-demo * { box-sizing: border-box; }
@@ -2838,12 +2843,17 @@ window.openStuffPage = id => {
   if (id === 'lighting-switching-demo') { openLightingDemo(); return; }
   const page = allStuffPages().find(item => item.id === id);
   if (!page) return;
-  show();
-  document.getElementById('topbarTitle').textContent = page.title;
-  document.getElementById('topbarSub').innerHTML = `<span style="font-size:12px;color:var(--text3)">${esc(page.url)}</span>`;
-  document.getElementById('topbarRight').innerHTML = `<button class="btn-ghost" onclick="showMyStuff()">Back</button><a class="btn" href="${esc(page.url)}" target="_blank" rel="noopener">Open tab</a>`;
-  document.getElementById('tabsRow').innerHTML = '';
-  document.getElementById('mainContent').innerHTML = `<div class="stuff-viewer"><div class="stuff-viewer-bar"><div class="stuff-viewer-title">${esc(page.title)}</div><button class="btn-ghost" onclick="showMyStuff()">Back to My stuff</button></div><iframe class="stuff-frame" src="${esc(page.url)}" title="${esc(page.title)}"></iframe></div>`;
+  const fs = document.createElement('div');
+  fs.className = 'stuff-fullscreen';
+  fs.id = 'stuffFullscreen';
+  fs.innerHTML = `<button class="stuff-fullscreen-back" onclick="closeStuffFullscreen()">✕ Back</button><iframe class="stuff-frame" src="${esc(page.url)}" title="${esc(page.title)}"></iframe>`;
+  document.body.appendChild(fs);
+};
+
+window.closeStuffFullscreen = () => {
+  const el = document.getElementById('stuffFullscreen');
+  if (el) el.remove();
+  showMyStuff();
 };
 
 const wireInfo = {
