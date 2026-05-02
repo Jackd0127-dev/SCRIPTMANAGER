@@ -210,13 +210,13 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .sb-btn:hover { background: var(--bg); color: var(--text); border-color: var(--border2); }
 
-.sb-btn.import-accent { border-color: rgba(78,205,196,0.36); color: #137b76; background: rgba(78,205,196,0.09); }
+.sb-btn-import { color: var(--blue); border-color: rgba(37,99,235,0.25); background: rgba(37,99,235,0.04); }
 
-.sb-btn.import-accent:hover { border-color: #4ecdc4; background: rgba(78,205,196,0.16); color: #0f625e; }
+.sb-btn-import:hover { background: rgba(37,99,235,0.09); border-color: rgba(37,99,235,0.42); color: var(--blue); }
 
-.sb-btn.create-accent { border-color: rgba(255,107,107,0.38); color: #b8324a; background: rgba(255,107,107,0.09); }
+.sb-btn-create { background: var(--accent, var(--text)); color: #fff; border-color: var(--accent, var(--text)); }
 
-.sb-btn.create-accent:hover { border-color: #ff6b6b; background: rgba(255,107,107,0.16); color: #98273b; }
+.sb-btn-create:hover { opacity: 0.84; color: #fff; background: var(--accent, var(--text)); border-color: var(--accent, var(--text)); }
 
 .sb-btn.generate-accent { border-color: rgba(233,196,106,0.46); color: #8a5a05; background: linear-gradient(135deg, rgba(233,196,106,0.17), rgba(78,205,196,0.10)); }
 
@@ -240,7 +240,7 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 .nav-project.active,
 .nav-script.active { border-color: var(--accent, var(--text)); }
 
-.topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 170px 14px 24px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 
 .topbar-left { flex: 1; min-width: 0; }
 
@@ -395,6 +395,16 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .stat-val { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -1px; line-height: 1; }
 
+.proj-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+
+.proj-stat { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid; border-radius: var(--radius); padding: 18px 20px; transition: transform 0.16s, box-shadow 0.16s; cursor: default; }
+
+.proj-stat:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,25,22,0.08); }
+
+.proj-stat-val { font-family: 'Syne', sans-serif; font-size: 42px; font-weight: 700; letter-spacing: -2px; line-height: 1; margin-bottom: 8px; }
+
+.proj-stat-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; }
+
 .shots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
 
 .shot-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; cursor: pointer; transition: border-color 0.16s, background 0.16s, box-shadow 0.16s, transform 0.16s; }
@@ -515,11 +525,13 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .saving.show { opacity: 1; }
 
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(26,25,22,0.45); z-index: 100; align-items: center; justify-content: center; }
+.modal-overlay { display: flex; position: fixed; inset: 0; background: rgba(26,25,22,0.45); z-index: 100; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.18s; }
 
-.modal-overlay.open { display: flex; animation: overlayFade 0.18s ease both; }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
 
-.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; width: 440px; max-width: 92vw; max-height: 85vh; overflow-y: auto; }
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; width: 440px; max-width: 92vw; max-height: 85vh; overflow-y: auto; transform: scale(0.96) translateY(8px); opacity: 0; transition: transform 0.26s cubic-bezier(0.16,1,0.3,1), opacity 0.2s; }
+
+.modal-overlay.open .modal { transform: scale(1) translateY(0); opacity: 1; }
 
 .modal-overlay.open .modal { animation: modalIn 0.22s cubic-bezier(.2,.8,.2,1) both; transform-origin: center top; }
 
@@ -1650,9 +1662,9 @@ body.theme-dark .filtered-hero::before { opacity: 0.16; }
 
       <div class="sidebar-bottom">
 
-        <button class="sb-btn import-accent" onclick="openImportScriptModal()">Import script</button>
+        <button class="sb-btn sb-btn-import" onclick="openImportScriptModal()"><svg viewBox="0 0 14 14" fill="none" style="width:13px;height:13px;flex-shrink:0"><path d="M7 1v8M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="1" y="10" width="12" height="3" rx="1" fill="currentColor" opacity=".22"/></svg>Import script</button>
 
-        <button class="sb-btn create-accent" onclick="openNewScriptModal()">Create script</button>
+        <button class="sb-btn sb-btn-create" onclick="openNewScriptModal()"><svg viewBox="0 0 14 14" fill="none" style="width:13px;height:13px;flex-shrink:0"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Create script</button>
 
         <button class="sb-btn generate-accent" onclick="openGenerateScriptModal()">Generate Script</button>
 
@@ -2528,6 +2540,8 @@ mobileNavQuery.addEventListener?.('change', e => {
 
 window.renderSb = function(filter='') {
 
+  if(!window.sbExpanded) window.sbExpanded = new Set([S.apid].filter(Boolean));
+
   let h='';
 
   const q = filter.toLowerCase();
@@ -2554,6 +2568,13 @@ window.renderSb = function(filter='') {
 
   document.getElementById('sidebarBody').innerHTML=h;
 
+};
+
+
+window.toggleSbProject = id => {
+  if(!window.sbExpanded) window.sbExpanded = new Set();
+  if(window.sbExpanded.has(id)) window.sbExpanded.delete(id); else window.sbExpanded.add(id);
+  renderSb();
 };
 
 
@@ -2592,10 +2613,12 @@ function show(){
 
   mv.style.display='flex';mv.style.flexDirection='column';mv.style.overflow='hidden';
 
+  const fab=document.querySelector('.global-project-btn');if(fab)fab.style.display='none';
+
 }
 
 
-window.selProject = function(id){S.apid=id;S.asid=null;S.view='overview';renderSb();showProject(id);closeMobileNav();};
+window.selProject = function(id){S.apid=id;S.asid=null;S.view='overview';window.sbExpanded=new Set([id]);renderSb();showProject(id);closeMobileNav();};
 
 const PROJECT_FILTERS = {
   all: { title: 'Scripts', label: 'All scripts', sub: 'Every script in this project, collected into one production-ready gallery.' },
@@ -2655,7 +2678,9 @@ function showProject(id){
   const dueSoon = settings().dueReminders ? scripts.filter(s=>['soon','overdue'].includes(dueSt(s.due))).length : 0;
   document.getElementById('topbarSub').innerHTML=`<span style="font-size:12px;color:var(--text3)">${scripts.length} script${scripts.length!==1?'s':''}</span>${dueSoon?`<span class="due soon">${dueSoon} need attention</span>`:''}`;
 
-  document.getElementById('topbarRight').innerHTML=`<button class="btn-ghost" onclick="openEditProjectModal('${id}')">Edit</button>`;
+  document.documentElement.style.setProperty('--accent',p.color);
+
+  document.getElementById('topbarRight').innerHTML=`<button class="btn-ghost" onclick="openEditProjectModal('${id}')">Edit</button><button class="btn" onclick="openNewProjectModal()">+ New project</button>`;
 
   document.getElementById('tabsRow').innerHTML='';
 
@@ -2663,7 +2688,7 @@ function showProject(id){
 
   if(!scripts.length){el.innerHTML=`<div class="empty" style="${style}"><div class="empty-title">No scripts yet</div><div class="empty-sub">Start clean or bring in a draft and let Director structure it.</div><div class="empty-actions"><button class="action-card create-action" onclick="openNewScriptModal('${id}')"><strong>Create script</strong><span>Start from an idea, title, or quick production brief.</span></button><button class="action-card import-action" onclick="openImportScriptModal('${id}')"><strong>Import script</strong><span>Paste a full draft and let AI sort it into blocks.</span></button></div></div>`;return;}
 
-  let h=`<div class="stat-grid project-stats" style="${style}"><div class="stat-card project-stat-card" onclick="showProjectFilter('${id}','all')"><div class="stat-label">Scripts</div><div class="stat-val">${scripts.length}</div></div><div class="stat-card project-stat-card" onclick="showProjectFilter('${id}','ready')"><div class="stat-label">Ready</div><div class="stat-val">${sc.ready}</div></div><div class="stat-card project-stat-card" onclick="showProjectFilter('${id}','posted')"><div class="stat-label">Posted</div><div class="stat-val">${sc.posted}</div></div><div class="stat-card project-stat-card" onclick="showProjectFilter('${id}','draft')"><div class="stat-label">Drafts</div><div class="stat-val">${sc.draft}</div></div></div><div class="sec-hd"><div class="sec-title">All scripts</div></div>`;
+  let h=`<div class="proj-stat-grid"><div class="proj-stat" style="border-top-color:${p.color}"><div class="proj-stat-val" style="color:${p.color}">${scripts.length}</div><div class="proj-stat-label">Scripts</div></div><div class="proj-stat" style="border-top-color:var(--green)"><div class="proj-stat-val" style="color:var(--green)">${sc.ready}</div><div class="proj-stat-label">Ready</div></div><div class="proj-stat" style="border-top-color:var(--blue)"><div class="proj-stat-val" style="color:var(--blue)">${sc.posted}</div><div class="proj-stat-label">Posted</div></div><div class="proj-stat" style="border-top-color:var(--amber)"><div class="proj-stat-val" style="color:var(--amber)">${sc.draft}</div><div class="proj-stat-label">Draft</div></div></div><div class="sec-hd"><div class="sec-title">All scripts</div></div>`;
 
   scripts.forEach(s=>{
 
@@ -2993,7 +3018,7 @@ window.selScript = function(id){S.asid=id;S.apid=scr(id)?.projectId;S.view=setti
 
 function showScript(id){
 
-  const s=scr(id);if(!s)return;show();
+  const s=scr(id);if(!s)return;show();const _p=proj(s.projectId);if(_p?.color)document.documentElement.style.setProperty('--accent',_p.color);else document.documentElement.style.removeProperty('--accent');
 
   document.getElementById('topbarTitle').textContent=s.name;
 
