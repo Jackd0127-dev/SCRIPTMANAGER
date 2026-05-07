@@ -18,23 +18,25 @@
 
 :root {
 
-  --bg: #f5f4f1; --surface: #ffffff; --border: #e5e3de; --border2: #d0cdc6;
+  --bg: #f6f7fb; --surface: #ffffff; --surface2: #fbfcff; --border: #e3e7ef; --border2: #cbd3df;
 
-  --text: #1a1916; --text2: #6b6860; --text3: #a8a59f;
+  --text: #151923; --text2: #5d6573; --text3: #9aa3b2;
 
-  --green: #3a7d44; --green-bg: #edf5ef; --red: #c0392b; --red-bg: #fdf0ee;
+  --green: #167a4a; --green-bg: #eaf8f0; --red: #cf3b55; --red-bg: #fff0f3;
 
-  --blue: #2563eb; --blue-bg: #eff4ff; --amber: #b45309; --amber-bg: #fef3c7;
+  --blue: #2c68d8; --blue-bg: #eef5ff; --amber: #b77908; --amber-bg: #fff7df;
 
-  --radius: 10px; --radius-sm: 6px;
+  --teal: #20b8ad; --coral: #ef5d72; --violet: #7657d6;
+
+  --radius: 10px; --radius-sm: 7px; --shadow-soft: 0 18px 48px rgba(33, 43, 68, 0.10); --shadow-tight: 0 8px 22px rgba(33, 43, 68, 0.08); --focus: 0 0 0 3px rgba(32,184,173,0.22);
 
 }
 
-body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; line-height: 1.5; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; line-height: 1.5; text-rendering: optimizeLegibility; }
 
-body.theme-dark { --bg: #11110f; --surface: #1b1b18; --border: #323029; --border2: #4a463b; --text: #f4f1e8; --text2: #bbb4a6; --text3: #827b6f; }
+body.theme-dark { --bg: #10141c; --surface: #171c26; --surface2: #1d2430; --border: #2b3443; --border2: #435064; --text: #f6f8fb; --text2: #bdc5d2; --text3: #7f8a9a; --shadow-soft: 0 22px 58px rgba(0,0,0,0.32); --shadow-tight: 0 10px 28px rgba(0,0,0,0.24); }
 
-body.theme-light { --bg: #f8f7f3; --surface: #ffffff; --border: #e5e3de; --border2: #d0cdc6; --text: #1a1916; --text2: #6b6860; --text3: #a8a59f; }
+body.theme-light { --bg: #f6f7fb; --surface: #ffffff; --surface2: #fbfcff; --border: #e3e7ef; --border2: #cbd3df; --text: #151923; --text2: #5d6573; --text3: #9aa3b2; }
 
 body.density-compact { font-size: 13px; }
 
@@ -59,9 +61,9 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
 
-.auth-wrap { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg); }
+.auth-wrap { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: radial-gradient(circle at 16% 14%, rgba(32,184,173,0.12), transparent 30%), radial-gradient(circle at 86% 18%, rgba(239,93,114,0.10), transparent 28%), var(--bg); }
 
-.auth-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 36px; width: 400px; max-width: 92vw; }
+.auth-box { background: rgba(255,255,255,0.84); border: 1px solid rgba(227,231,239,0.9); border-radius: 18px; padding: 36px; width: 400px; max-width: 92vw; box-shadow: var(--shadow-soft); backdrop-filter: blur(18px); }
 
 .auth-logo { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 4px; }
 
@@ -109,6 +111,10 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .auth-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
+.auth-demo-btn { width: 100%; margin-top: 10px; border: 1px solid rgba(32,184,173,0.38); border-radius: var(--radius-sm); background: linear-gradient(135deg, rgba(32,184,173,0.14), rgba(118,87,214,0.10)); color: var(--text); padding: 10px 12px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s; }
+
+.auth-demo-btn:hover { transform: translateY(-1px); border-color: var(--teal); box-shadow: 0 12px 28px rgba(32,184,173,0.18); }
+
 .auth-err { font-size: 12px; color: var(--red); margin-top: 10px; min-height: 16px; }
 
 .icloud-warning { font-size: 11px; color: var(--amber); background: var(--amber-bg); border: 1px solid #fde68a; border-radius: var(--radius-sm); padding: 8px 10px; margin-bottom: 12px; line-height: 1.5; }
@@ -138,9 +144,9 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 #appScreen { display: none; }
 
-.app { display: flex; height: 100vh; overflow: hidden; }
+.app { display: flex; height: 100vh; overflow: hidden; background: linear-gradient(135deg, rgba(32,184,173,0.05), transparent 36%), var(--bg); }
 
-.sidebar { width: 240px; min-width: 240px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.sidebar { width: 264px; min-width: 264px; background: color-mix(in srgb, var(--surface) 92%, transparent); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 10px 0 30px rgba(33,43,68,0.04); backdrop-filter: blur(18px); }
 
 .sidebar-top { padding: 16px 16px 12px; border-bottom: 1px solid var(--border); }
 
@@ -210,13 +216,13 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .sb-btn:hover { background: var(--bg); color: var(--text); border-color: var(--border2); }
 
-.sb-btn-import { color: var(--blue); border-color: rgba(37,99,235,0.25); background: rgba(37,99,235,0.04); }
+.sb-btn.import-accent { border-color: rgba(78,205,196,0.36); color: #137b76; background: rgba(78,205,196,0.09); }
 
-.sb-btn-import:hover { background: rgba(37,99,235,0.09); border-color: rgba(37,99,235,0.42); color: var(--blue); }
+.sb-btn.import-accent:hover { border-color: #4ecdc4; background: rgba(78,205,196,0.16); color: #0f625e; }
 
-.sb-btn-create { background: var(--accent, var(--text)); color: #fff; border-color: var(--accent, var(--text)); }
+.sb-btn.create-accent { border-color: rgba(255,107,107,0.38); color: #b8324a; background: rgba(255,107,107,0.09); }
 
-.sb-btn-create:hover { opacity: 0.84; color: #fff; background: var(--accent, var(--text)); border-color: var(--accent, var(--text)); }
+.sb-btn.create-accent:hover { border-color: #ff6b6b; background: rgba(255,107,107,0.16); color: #98273b; }
 
 .sb-btn.generate-accent { border-color: rgba(233,196,106,0.46); color: #8a5a05; background: linear-gradient(135deg, rgba(233,196,106,0.17), rgba(78,205,196,0.10)); }
 
@@ -225,6 +231,10 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 .sb-btn.stuff-accent { border-color: rgba(106,76,147,0.38); color: #5b3d82; background: linear-gradient(135deg, rgba(106,76,147,0.14), rgba(69,123,157,0.10)); }
 
 .sb-btn.stuff-accent:hover { border-color: #6a4c93; background: linear-gradient(135deg, rgba(106,76,147,0.22), rgba(69,123,157,0.16)); color: #432b64; }
+
+.sb-btn.command-accent { justify-content: space-between; border-color: rgba(32,184,173,0.34); color: #08766f; background: linear-gradient(135deg, rgba(32,184,173,0.12), rgba(118,87,214,0.08)); }
+
+.sb-btn.command-accent:hover { border-color: var(--teal); background: linear-gradient(135deg, rgba(32,184,173,0.20), rgba(118,87,214,0.14)); color: #075f5a; }
 
 .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
 
@@ -240,7 +250,7 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 .nav-project.active,
 .nav-script.active { border-color: var(--accent, var(--text)); }
 
-.topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.topbar { background: color-mix(in srgb, var(--surface) 94%, transparent); border-bottom: 1px solid var(--border); padding: 14px 170px 14px 24px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; backdrop-filter: blur(16px); }
 
 .topbar-left { flex: 1; min-width: 0; }
 
@@ -395,16 +405,6 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .stat-val { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -1px; line-height: 1; }
 
-.proj-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
-
-.proj-stat { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid; border-radius: var(--radius); padding: 18px 20px; transition: transform 0.16s, box-shadow 0.16s; cursor: default; }
-
-.proj-stat:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,25,22,0.08); }
-
-.proj-stat-val { font-family: 'Syne', sans-serif; font-size: 42px; font-weight: 700; letter-spacing: -2px; line-height: 1; margin-bottom: 8px; }
-
-.proj-stat-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; }
-
 .shots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
 
 .shot-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; cursor: pointer; transition: border-color 0.16s, background 0.16s, box-shadow 0.16s, transform 0.16s; }
@@ -525,13 +525,11 @@ body.density-spacious .tl-card { padding: 14px 16px; margin-bottom: 9px; }
 
 .saving.show { opacity: 1; }
 
-.modal-overlay { display: flex; position: fixed; inset: 0; background: rgba(26,25,22,0.45); z-index: 100; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.18s; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(26,25,22,0.45); z-index: 100; align-items: center; justify-content: center; }
 
-.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal-overlay.open { display: flex; animation: overlayFade 0.18s ease both; }
 
-.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; width: 440px; max-width: 92vw; max-height: 85vh; overflow-y: auto; transform: scale(0.96) translateY(8px); opacity: 0; transition: transform 0.26s cubic-bezier(0.16,1,0.3,1), opacity 0.2s; }
-
-.modal-overlay.open .modal { transform: scale(1) translateY(0); opacity: 1; }
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; width: 440px; max-width: 92vw; max-height: 85vh; overflow-y: auto; }
 
 .modal-overlay.open .modal { animation: modalIn 0.22s cubic-bezier(.2,.8,.2,1) both; transform-origin: center top; }
 
@@ -1105,11 +1103,6 @@ body.theme-dark .filtered-hero::before { opacity: 0.16; }
 
 .stuff-frame { width: 100%; flex: 1; min-height: calc(100vh - 150px); border: 0; background: #fff; }
 
-.stuff-fullscreen { position: fixed; inset: 0; z-index: 500; background: #fff; }
-.stuff-fullscreen .stuff-frame { width: 100%; height: 100%; min-height: 0; display: block; }
-.stuff-fullscreen-back { position: fixed; top: 12px; right: 12px; z-index: 501; background: rgba(0,0,0,0.55); color: #fff; border: none; border-radius: 8px; padding: 7px 14px; font-size: 13px; font-family: 'Inter',sans-serif; cursor: pointer; backdrop-filter: blur(6px); transition: background 0.15s; }
-.stuff-fullscreen-back:hover { background: rgba(0,0,0,0.8); }
-
 .lighting-demo { min-height: 100%; padding: 24px; background: #fff; color: #0f172a; }
 
 .lighting-demo * { box-sizing: border-box; }
@@ -1206,6 +1199,125 @@ body.theme-dark .filtered-hero::before { opacity: 0.16; }
 .action-card::before { content: ''; position: absolute; left: 18px; right: 18px; bottom: 14px; height: 2px; border-radius: 999px; background: linear-gradient(90deg, currentColor, transparent); opacity: 0.34; }
 
 .ai-flow-orb { display: none; }
+
+button,
+input,
+select,
+textarea,
+.tab,
+.nav-project,
+.nav-script,
+.status-chip,
+.preset-chip,
+.project-choice,
+.osc,
+.shot-card,
+.tl-card,
+.sub-line,
+.action-card {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.tab:focus-visible,
+.nav-project:focus-visible,
+.nav-script:focus-visible,
+.status-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+}
+
+.btn,
+.btn-ghost,
+.global-project-btn,
+.sb-btn,
+.social-btn,
+.auth-btn,
+.glass-btn {
+  transition: transform 0.18s cubic-bezier(0.16,1,0.3,1), background 0.18s, border-color 0.18s, box-shadow 0.18s, color 0.18s, opacity 0.18s;
+}
+
+.btn:hover,
+.btn-ghost:hover,
+.sb-btn:hover,
+.social-btn:hover,
+.auth-btn:hover,
+.glass-btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn,
+.global-project-btn {
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--accent, var(--text)) 18%, transparent);
+}
+
+.card,
+.stat-card,
+.settings-section,
+.modal,
+.import-panel,
+.project-script-card,
+.stuff-card {
+  box-shadow: var(--shadow-tight);
+}
+
+.kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 25px; min-height: 20px; border: 1px solid var(--border2); border-radius: 6px; padding: 1px 6px; background: var(--surface); color: var(--text3); font-size: 11px; font-weight: 800; line-height: 1; }
+
+.script-summary { display: grid; grid-template-columns: minmax(0, 1.25fr) repeat(3, minmax(92px, 0.38fr)); gap: 10px; margin-bottom: 16px; }
+
+.script-summary-main { border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; background: linear-gradient(135deg, var(--surface), var(--surface2)); box-shadow: var(--shadow-tight); }
+
+.script-summary-title { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+
+.script-summary-title strong { font-size: 13px; }
+
+.script-summary-meta { color: var(--text2); font-size: 12px; line-height: 1.55; }
+
+.script-summary-stat { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; background: var(--surface); box-shadow: var(--shadow-tight); }
+
+.script-summary-stat span { display: block; color: var(--text3); font-size: 10px; font-weight: 800; letter-spacing: 0.7px; text-transform: uppercase; margin-bottom: 8px; }
+
+.script-summary-stat strong { display: block; font-family: 'Syne', sans-serif; font-size: 28px; line-height: 0.95; letter-spacing: -0.8px; }
+
+.command-modal { width: min(680px, 94vw); padding: 0; overflow: hidden; border: 0; background: linear-gradient(135deg, var(--surface), var(--surface2)); box-shadow: 0 28px 80px rgba(33,43,68,0.24); }
+
+.command-shell { padding: 16px; }
+
+.command-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+
+.command-head strong { font-family: 'Syne', sans-serif; font-size: 20px; letter-spacing: -0.4px; }
+
+.command-search { width: 100%; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); color: var(--text); padding: 13px 14px; font-family: 'Inter', sans-serif; font-size: 15px; outline: none; }
+
+.command-list { display: grid; gap: 7px; max-height: min(420px, 56vh); overflow-y: auto; margin-top: 12px; padding-right: 2px; }
+
+.command-item { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 12px; width: 100%; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); padding: 11px 12px; font-family: 'Inter', sans-serif; text-align: left; cursor: pointer; transition: transform 0.16s, border-color 0.16s, box-shadow 0.16s, background 0.16s; }
+
+.command-item:hover { transform: translateY(-1px); border-color: var(--border2); box-shadow: var(--shadow-tight); }
+
+.command-icon { width: 34px; height: 34px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; background: rgba(32,184,173,0.12); color: #08766f; font-weight: 900; }
+
+.command-title { display: block; font-size: 13px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.command-sub { display: block; color: var(--text3); font-size: 11px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.command-tag { border: 1px solid var(--border); border-radius: 999px; padding: 3px 7px; color: var(--text3); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.command-empty { color: var(--text3); padding: 22px 8px; text-align: center; font-size: 13px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
 
 .mobile-menu-btn,
 .sidebar-scrim { display: none; }
@@ -1343,6 +1455,19 @@ body.theme-dark .filtered-hero::before { opacity: 0.16; }
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
   }
+
+  .script-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .script-summary-title {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .command-shell { padding: 14px; }
+  .command-item { grid-template-columns: 30px minmax(0, 1fr); }
+  .command-tag { display: none; }
 
   .stat-card { padding: 12px; }
   .stat-val { font-size: 24px; }
@@ -1571,6 +1696,7 @@ body.theme-dark .filtered-hero::before { opacity: 0.16; }
       <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="loginPassword" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
 
       <button class="auth-btn" id="loginBtn" onclick="doLogin()">Sign in</button>
+      <button class="auth-demo-btn" type="button" onclick="startDemoWorkspace()">Preview demo workspace</button>
 
       <div class="auth-err" id="loginErr"></div>
 
@@ -1666,10 +1792,11 @@ body.theme-dark .filtered-hero::before { opacity: 0.16; }
       <div class="sidebar-body" id="sidebarBody"><div style="padding:20px 16px;font-size:12px;color:var(--text3)">Loading…</div></div>
 
       <div class="sidebar-bottom">
+        <button class="sb-btn command-accent" onclick="openCommandPalette()">Command menu <span class="kbd">⌘K</span></button>
 
-        <button class="sb-btn sb-btn-import" onclick="openImportScriptModal()"><svg viewBox="0 0 14 14" fill="none" style="width:13px;height:13px;flex-shrink:0"><path d="M7 1v8M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="1" y="10" width="12" height="3" rx="1" fill="currentColor" opacity=".22"/></svg>Import script</button>
+        <button class="sb-btn import-accent" onclick="openImportScriptModal()">Import script</button>
 
-        <button class="sb-btn sb-btn-create" onclick="openNewScriptModal()"><svg viewBox="0 0 14 14" fill="none" style="width:13px;height:13px;flex-shrink:0"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Create script</button>
+        <button class="sb-btn create-accent" onclick="openNewScriptModal()">Create script</button>
 
         <button class="sb-btn generate-accent" onclick="openGenerateScriptModal()">Generate Script</button>
 
@@ -1899,6 +2026,8 @@ function showScreen(name) {
 
 }
 
+window.showScreen = showScreen;
+
 
 function friendlyError(code, message='') {
 
@@ -2104,6 +2233,8 @@ async function loadUser(user) {
 
 onAuthStateChanged(auth, async (user) => {
 
+  if (window.isDemoMode) return;
+
   if (!user) {
 
     currentUser = null;
@@ -2216,6 +2347,16 @@ window.doSignup = async () => {
 
 window.doSignout = async () => {
 
+  if (window.isDemoMode) {
+    window.isDemoMode = false;
+    currentUser = null;
+    if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+    const signout = document.querySelector('.signout-btn');
+    if (signout) signout.textContent = 'Sign out';
+    showScreen('login');
+    return;
+  }
+
   if (unsubscribe) { unsubscribe(); unsubscribe = null; }
 
   await signOut(auth);
@@ -2317,6 +2458,25 @@ function stateForSave() {
 
 window.save = () => {
 
+  if (window.isDemoMode) {
+    const ind = document.getElementById('savingIndicator');
+    ind.classList.add('show');
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+      localStorage.setItem('directorDemoWorkspace', JSON.stringify({
+        demoVersion: 2,
+        projects: window.S.projects || [],
+        scripts: window.S.scripts || [],
+        settings: window.S.settings || {},
+        apid: window.S.apid || null,
+        asid: window.S.asid || null,
+        view: window.S.view || 'full'
+      }));
+      ind.classList.remove('show');
+    }, 220);
+    return;
+  }
+
   if (!currentUser) return;
 
   const ind = document.getElementById('savingIndicator');
@@ -2347,7 +2507,7 @@ window.DEFAULT_SETTINGS = {
   language: 'English',
   timezone: 'Europe/London',
   theme: 'system',
-  accent: '#1a1916',
+  accent: '#20b8ad',
   density: 'comfortable',
   defaultView: 'full',
   defaultProject: '',
@@ -2378,7 +2538,7 @@ window.currentProfile = { email: '', displayName: '', provider: 'password' };
 
 window.S = { projects: [], scripts: [], apid: null, asid: null, view: 'full', settings: { ...window.DEFAULT_SETTINGS } };
 
-const COLORS = ['#1a1916','#e63946','#2a9d8f','#e9c46a','#457b9d','#f4a261','#6a4c93','#52b788','#ff6b6b','#4ecdc4'];
+const COLORS = ['#20b8ad','#ef5d72','#7657d6','#e9b949','#2f80ed','#f2994a','#8f63d9','#27ae60','#ff7a90','#56cfe1'];
 
 const STATUSES = ['draft','ready','shot','posted'];
 
@@ -2391,6 +2551,137 @@ const CUSTOM_TYPE_COLORS = ['#4ecdc4','#ff6b6b','#e9c46a','#6a4c93','#52b788','#
 const TC = BASE_TC;
 
 const SC = { draft:'#b45309', ready:'#3a7d44', shot:'#c0392b', posted:'#2563eb' };
+
+function demoWorkspaceTemplate() {
+  const nextWeek = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+  const soon = new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10);
+  return {
+    projects: [
+      { id: 'demo-launch', name: 'Creator Launch', color: '#20b8ad' },
+      { id: 'demo-retainer', name: 'Client Retainers', color: '#7657d6' }
+    ],
+    scripts: [
+      {
+        id: 'demo-script-hook',
+        projectId: 'demo-launch',
+        name: 'Batch Filming Hook',
+        status: 'ready',
+        due: soon,
+        platforms: ['TikTok', 'Instagram'],
+        notes: 'Demo script. Edit anything here without affecting real account data.',
+        blocks: [
+          { id: 'b1', type: 'shot', shotName: 'Cold open', desc: 'Medium close-up, direct to camera, fast jump cut at the first pause.', spoken: '', notes: 'Film vertical, keep laptop visible in background.', done: true, cut: false },
+          { id: 'b2', type: 'speech', shotName: '', desc: '', spoken: 'If content feels impossible, your system is probably too heavy.', notes: '', done: true, cut: false },
+          { id: 'b3', type: 'transition', shotName: 'Desk wipe', desc: 'Hand crosses lens into a clean desk top-down setup.', spoken: '', notes: '', done: false, cut: false },
+          { id: 'b4', type: 'subtitle', shotName: '', desc: '', spoken: 'Batch the thinking. Then batch the filming.', notes: 'Use bold yellow highlight on Batch.', done: false, cut: false },
+          { id: 'b5', type: 'direction', shotName: 'CTA', desc: 'Point to pinned comment and ask viewers to save the checklist.', spoken: '', notes: 'End with 1 second hold.', done: false, cut: false }
+        ]
+      },
+      {
+        id: 'demo-script-product',
+        projectId: 'demo-launch',
+        name: 'Director Product Teaser',
+        status: 'draft',
+        due: nextWeek,
+        platforms: ['YouTube', 'X'],
+        notes: 'Use this as a visual QA surface for cards, tabs, progress, and block editing.',
+        blocks: [
+          { id: 'p1', type: 'shot', shotName: 'Screen record', desc: 'Open dashboard, show project stats and command menu.', spoken: '', notes: '', done: false, cut: false },
+          { id: 'p2', type: 'voiceover', shotName: '', desc: '', spoken: 'Director turns scattered ideas into a production plan you can actually shoot.', notes: '', done: false, cut: false },
+          { id: 'p3', type: 'transition', shotName: 'Zoom', desc: 'Zoom from script card into full script view.', spoken: '', notes: '', done: false, cut: false },
+          { id: 'p4', type: 'subtitle', shotName: '', desc: '', spoken: 'Plan. Shoot. Track. Ship.', notes: '', done: false, cut: false }
+        ]
+      },
+      {
+        id: 'demo-script-client',
+        projectId: 'demo-retainer',
+        name: 'Monthly Results Recap',
+        status: 'posted',
+        due: '',
+        platforms: ['Instagram', 'X'],
+        notes: 'Posted demo item for filtered project views.',
+        blocks: [
+          { id: 'c1', type: 'shot', shotName: 'Metric board', desc: 'Show three simple before/after stats.', spoken: '', notes: '', done: true, cut: false },
+          { id: 'c2', type: 'speech', shotName: '', desc: '', spoken: 'Here is what changed after we stopped posting random content.', notes: '', done: true, cut: false },
+          { id: 'c3', type: 'direction', shotName: 'Close', desc: 'End on next-month roadmap card.', spoken: '', notes: '', done: true, cut: false }
+        ]
+      }
+    ],
+    apid: 'demo-launch',
+    asid: 'demo-script-hook',
+    view: 'full',
+    settings: { ...window.DEFAULT_SETTINGS, displayName: 'Demo Creator', accent: '#20b8ad', defaultView: 'full' }
+  };
+}
+
+function loadDemoWorkspaceSnapshot() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('directorDemoWorkspace') || 'null');
+    if (saved?.demoVersion === 2 && saved?.projects?.length && saved?.scripts?.length) return { ...demoWorkspaceTemplate(), ...saved, settings: { ...window.DEFAULT_SETTINGS, ...(saved.settings || {}) } };
+  } catch(e) {}
+  return demoWorkspaceTemplate();
+}
+
+window.startDemoWorkspace = () => {
+  window.isDemoMode = true;
+  const data = loadDemoWorkspaceSnapshot();
+  window.S = {
+    projects: Array.isArray(data.projects) ? data.projects : [],
+    scripts: Array.isArray(data.scripts) ? data.scripts : [],
+    apid: data.apid || data.projects?.[0]?.id || null,
+    asid: data.asid || data.scripts?.[0]?.id || null,
+    view: data.view || 'full',
+    settings: { ...window.DEFAULT_SETTINGS, ...(data.settings || {}) }
+  };
+  window.currentProfile = { email: 'demo@director.local', displayName: 'Demo Creator', provider: 'demo' };
+  const signout = document.querySelector('.signout-btn');
+  if (signout) signout.textContent = 'Exit demo';
+  window.showScreen?.('app');
+  applySettings();
+  renderSb();
+  if (S.asid && scr(S.asid)) selScript(S.asid);
+  else if (S.apid && proj(S.apid)) selProject(S.apid);
+  else if (S.projects[0]) selProject(S.projects[0].id);
+  showToast('Demo workspace loaded. Changes stay in this browser.');
+};
+
+function demoTitleFromText(text, fallback='Generated creator script') {
+  return String(text || fallback)
+    .replace(/\s+/g, ' ')
+    .trim()
+    .split(' ')
+    .slice(0, 7)
+    .join(' ')
+    .replace(/[,.!?;:]+$/g, '') || fallback;
+}
+
+function demoGeneratedScript(payload={}) {
+  const brief = String(payload.instructions || payload.currentScript || payload.currentName || 'a practical creator workflow').trim();
+  const topic = demoTitleFromText(brief, 'Creator workflow');
+  const title = payload.currentName || `${topic} Hook`;
+  const script = [
+    `Hook: Most creators do not need more ideas. They need a cleaner way to turn one idea into something they can actually shoot.`,
+    `Shot: Open on the messy notes, then cut to a clean Director project view.`,
+    `Speech: Here is the simple system: capture the idea, split it into shots, mark what is done, and export the final plan.`,
+    `Subtitle: Plan it once. Shoot it faster.`,
+    `Transition: Quick zoom from the project card into the script blocks.`,
+    `Direction: End on a confident CTA to save the workflow and reuse it for the next script.`
+  ].join('\n\n');
+  return { title: title.slice(0, 80), script: `${script}\n\nBrief used: ${brief.slice(0, 240)}` };
+}
+
+function demoBlocksFromText(rawScript) {
+  const clean = String(rawScript || '').replace(/\s+/g, ' ').trim();
+  const parts = clean.match(/[^.!?\n]+[.!?]?/g)?.map(part => part.trim()).filter(Boolean).slice(0, 6) || [];
+  const seed = parts.length ? parts : ['Open with a strong hook.', 'Explain the main idea clearly.', 'Show the product or process in action.', 'Finish with a direct CTA.'];
+  return [
+    { type: 'shot', shotName: 'Hook shot', desc: 'Open with a clean visual setup that makes the topic obvious.', spoken: '' },
+    { type: 'speech', shotName: '', desc: '', spoken: seed[0] },
+    { type: 'transition', shotName: 'Clean cut', desc: 'Cut from the hook into the proof or workflow moment.', spoken: '' },
+    { type: 'subtitle', shotName: '', desc: '', spoken: seed[1] || 'Keep the main takeaway visible on screen.' },
+    { type: 'direction', shotName: 'CTA', desc: seed[2] || 'Close with the next step for the viewer.', spoken: '' }
+  ];
+}
 
 const uid = () => Math.random().toString(36).substr(2,9);
 
@@ -2517,6 +2808,15 @@ function notifyUser(title, body) {
   else if (Notification.permission !== 'denied' && st.pushNotifications) Notification.requestPermission();
 }
 
+function showToast(message, actionLabel='', action='') {
+  const toast = document.getElementById('aiJobToast');
+  if (!toast) return;
+  toast.innerHTML = `${esc(message)}${actionLabel ? `<button onclick="${action}">${esc(actionLabel)}</button>` : ''}`;
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove('show'), actionLabel ? 12000 : 4200);
+}
+
 const mobileNavQuery = window.matchMedia('(max-width: 780px)');
 
 window.openMobileNav = () => {
@@ -2532,6 +2832,11 @@ window.closeMobileNav = () => {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeMobileNav();
   const tag = e.target?.tagName;
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault();
+    openCommandPalette();
+    return;
+  }
   if (!settings().keyboardShortcuts || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
   if (e.key.toLowerCase() === 'n') { e.preventDefault(); openNewScriptModal(S.apid); }
   if (e.key.toLowerCase() === 'i') { e.preventDefault(); openImportScriptModal(S.apid); }
@@ -2544,8 +2849,6 @@ mobileNavQuery.addEventListener?.('change', e => {
 
 
 window.renderSb = function(filter='') {
-
-  if(!window.sbExpanded) window.sbExpanded = new Set([S.apid].filter(Boolean));
 
   let h='';
 
@@ -2573,13 +2876,6 @@ window.renderSb = function(filter='') {
 
   document.getElementById('sidebarBody').innerHTML=h;
 
-};
-
-
-window.toggleSbProject = id => {
-  if(!window.sbExpanded) window.sbExpanded = new Set();
-  if(window.sbExpanded.has(id)) window.sbExpanded.delete(id); else window.sbExpanded.add(id);
-  renderSb();
 };
 
 
@@ -2618,12 +2914,10 @@ function show(){
 
   mv.style.display='flex';mv.style.flexDirection='column';mv.style.overflow='hidden';
 
-  const fab=document.querySelector('.global-project-btn');if(fab)fab.style.display='none';
-
 }
 
 
-window.selProject = function(id){S.apid=id;S.asid=null;S.view='overview';window.sbExpanded=new Set([id]);renderSb();showProject(id);closeMobileNav();};
+window.selProject = function(id){S.apid=id;S.asid=null;S.view='overview';renderSb();showProject(id);closeMobileNav();};
 
 const PROJECT_FILTERS = {
   all: { title: 'Scripts', label: 'All scripts', sub: 'Every script in this project, collected into one production-ready gallery.' },
@@ -2683,9 +2977,7 @@ function showProject(id){
   const dueSoon = settings().dueReminders ? scripts.filter(s=>['soon','overdue'].includes(dueSt(s.due))).length : 0;
   document.getElementById('topbarSub').innerHTML=`<span style="font-size:12px;color:var(--text3)">${scripts.length} script${scripts.length!==1?'s':''}</span>${dueSoon?`<span class="due soon">${dueSoon} need attention</span>`:''}`;
 
-  document.documentElement.style.setProperty('--accent',p.color);
-
-  document.getElementById('topbarRight').innerHTML=`<button class="btn-ghost" onclick="openEditProjectModal('${id}')">Edit</button><button class="btn" onclick="openNewProjectModal()">+ New project</button>`;
+  document.getElementById('topbarRight').innerHTML=`<button class="btn-ghost" onclick="openEditProjectModal('${id}')">Edit</button>`;
 
   document.getElementById('tabsRow').innerHTML='';
 
@@ -2693,7 +2985,7 @@ function showProject(id){
 
   if(!scripts.length){el.innerHTML=`<div class="empty" style="${style}"><div class="empty-title">No scripts yet</div><div class="empty-sub">Start clean or bring in a draft and let Director structure it.</div><div class="empty-actions"><button class="action-card create-action" onclick="openNewScriptModal('${id}')"><strong>Create script</strong><span>Start from an idea, title, or quick production brief.</span></button><button class="action-card import-action" onclick="openImportScriptModal('${id}')"><strong>Import script</strong><span>Paste a full draft and let AI sort it into blocks.</span></button></div></div>`;return;}
 
-  let h=`<div class="proj-stat-grid"><div class="proj-stat" style="border-top-color:${p.color}"><div class="proj-stat-val" style="color:${p.color}">${scripts.length}</div><div class="proj-stat-label">Scripts</div></div><div class="proj-stat" style="border-top-color:var(--green)"><div class="proj-stat-val" style="color:var(--green)">${sc.ready}</div><div class="proj-stat-label">Ready</div></div><div class="proj-stat" style="border-top-color:var(--blue)"><div class="proj-stat-val" style="color:var(--blue)">${sc.posted}</div><div class="proj-stat-label">Posted</div></div><div class="proj-stat" style="border-top-color:var(--amber)"><div class="proj-stat-val" style="color:var(--amber)">${sc.draft}</div><div class="proj-stat-label">Draft</div></div></div><div class="sec-hd"><div class="sec-title">All scripts</div></div>`;
+  let h=`<div class="stat-grid project-stats" style="${style}"><div class="stat-card project-stat-card" onclick="showProjectFilter('${id}','all')"><div class="stat-label">Scripts</div><div class="stat-val">${scripts.length}</div></div><div class="stat-card project-stat-card" onclick="showProjectFilter('${id}','ready')"><div class="stat-label">Ready</div><div class="stat-val">${sc.ready}</div></div><div class="stat-card project-stat-card" onclick="showProjectFilter('${id}','posted')"><div class="stat-label">Posted</div><div class="stat-val">${sc.posted}</div></div><div class="stat-card project-stat-card" onclick="showProjectFilter('${id}','draft')"><div class="stat-label">Drafts</div><div class="stat-val">${sc.draft}</div></div></div><div class="sec-hd"><div class="sec-title">All scripts</div></div>`;
 
   scripts.forEach(s=>{
 
@@ -2763,12 +3055,6 @@ function builtInStuffPages() {
     title: 'Lighting switching demo',
     desc: 'Interactive UK lighting switching diagram with 1-way, 2-way, and intermediate switch paths.',
     type: 'demo'
-  }, {
-    id: 'ni-rewire-guide',
-    title: 'NI House Rewire Guide',
-    desc: 'Interactive full house rewire reference for Northern Ireland. BS 7671:2018+A2:2022 circuits, diagrams, and Building Control checklist.',
-    type: 'url',
-    url: '/ni-rewire-guide.html'
   }];
 }
 
@@ -2841,19 +3127,14 @@ window.saveStuffPage = () => {
 
 window.openStuffPage = id => {
   if (id === 'lighting-switching-demo') { openLightingDemo(); return; }
-  const page = allStuffPages().find(item => item.id === id);
+  const page = myStuffPages().find(item => item.id === id);
   if (!page) return;
-  const fs = document.createElement('div');
-  fs.className = 'stuff-fullscreen';
-  fs.id = 'stuffFullscreen';
-  fs.innerHTML = `<button class="stuff-fullscreen-back" onclick="closeStuffFullscreen()">✕ Back</button><iframe class="stuff-frame" src="${esc(page.url)}" title="${esc(page.title)}"></iframe>`;
-  document.body.appendChild(fs);
-};
-
-window.closeStuffFullscreen = () => {
-  const el = document.getElementById('stuffFullscreen');
-  if (el) el.remove();
-  showMyStuff();
+  show();
+  document.getElementById('topbarTitle').textContent = page.title;
+  document.getElementById('topbarSub').innerHTML = `<span style="font-size:12px;color:var(--text3)">${esc(page.url)}</span>`;
+  document.getElementById('topbarRight').innerHTML = `<button class="btn-ghost" onclick="showMyStuff()">Back</button><a class="btn" href="${esc(page.url)}" target="_blank" rel="noopener">Open tab</a>`;
+  document.getElementById('tabsRow').innerHTML = '';
+  document.getElementById('mainContent').innerHTML = `<div class="stuff-viewer"><div class="stuff-viewer-bar"><div class="stuff-viewer-title">${esc(page.title)}</div><button class="btn-ghost" onclick="showMyStuff()">Back to My stuff</button></div><iframe class="stuff-frame" src="${esc(page.url)}" title="${esc(page.title)}"></iframe></div>`;
 };
 
 const wireInfo = {
@@ -3028,21 +3309,72 @@ window.toggleLighting = target => {
   renderLightingDemo();
 };
 
+function scriptPlainText(s) {
+  if (!s) return '';
+  const lines = [
+    s.name,
+    '',
+    `Status: ${s.status || 'draft'}`,
+    s.due ? `Due: ${fmtDate(s.due)}` : '',
+    (s.platforms || []).length ? `Platforms: ${(s.platforms || []).join(', ')}` : '',
+    s.notes ? `Notes: ${s.notes}` : '',
+    '',
+    'Blocks'
+  ].filter(Boolean);
+  (s.blocks || []).forEach((b, i) => {
+    const label = typeLabel(normalizeClientType(b.type));
+    const body = isSpokenType(b.type) ? b.spoken : [b.shotName, b.desc].filter(Boolean).join(' - ');
+    lines.push(`${String(i + 1).padStart(2, '0')}. [${label}] ${body || 'Untitled block'}`);
+    if (b.notes) lines.push(`    Notes: ${b.notes}`);
+  });
+  return lines.join('\n');
+}
+
+window.copyScriptText = async id => {
+  const s = scr(id);
+  if (!s) return;
+  const text = scriptPlainText(s);
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast('Script copied to clipboard.');
+  } catch(e) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    showToast('Script copied to clipboard.');
+  }
+};
+
+window.downloadScriptText = id => {
+  const s = scr(id);
+  if (!s) return;
+  const blob = new Blob([scriptPlainText(s)], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${slugType(s.name) || 'director-script'}.txt`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('Script download started.');
+};
+
 
 window.selScript = function(id){S.asid=id;S.apid=scr(id)?.projectId;S.view=settings().defaultView||'full';renderSb();showScript(id);closeMobileNav();};
 
 
 function showScript(id){
 
-  const s=scr(id);if(!s)return;show();const _p=proj(s.projectId);if(_p?.color)document.documentElement.style.setProperty('--accent',_p.color);else document.documentElement.style.removeProperty('--accent');
+  const s=scr(id);if(!s)return;show();
 
   document.getElementById('topbarTitle').textContent=s.name;
 
   const ds=dueSt(s.due);
 
-  document.getElementById('topbarSub').innerHTML=`<span class="badge badge-${s.status}" style="cursor:pointer" onclick="cycleStatus('${id}')">${s.status}</span>${s.due?`<span class="due${ds?' '+ds:''}">${fmtDate(s.due)}</span>`:''} ${(s.platforms||[]).map(p=>`<span class="plat plat-${p.toLowerCase()}">${p}</span>`).join('')}`;
+  document.getElementById('topbarSub').innerHTML=`<span class="badge badge-${s.status}" style="cursor:pointer" onclick="cycleStatus('${id}')">${s.status}</span>${s.due?`<span class="due${ds?' '+ds:''}">${fmtDate(s.due)}</span>`:''} ${(s.platforms||[]).map(p=>`<span class="plat plat-${esc(p).toLowerCase()}">${esc(p)}</span>`).join('')}`;
 
-  document.getElementById('topbarRight').innerHTML=`<button class="btn-ghost" onclick="openAddBlock('${id}')">Add block</button><button class="btn-ghost" onclick="openEditScriptModal('${id}')">Edit</button><button class="btn-ghost" onclick="resetBlocks('${id}')">Reset</button>`;
+  document.getElementById('topbarRight').innerHTML=`<button class="btn-ghost" onclick="openAddBlock('${id}')">Add block</button><button class="btn-ghost" onclick="copyScriptText('${id}')">Copy</button><button class="btn-ghost" onclick="downloadScriptText('${id}')">Export</button><button class="btn-ghost" onclick="openEditScriptModal('${id}')">Edit</button><button class="btn-ghost" onclick="resetBlocks('${id}')">Reset</button>`;
 
   const TABS=[{id:'full',label:'Full script'},{id:'shots',label:'Shots'},{id:'transitions',label:'Transitions'},{id:'subtitles',label:'Subtitles'},{id:'timeline',label:'Timeline'},{id:'notes',label:'Notes'}];
 
@@ -3083,9 +3415,24 @@ function renderFull(s,el){
 
   const done=s.blocks.filter(b=>b.done).length;
 
+  const cut=s.blocks.filter(b=>b.cut).length;
+
+  const shots=s.blocks.filter(b=>b.type==='shot').length;
+
+  const lines=s.blocks.filter(b=>isSpokenType(b.type)).length;
+
   const pct=s.blocks.length?Math.round(done/s.blocks.length*100):0;
 
-  let h=`<div class="card" style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:12px;font-weight:600;color:var(--text2)">Shoot progress</span><span style="font-size:12px;font-weight:600" data-pct>${pct}%</span></div><div class="prog-wrap"><div class="prog-fill" style="width:${pct}%"></div></div><div style="font-size:11px;color:var(--text3);margin-top:5px" data-prog-sub>${done} of ${s.blocks.length} blocks marked done</div></div>`;
+  let h=`<div class="script-summary">
+    <div class="script-summary-main">
+      <div class="script-summary-title"><strong>Shoot progress</strong><span style="font-size:12px;font-weight:800" data-pct>${pct}%</span></div>
+      <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%"></div></div>
+      <div class="script-summary-meta" data-prog-sub>${done} of ${s.blocks.length} blocks marked done${cut?` · ${cut} cut`:''}. Use Copy or Export when the plan is ready to share.</div>
+    </div>
+    <div class="script-summary-stat"><span>Blocks</span><strong>${s.blocks.length}</strong></div>
+    <div class="script-summary-stat"><span>Shots</span><strong>${shots}</strong></div>
+    <div class="script-summary-stat"><span>Lines</span><strong>${lines}</strong></div>
+  </div>`;
 
   h+=`<div class="legend">${blockTypeList().map(t=>`<div class="legend-item"><div class="legend-pip" style="background:${t.color}"></div>${esc(t.label)}</div>`).join('')}</div>`;
 
@@ -3094,7 +3441,7 @@ function renderFull(s,el){
     b.type = normalizeClientType(b.type);
     const isSp=isSpokenType(b.type);
 
-    const txt=isSp?fp(b.spoken):(b.shotName+(b.desc?' — '+b.desc:''));
+    const txt=isSp?fp(b.spoken):fp(b.shotName+(b.desc?' — '+b.desc:''));
 
     h+=`<div class="block-row${b.done?' done':''}${b.cut?' cut':''}" id="bl-${b.id}" onclick="openBlockDetail('${s.id}','${b.id}')"><span class="type-pill ${typePillClass(b.type)}" style="--type-color:${typeColor(b.type)}">${esc(typeLabel(b.type))}${b.shotName&&!isSp?' · '+esc(b.shotName):''}</span><div class="block-main ${isSp?'block-spoken':'block-desc'}">${txt}${b.notes?`<div class="block-note-preview">${esc(b.notes)}</div>`:''}</div><button class="block-tick${b.done?' on':''}" onclick="event.stopPropagation();toggle('${s.id}','${b.id}','done')" aria-label="Mark done"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1"/></svg></button><button class="block-x${b.cut?' on':''}" onclick="event.stopPropagation();toggle('${s.id}','${b.id}','cut')" aria-label="Cut"><svg viewBox="0 0 12 12" fill="none"><line x1="1" y1="1" x2="11" y2="11"/><line x1="11" y1="1" x2="1" y2="11"/></svg></button></div>`;
 
@@ -3138,7 +3485,7 @@ function renderTransitions(s,el){
 
   Object.entries(groups).forEach(([name,blocks])=>{
 
-    h+=`<div style="margin-bottom:18px"><div style="font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px">${name} <span style="font-size:11px;color:var(--text3);font-weight:400">×${blocks.length}</span></div>`;
+    h+=`<div style="margin-bottom:18px"><div style="font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px">${esc(name)} <span style="font-size:11px;color:var(--text3);font-weight:400">×${blocks.length}</span></div>`;
 
     blocks.forEach((b,i)=>{h+=`<div class="block-row${b.done?' done':''}${b.cut?' cut':''}" id="bl-${b.id}" onclick="openBlockDetail('${s.id}','${b.id}')"><span class="type-pill pill-transition">#${i+1}</span><div class="block-main block-desc">${esc(b.desc||'—')}${b.notes?`<div class="block-note-preview">${esc(b.notes)}</div>`:''}</div><button class="block-tick${b.done?' on':''}" onclick="event.stopPropagation();toggle('${s.id}','${b.id}','done')" aria-label="Mark done"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1"/></svg></button><button class="block-x${b.cut?' on':''}" onclick="event.stopPropagation();toggle('${s.id}','${b.id}','cut')" aria-label="Cut"><svg viewBox="0 0 12 12" fill="none"><line x1="1" y1="1" x2="11" y2="11"/><line x1="11" y1="1" x2="1" y2="11"/></svg></button></div>`;});
 
@@ -3188,7 +3535,7 @@ function renderNotes(s,el){
 
   const cut=s.blocks.filter(b=>b.cut).length;
 
-  el.innerHTML=`<div class="sec-hd"><div class="sec-title">Notes</div></div><textarea class="notes-ta" placeholder="Notes, reminders, shoot checklist…" oninput="saveNotes('${s.id}',this.value)">${s.notes||''}</textarea><div class="divider"></div><div class="sec-hd"><div class="sec-title">Script info</div></div><div class="stat-grid"><div class="stat-card"><div class="stat-label">Total blocks</div><div class="stat-val">${s.blocks.length}</div></div><div class="stat-card"><div class="stat-label">Shots</div><div class="stat-val" style="color:#c2410c">${s.blocks.filter(b=>b.type==='shot').length}</div></div><div class="stat-card"><div class="stat-label">Transitions</div><div class="stat-val" style="color:#1d4ed8">${s.blocks.filter(b=>b.type==='transition').length}</div></div><div class="stat-card"><div class="stat-label">Lines</div><div class="stat-val" style="color:#166534">${s.blocks.filter(b=>isSpokenType(b.type)).length}</div></div><div class="stat-card"><div class="stat-label">Done</div><div class="stat-val" style="color:var(--green)">${done}</div></div><div class="stat-card"><div class="stat-label">Cut</div><div class="stat-val" style="color:var(--red)">${cut}</div></div></div>`;
+  el.innerHTML=`<div class="sec-hd"><div class="sec-title">Notes</div></div><textarea class="notes-ta" placeholder="Notes, reminders, shoot checklist…" oninput="saveNotes('${s.id}',this.value)">${esc(s.notes||'')}</textarea><div class="divider"></div><div class="sec-hd"><div class="sec-title">Script info</div></div><div class="stat-grid"><div class="stat-card"><div class="stat-label">Total blocks</div><div class="stat-val">${s.blocks.length}</div></div><div class="stat-card"><div class="stat-label">Shots</div><div class="stat-val" style="color:#c2410c">${s.blocks.filter(b=>b.type==='shot').length}</div></div><div class="stat-card"><div class="stat-label">Transitions</div><div class="stat-val" style="color:#1d4ed8">${s.blocks.filter(b=>b.type==='transition').length}</div></div><div class="stat-card"><div class="stat-label">Lines</div><div class="stat-val" style="color:#166534">${s.blocks.filter(b=>isSpokenType(b.type)).length}</div></div><div class="stat-card"><div class="stat-label">Done</div><div class="stat-val" style="color:var(--green)">${done}</div></div><div class="stat-card"><div class="stat-label">Cut</div><div class="stat-val" style="color:var(--red)">${cut}</div></div></div>`;
 
 }
 
@@ -3282,9 +3629,9 @@ window.toggle=(sid,bid,field)=>{
 };
 
 
-window.openModal=(html, extraClass='')=>{const box=document.getElementById('modalBox');delete box.dataset.jobId;box.className=`modal${extraClass?` ${extraClass}`:''}`;box.innerHTML=html;document.getElementById('modalOverlay').classList.add('open');};
+window.openModal=(html, extraClass='')=>{const box=document.getElementById('modalBox');delete box.dataset.jobId;box.removeAttribute('style');box.className=`modal${extraClass?` ${extraClass}`:''}`;box.innerHTML=html;document.getElementById('modalOverlay').classList.add('open');};
 
-window.closeModal=()=>{document.getElementById('modalOverlay').classList.remove('open');document.getElementById('modalBox').className='modal';};
+window.closeModal=()=>{document.getElementById('modalOverlay').classList.remove('open');document.getElementById('modalBox').className='modal';document.getElementById('modalBox').removeAttribute('style');};
 
 window.closeModalOutside=e=>{if(e.target===document.getElementById('modalOverlay'))closeModal();};
 
@@ -3313,6 +3660,73 @@ window.openCustomTypeCreator = selectId => {
     select.innerHTML = blockTypeOptions(id);
     select.value = id;
   }
+};
+
+function commandItems() {
+  const base = [
+    { kind: 'action', id: 'new-project', icon: '+', title: 'Create project', sub: 'Start a new colour-coded workspace', tag: 'Action' },
+    { kind: 'action', id: 'new-script', icon: 'S', title: 'Create script', sub: 'Open the guided script creator', tag: 'Action' },
+    { kind: 'action', id: 'import-script', icon: 'I', title: 'Import script', sub: 'Paste or generate a script and sort it with Gemini', tag: 'Action' },
+    { kind: 'action', id: 'generate-script', icon: 'G', title: 'Generate script', sub: 'Create a draft from a brief', tag: 'AI' },
+    { kind: 'action', id: 'settings', icon: ',', title: 'Settings', sub: 'Profile, appearance, AI, shortcuts, data', tag: 'View' },
+    { kind: 'action', id: 'my-stuff', icon: 'M', title: 'My stuff', sub: 'Private pages and built-in demos', tag: 'View' },
+    { kind: 'action', id: 'export', icon: 'E', title: 'Export workspace', sub: 'Download all projects, scripts, and settings', tag: 'Data' }
+  ];
+  if (S.asid && scr(S.asid)) {
+    base.splice(4, 0,
+      { kind: 'action', id: 'copy-active', icon: 'C', title: 'Copy active script', sub: scr(S.asid).name, tag: 'Script' },
+      { kind: 'action', id: 'download-active', icon: 'D', title: 'Download active script', sub: scr(S.asid).name, tag: 'Script' }
+    );
+  }
+  if (!window.isDemoMode) base.push({ kind: 'action', id: 'demo', icon: 'P', title: 'Preview demo workspace', sub: 'Explore Director without signing in', tag: 'Demo' });
+  const projects = (S.projects || []).map(p => ({ kind: 'project', id: p.id, icon: 'P', title: p.name, sub: `${pscripts(p.id).length} script${pscripts(p.id).length !== 1 ? 's' : ''}`, tag: 'Project' }));
+  const scripts = (S.scripts || []).map(s => ({ kind: 'script', id: s.id, icon: 'S', title: s.name, sub: `${proj(s.projectId)?.name || 'No project'} · ${s.status}`, tag: 'Script' }));
+  return [...base, ...projects, ...scripts];
+}
+
+window.openCommandPalette = () => {
+  closeMobileNav();
+  openModal(`<div class="command-shell">
+    <div class="command-head"><strong>Command menu</strong><span class="kbd">⌘K</span></div>
+    <input class="command-search" id="commandSearch" placeholder="Search actions, projects, and scripts..." oninput="renderCommandResults(this.value)" onkeydown="if(event.key==='Enter')runFirstCommandResult()">
+    <div class="command-list" id="commandList"></div>
+  </div>`, 'command-modal');
+  renderCommandResults('');
+  setTimeout(() => document.getElementById('commandSearch')?.focus(), 30);
+};
+
+window.renderCommandResults = q => {
+  const query = String(q || '').trim().toLowerCase();
+  const items = commandItems().filter(item => !query || `${item.title} ${item.sub} ${item.tag}`.toLowerCase().includes(query)).slice(0, 18);
+  const list = document.getElementById('commandList');
+  if (!list) return;
+  list.innerHTML = items.length ? items.map(item => `
+    <button class="command-item" data-kind="${esc(item.kind)}" data-id="${esc(item.id)}" onclick="runCommand('${esc(item.kind)}','${esc(item.id)}')">
+      <span class="command-icon">${esc(item.icon)}</span>
+      <span><span class="command-title">${esc(item.title)}</span><span class="command-sub">${esc(item.sub)}</span></span>
+      <span class="command-tag">${esc(item.tag)}</span>
+    </button>`).join('') : '<div class="command-empty">No matching commands.</div>';
+};
+
+window.runFirstCommandResult = () => {
+  const first = document.querySelector('.command-item');
+  if (first) runCommand(first.dataset.kind, first.dataset.id);
+};
+
+window.runCommand = (kind, id) => {
+  closeModal();
+  if (kind === 'project') { selProject(id); return; }
+  if (kind === 'script') { selScript(id); return; }
+  if (id === 'new-project') openNewProjectModal();
+  if (id === 'new-script') openNewScriptModal(S.apid);
+  if (id === 'import-script') openImportScriptModal(S.apid);
+  if (id === 'generate-script') openGenerateScriptModal(S.apid);
+  if (id === 'settings') openSettingsPage();
+  if (id === 'my-stuff') openMyStuff();
+  if (id === 'export') exportWorkspace();
+  if (id === 'demo') startDemoWorkspace();
+  if (id === 'copy-active') copyScriptText(S.asid);
+  if (id === 'download-active') downloadScriptText(S.asid);
 };
 
 window.scrollSettings = id => {
@@ -3696,6 +4110,18 @@ window.generateScriptPreview = async () => {
   btn.disabled = true;
   btn.textContent = 'Generating...';
   msg.textContent = 'Gemini is drafting your preview...';
+  if (window.isDemoMode) {
+    const data = demoGeneratedScript({ instructions: brief, brainstorm: mode === 'brainstorm' });
+    generatedScriptPreview = { title:data.title, script:data.script, platforms, projectId:document.getElementById('gs-proj').value };
+    document.getElementById('gs-preview-title').textContent = generatedScriptPreview.title;
+    document.getElementById('gs-preview-body').textContent = generatedScriptPreview.script;
+    document.getElementById('gs-preview').classList.add('open');
+    document.getElementById('gs-save-btn').disabled = false;
+    msg.textContent = 'Demo preview ready. Save it when you are happy with it.';
+    btn.disabled = false;
+    btn.textContent = 'Generate preview';
+    return;
+  }
   try {
     const res = await fetch('/api/generate-script', {
       method:'POST',
@@ -3735,6 +4161,14 @@ window.saveGeneratedScript = async () => {
   btn.disabled = true;
   btn.textContent = 'Saving...';
   msg.textContent = 'Sorting the preview into Director blocks...';
+  if (window.isDemoMode) {
+    const blocks = demoBlocksFromText(generatedScriptPreview.script).map(b=>({id:uid(),type:normalizeClientType(b.type),shotName:b.shotName||'',desc:b.desc||'',spoken:b.spoken||'',notes:'',done:false,cut:false}));
+    const s={id:uid(),projectId:generatedScriptPreview.projectId,name:generatedScriptPreview.title || 'Generated script',status:'draft',due:'',platforms:generatedScriptPreview.platforms,notes:'Generated in demo mode.',blocks};
+    if(!S.scripts)S.scripts=[];
+    S.scripts.push(s);
+    save();closeModal();renderSb();selScript(s.id);
+    return;
+  }
   try {
     const st = settings();
     const res = await fetch('/api/sort-script',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rawScript: generatedScriptPreview.script, tone:st.aiTone, creativity:Number(st.aiCreativity), autoShots:st.aiAutoShots, customTypes:customTypesPayload()})});
@@ -3814,6 +4248,16 @@ window.generateImportScript = async () => {
   msg.textContent = 'Gemini is generating a name and script...';
   btn.disabled = true;
   btn.textContent = 'Generating...';
+  if (window.isDemoMode) {
+    const data = demoGeneratedScript({ mode, instructions, currentName, currentScript, platforms });
+    document.getElementById('is-name').value = data.title || '';
+    document.getElementById('is-raw').value = data.script || '';
+    msg.textContent = 'Demo script generated. Review it, then press Continue to sort it into blocks.';
+    closeImportGenerateMenu();
+    btn.disabled = false;
+    btn.textContent = 'Generate script';
+    return;
+  }
   try {
     const res = await fetch('/api/generate-script', {
       method:'POST',
@@ -3911,11 +4355,7 @@ window.closeImportPage = () => {
 };
 
 function showAiToast(message, canOpen=false) {
-  const toast = document.getElementById('aiJobToast');
-  toast.innerHTML = `${esc(message)}${canOpen?`<button onclick="openLastImportedScript()">Open</button>`:''}`;
-  toast.classList.add('show');
-  clearTimeout(toast._timer);
-  toast._timer = setTimeout(() => toast.classList.remove('show'), canOpen ? 12000 : 4200);
+  showToast(message, canOpen ? 'Open' : '', canOpen ? 'openLastImportedScript()' : '');
 }
 
 window.openLastImportedScript = () => {
@@ -4005,6 +4445,20 @@ window.importScriptWithAI = async () => {
   };
   activeAiJob = job;
   renderAiWorking(job);
+  if (window.isDemoMode) {
+    await new Promise(resolve => setTimeout(resolve, 350));
+    const name = job.name || demoTitleFromText(job.rawScript, 'Imported demo script');
+    const blocks = demoBlocksFromText(job.rawScript).map(b=>({id:uid(),type:normalizeClientType(b.type),shotName:b.shotName||'',desc:b.desc||'',spoken:b.spoken||'',done:false,cut:false}));
+    const s = {id:uid(),projectId:job.projectId,name,status:'draft',due:'',platforms:job.platforms,notes:'Imported in demo mode.',blocks};
+    if(!S.scripts)S.scripts=[];
+    S.scripts.push(s);
+    lastImportedScriptId = s.id;
+    save();
+    renderSb();
+    activeAiJob = null;
+    renderAiComplete(job, s.id);
+    return;
+  }
   try {
     const st = settings();
     const res = await fetch('/api/sort-script',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rawScript: job.rawScript, tone:st.aiTone, creativity:Number(st.aiCreativity), autoShots:st.aiAutoShots, customTypes:customTypesPayload()})});
@@ -4032,7 +4486,7 @@ window.importScriptWithAI = async () => {
   }
 };
 
-window.openEditScriptModal=id=>{const s=scr(id);openModal(`<div class="modal-title">Edit script</div><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="es-name" value="${s.name}"></div><div class="form-group"><label class="form-label">Status</label><div class="status-row">${STATUSES.map(opt=>`<div class="status-chip badge badge-${opt}${s.status===opt?' sel':''}" data-s="${opt}" onclick="selStatus(this)">${opt}</div>`).join('')}</div></div><div class="form-group"><label class="form-label">Due date</label><input class="form-input" id="es-due" type="date" value="${s.due||''}"></div><div class="form-group"><label class="form-label">Platforms</label><div class="plats-row">${PLATFORMS.map(p=>`<label><input type="checkbox" value="${p}" ${(s.platforms||[]).includes(p)?'checked':''} style="accent-color:var(--text)"> ${p}</label>`).join('')}</div></div><div class="modal-actions"><button class="btn-ghost btn-danger" onclick="deleteScript('${id}')">Delete script</button><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveScript('${id}')">Save</button></div>`);};
+window.openEditScriptModal=id=>{const s=scr(id);openModal(`<div class="modal-title">Edit script</div><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="es-name" value="${esc(s.name)}"></div><div class="form-group"><label class="form-label">Status</label><div class="status-row">${STATUSES.map(opt=>`<div class="status-chip badge badge-${opt}${s.status===opt?' sel':''}" data-s="${opt}" onclick="selStatus(this)">${opt}</div>`).join('')}</div></div><div class="form-group"><label class="form-label">Due date</label><input class="form-input" id="es-due" type="date" value="${esc(s.due||'')}"></div><div class="form-group"><label class="form-label">Platforms</label><div class="plats-row">${PLATFORMS.map(p=>`<label><input type="checkbox" value="${esc(p)}" ${(s.platforms||[]).includes(p)?'checked':''} style="accent-color:var(--text)"> ${esc(p)}</label>`).join('')}</div></div><div class="modal-actions"><button class="btn-ghost btn-danger" onclick="deleteScript('${id}')">Delete script</button><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveScript('${id}')">Save</button></div>`);};
 
 window.saveScript=id=>{const s=scr(id);s.name=document.getElementById('es-name').value.trim()||s.name;s.status=document.querySelector('.status-chip.sel')?.dataset.s||s.status;s.due=document.getElementById('es-due').value;s.platforms=[...document.querySelectorAll('input[type=checkbox]:checked')].map(c=>c.value);save();closeModal();renderSb();showScript(id);};
 
