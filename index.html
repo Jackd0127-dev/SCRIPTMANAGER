@@ -297,16 +297,16 @@
         linear-gradient(145deg, #ffffff, #ecece8);
     }
 
-    .visual-lighting {
-      background:
-        radial-gradient(circle at 70% 34%, rgba(255, 218, 93, 0.55), transparent 18%),
-        linear-gradient(145deg, #f8fafc, #e8edf2);
-    }
-
     .visual-guide {
       background:
         linear-gradient(135deg, rgba(0,154,68,0.13), transparent 45%),
         linear-gradient(145deg, #f7f1e8, #e6ddd0);
+    }
+
+    .visual-legal {
+      background:
+        linear-gradient(135deg, rgba(255,77,109,0.12), transparent 42%),
+        linear-gradient(145deg, #fff, #f1f3f6);
     }
 
     .mini-app {
@@ -369,60 +369,6 @@
     .mini-block:nth-child(3) { border-left-color: var(--coral); }
     .mini-block:nth-child(4) { border-left-color: var(--gold); }
 
-    .switch-board {
-      position: absolute;
-      inset: 18px;
-      border: 1px solid rgba(17,17,17,0.12);
-      border-radius: 16px;
-      background: rgba(255,255,255,0.72);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.64);
-    }
-
-    .wire {
-      position: absolute;
-      height: 7px;
-      border-radius: 999px;
-      transform-origin: 0 50%;
-      box-shadow: 0 0 16px rgba(233, 169, 0, 0.32);
-    }
-
-    .wire.line { left: 37px; top: 72px; width: 110px; background: #ef4444; transform: rotate(-12deg); }
-    .wire.neutral { left: 36px; top: 104px; width: 190px; background: #3b82f6; }
-    .wire.switched { left: 141px; top: 68px; width: 122px; background: #f59e0b; transform: rotate(14deg); }
-    .switch-box, .lamp, .supply {
-      position: absolute;
-      border: 1px solid rgba(17,17,17,0.14);
-      background: #fff;
-      box-shadow: 0 10px 22px rgba(17,17,17,0.08);
-    }
-
-    .supply {
-      left: 20px;
-      top: 38px;
-      width: 54px;
-      height: 42px;
-      border-radius: 11px;
-    }
-
-    .switch-box {
-      left: 112px;
-      top: 50px;
-      width: 58px;
-      height: 58px;
-      border-radius: 13px;
-    }
-
-    .lamp {
-      right: 24px;
-      top: 38px;
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      background: #fff7b7;
-      border-color: rgba(233, 169, 0, 0.45);
-      box-shadow: 0 0 35px rgba(233, 169, 0, 0.38);
-    }
-
     .guide-sheet {
       position: absolute;
       left: 28px;
@@ -454,6 +400,47 @@
     .guide-row:nth-child(3) { width: 76%; }
     .guide-row:nth-child(4) { width: 88%; background: rgba(0,154,68,0.28); }
     .guide-row:nth-child(5) { width: 61%; }
+
+    .legal-sheet {
+      position: absolute;
+      left: 28px;
+      right: 28px;
+      top: 20px;
+      bottom: -26px;
+      border: 1px solid rgba(17,17,17,0.14);
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 18px 40px rgba(17,17,17,0.12);
+      padding: 18px;
+    }
+
+    .legal-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: #111;
+      color: #fff;
+      font-family: "Syne", sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .legal-row {
+      display: block;
+      height: 10px;
+      border-radius: 999px;
+      background: #d9dde3;
+      margin-bottom: 10px;
+    }
+
+    .legal-row:nth-child(2) { width: 68%; height: 15px; background: #111; }
+    .legal-row:nth-child(3) { width: 92%; }
+    .legal-row:nth-child(4) { width: 78%; }
+    .legal-row:nth-child(5) { width: 86%; background: rgba(255,77,109,0.24); }
 
     .card-body {
       flex: 1;
@@ -649,23 +636,23 @@
 
       <nav class="top-actions" aria-label="Quick links">
         <a class="chip-link" href="scriptai.html">ScriptAI</a>
-        <a class="chip-link" href="lighting-demo.html">Lighting demo</a>
         <a class="chip-link" href="ni-rewire-guide.html">NI guide</a>
+        <a class="chip-link" href="https://legal.scriptai.space">Legal</a>
       </nav>
     </header>
 
     <section class="hero" aria-labelledby="home-title">
       <div>
         <h1 id="home-title">Open the right tool fast.</h1>
-        <p class="hero-copy">This homepage collects the working pages in the repo into one clean launch screen: the ScriptAI/Director script manager, the interactive lighting switching demo, and the NI rewire guide.</p>
+        <p class="hero-copy">This homepage collects the working pages and external ScriptAI links into one clean launch screen: the ScriptAI/Director script manager, the NI rewire guide, and the legal site.</p>
       </div>
 
       <aside class="hero-panel" aria-label="Workspace summary">
         <div class="panel-grid">
-          <div class="metric"><strong>3</strong><span>Pages</span></div>
-          <div class="metric"><strong>2</strong><span>Demos</span></div>
+          <div class="metric"><strong>3</strong><span>Cards</span></div>
+          <div class="metric"><strong>Home</strong><span>Launcher</span></div>
           <div class="metric"><strong>AI</strong><span>Script tools</span></div>
-          <div class="metric"><strong>NI</strong><span>Guide</span></div>
+          <div class="metric"><strong>Legal</strong><span>Site</span></div>
         </div>
       </aside>
     </section>
@@ -673,7 +660,7 @@
     <section aria-labelledby="cards-title">
       <div class="section-head">
         <h2 id="cards-title">Workspace cards</h2>
-        <p>Each card opens a real page from this folder. The ScriptAI app was preserved as its own page so this homepage can stay focused.</p>
+        <p>Each card opens a real ScriptAI page or reference link. The ScriptAI app was preserved as its own page so this homepage can stay focused.</p>
       </div>
 
       <div class="cards">
@@ -708,30 +695,6 @@
           </div>
         </a>
 
-        <a class="card" href="lighting-demo.html">
-          <div class="card-visual visual-lighting" aria-hidden="true">
-            <div class="switch-board">
-              <span class="supply"></span>
-              <span class="switch-box"></span>
-              <span class="lamp"></span>
-              <span class="wire line"></span>
-              <span class="wire switched"></span>
-              <span class="wire neutral"></span>
-            </div>
-          </div>
-          <div class="card-body">
-            <div>
-              <h3 class="card-title">Lighting Switching Demo</h3>
-              <p class="card-text">Open the interactive UK lighting switching visualiser for 1-way, 2-way, and intermediate switching paths.</p>
-              <div class="card-meta">
-                <span class="tag">Standalone HTML</span>
-                <span class="tag">Interactive</span>
-              </div>
-            </div>
-            <span class="card-action">Open lighting demo <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h11M11 5l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </div>
-        </a>
-
         <a class="card" href="ni-rewire-guide.html">
           <div class="card-visual visual-guide" aria-hidden="true">
             <div class="guide-sheet">
@@ -755,10 +718,34 @@
             <span class="card-action">Open NI guide <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h11M11 5l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           </div>
         </a>
+
+        <a class="card" href="https://legal.scriptai.space">
+          <div class="card-visual visual-legal" aria-hidden="true">
+            <div class="legal-sheet">
+              <span class="legal-badge">§</span>
+              <span class="legal-row"></span>
+              <span class="legal-row"></span>
+              <span class="legal-row"></span>
+              <span class="legal-row"></span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div>
+              <h3 class="card-title">ScriptAI Legal</h3>
+              <p class="card-text">Open the live legal site for ScriptAI terms, privacy information, policies, and related user-facing legal pages.</p>
+              <div class="card-meta">
+                <span class="tag">External link</span>
+                <span class="tag">Legal</span>
+                <span class="tag">ScriptAI</span>
+              </div>
+            </div>
+            <span class="card-action">Open legal site <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h11M11 5l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+        </a>
       </div>
     </section>
 
-    <p class="footer">The homepage is <code>index.html</code>. The original ScriptAI app now lives at <code>scriptai.html</code>. The lighting demo card opens <code>lighting-demo.html</code>, a static page that works from this folder.</p>
+    <p class="footer">The homepage is <code>index.html</code>. The original ScriptAI app now lives at <code>scriptai.html</code>, the guide opens from <code>ni-rewire-guide.html</code>, and the legal card opens <code>https://legal.scriptai.space</code>.</p>
   </main>
 </body>
 </html>
