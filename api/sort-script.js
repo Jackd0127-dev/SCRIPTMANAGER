@@ -1,4 +1,5 @@
 import { GEMINI_MODEL, parseGeminiJson, sendJson } from "./lib/gemini.js";
+import { buildSortScriptPrompt } from "./lib/gemini-prompts.js";
 
 function slugType(label) {
   return String(label || "")
@@ -43,19 +44,6 @@ function normalizeBlock(block, customTypes) {
   };
 }
 
-const SORTING_CONTEXT = `
-Director sorting context:
-- Creator: Jack Casey Dickson, solo iOS developer from Northern Ireland, posting as @jackcaseydickson.
-- Pillars to recognise:
-  1. Investing/markets/finance: stocks, ETFs, bonds, crypto, portfolio lessons, beginner investing, global markets, property aspiration.
-  2. Dev/iOS/app building: Curate photo sorting app, SwiftUI, Xcode, indie dev, AI-assisted coding, build-in-public, working full time.
-- Content is short-form vertical video for TikTok, Instagram Reels, YouTube Shorts, and X.
-- Visual style: no screen recordings. Convert any implied screen recording into filmed phone/laptop/iPad B-roll unless the user explicitly needs otherwise.
-- Common filming modes: cinematic indoor Canon + DJI Mic Mini, or casual iPhone + DJI Mic Mini anywhere.
-- Standard transitions: HARD CUT, PUSH IN, PULL OUT, OVERHEAD SHOT, WHOOSH CUT, TRACKING SHOT, WHIP PAN, PHONE THROW TRANSITION, CUTAWAY, GOLDEN REVEAL.
-- Scripts may contain sections like Hook, Script, Shot list, Transitions, Subtitles, Caption, CTA, Notes, or labels like [SPEECH], [SHOT], [SUBTITLE]. Sort these into clean production blocks.
-`;
-
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -81,53 +69,13 @@ export default async function handler(req, res) {
       error: "Script is too long. Try a shorter version.",
     });
 
-  const prompt = `Sort this creator script into Director production blocks.
-
-Return JSON only, with this exact shape:
-{
-  "title": "short script title",
-  "blocks": [
-    {
-      "type": "shot | transition | subtitle | voiceover | speech | direction${customTypes.length ? " | " + customTypes.map((t) => t.id).join(" | ") : ""}",
-      "shotName": "short label, or empty string",
-      "desc": "visual/action/editing description, or empty string",
-      "spoken": "spoken caption/voiceover text, or empty string"
-    }
-  ]
-}
-
-${SORTING_CONTEXT}
-
-Block rules:
-- Preferred tone: ${tone}.
-- Creativity level: ${creativity}/100. Higher means clearer production structure and smarter inferred notes while preserving the original intent.
-- ${autoShots ? "Actively infer practical shot blocks when the source implies visuals." : "Only create shot blocks when the source explicitly describes visuals."}
-- Use "speech" for direct-to-camera spoken lines, including hooks and spoken CTAs.
-- Use "voiceover" for narration that plays over B-roll or visual sequences.
-- Use "shot" for camera setup, scene, B-roll, hook shot, product/app shot, desk shot, filmed device screen, props, or visual beat.
-- Use "subtitle" for on-screen text, captions, lower-thirds, title cards, disclaimers that appear visually, or text overlays.
-- Use "transition" for edit moves. Prefer Jack's standard transition names when possible: HARD CUT, PUSH IN, PULL OUT, OVERHEAD SHOT, WHOOSH CUT, TRACKING SHOT, WHIP PAN, PHONE THROW TRANSITION, CUTAWAY, GOLDEN REVEAL.
-- Use "direction" for notes, reminders, pacing, pause markers, props, lighting/audio reminders, source reminders, compliance reminders, or anything that should not be spoken/shown directly.
-${customTypes.length ? `- You may use these custom types only when they are the best fit: ${customTypes.map((t) => `${t.id} (${t.label})`).join(", ")}.` : ""}
-
-Content-specific rules:
-- If the script is investing/markets/finance and does not already include a disclaimer, add a short "direction" or "subtitle" block near the end reminding Jack to include "not financial advice".
-- For investing scripts, do not turn vague ideas into buy/sell recommendations. Preserve educational/personal wording.
-- If the script mentions current prices, returns, news, earnings, or market events without a source, add a "direction" block reminding Jack to verify the fact before filming.
-- For dev scripts, preserve Curate, SwiftUI, Xcode, app-building, AI coding, and full-time-job context where present.
-- If a script asks for a screen recording, convert it into a filmed phone/laptop/iPad B-roll shot unless the original wording absolutely requires a screen capture.
-
-Sorting quality rules:
-- Preserve the original order and intent.
-- Keep each block short, useful, and practical for filming.
-- Do not duplicate the same content just because it appears in both a full script and a shot list; merge shot notes with the relevant spoken/visual moment.
-- Put spoken words only in "spoken". Put visual/editing instructions only in "desc".
-- Make shotName concise, for example "Hook", "Desk B-roll", "Phone close-up", "CTA", "Disclaimer".
-- Do not add markdown.
-- Do not include anything outside the JSON object.
-
-Script:
-${rawScript}`;
+  const prompt = buildSortScriptPrompt({
+    autoShots,
+    creativity,
+    customTypes,
+    rawScript,
+    tone,
+  });
 
   try {
     const geminiRes = await fetch(
@@ -138,7 +86,7 @@ ${rawScript}`;
         body: JSON.stringify({
           contents: [{ role: "user", parts: [{ text: prompt }] }],
           generationConfig: {
-            temperature: 0.15 + (creativity / 100) * 0.55,
+            temperature: 0.12 + (creativity / 100) * 0.45,
             responseMimeType: "application/json",
           },
         }),

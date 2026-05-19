@@ -6,6 +6,7 @@ const jsFiles = [
   "api/generate-script.js",
   "api/sort-script.js",
   "api/lib/gemini.js",
+  "api/lib/gemini-prompts.js",
   "assets/js/launcher.js",
   "assets/js/director-auth.js",
   "assets/js/director.js",
