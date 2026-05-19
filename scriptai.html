@@ -239,7 +239,18 @@
 
         <div class="sidebar" id="sidebarNav">
           <div class="sidebar-top">
-            <div class="wordmark">Director</div>
+            <div class="sidebar-title-row">
+              <div class="wordmark">Director</div>
+
+              <button
+                class="sidebar-close-btn"
+                type="button"
+                onclick="closeMobileNav()"
+                aria-label="Close projects menu"
+              >
+                ×
+              </button>
+            </div>
 
             <div class="user-row">
               <button
@@ -368,6 +379,12 @@
             <div class="content" id="mainContent"></div>
           </div>
         </div>
+
+        <div
+          class="mobile-context-bar"
+          id="mobileContextBar"
+          aria-label="Mobile quick actions"
+        ></div>
       </div>
     </div>
 

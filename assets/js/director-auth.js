@@ -476,6 +476,14 @@ window.doSignup = async () => {
 };
 
 window.doSignout = async () => {
+  window.setMobileActions?.([]);
+  document.body.classList.remove(
+    "has-mobile-actions",
+    "modal-open",
+    "sidebar-open",
+    "import-open",
+  );
+
   if (window.isDemoMode) {
     window.isDemoMode = false;
     currentUser = null;

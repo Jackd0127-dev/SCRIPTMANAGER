@@ -447,6 +447,8 @@ const esc = (v) =>
       ],
   );
 
+const jsArg = (v) => String(v ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+
 function slugType(label) {
   return String(label || "")
     .toLowerCase()
@@ -751,8 +753,26 @@ function show() {
 
   mv.style.display = "flex";
   mv.style.flexDirection = "column";
-  mv.style.overflow = "hidden";
+  mv.style.removeProperty("overflow");
 }
+
+function mobileAction(label, action, primary = false) {
+  return `<button class="mobile-context-action${primary ? " primary" : ""}" type="button" onclick="${esc(action)}">${esc(label)}</button>`;
+}
+
+function setMobileActions(actions = []) {
+  const bar = document.getElementById("mobileContextBar");
+  if (!bar) return;
+  const html = actions
+    .filter(Boolean)
+    .map(({ label, action, primary }) => mobileAction(label, action, primary))
+    .join("");
+  bar.innerHTML = html;
+  bar.classList.toggle("show", !!html);
+  document.body.classList.toggle("has-mobile-actions", !!html);
+}
+
+window.setMobileActions = setMobileActions;
 
 window.selProject = function (id) {
   S.apid = id;
@@ -825,6 +845,13 @@ window.showProjectFilter = (id, filter = "all") => {
     </section>
     <div class="filtered-actions"><button class="btn-ghost" onclick="showProject('${id}')">Back to overview</button><button class="btn" onclick="openNewScriptModal('${id}')">Create script</button></div>
     ${filtered.length ? `<div class="script-gallery">${filtered.map((s) => scriptCardHtml(s, style)).join("")}</div>` : empty}`;
+  const safeId = jsArg(id);
+  setMobileActions([
+    { label: "Overview", action: `showProject('${safeId}')` },
+    { label: "Create", action: `openNewScriptModal('${safeId}')`, primary: true },
+    { label: "Import", action: `openImportScriptModal('${safeId}')` },
+    { label: "Generate", action: `openGenerateScriptModal('${safeId}')` },
+  ]);
 };
 
 function showProject(id) {
@@ -857,6 +884,13 @@ function showProject(id) {
 
   if (!scripts.length) {
     el.innerHTML = `<div class="empty" style="${style}"><div class="empty-title">No scripts yet</div><div class="empty-sub">Start clean or bring in a draft and let Director structure it.</div><div class="empty-actions"><button class="action-card create-action" onclick="openNewScriptModal('${id}')"><strong>Create script</strong><span>Start from an idea, title, or quick production brief.</span></button><button class="action-card import-action" onclick="openImportScriptModal('${id}')"><strong>Import script</strong><span>Paste a full draft and let AI sort it into blocks.</span></button></div></div>`;
+    const safeId = jsArg(id);
+    setMobileActions([
+      { label: "Create", action: `openNewScriptModal('${safeId}')`, primary: true },
+      { label: "Import", action: `openImportScriptModal('${safeId}')` },
+      { label: "Generate", action: `openGenerateScriptModal('${safeId}')` },
+      { label: "Edit", action: `openEditProjectModal('${safeId}')` },
+    ]);
     return;
   }
 
@@ -875,6 +909,13 @@ function showProject(id) {
   });
 
   el.innerHTML = h;
+  const safeId = jsArg(id);
+  setMobileActions([
+    { label: "Create", action: `openNewScriptModal('${safeId}')`, primary: true },
+    { label: "Import", action: `openImportScriptModal('${safeId}')` },
+    { label: "Generate", action: `openGenerateScriptModal('${safeId}')` },
+    { label: "Edit", action: `openEditProjectModal('${safeId}')` },
+  ]);
 }
 
 const MY_STUFF_PASSWORD_HASH =
@@ -923,6 +964,7 @@ window.openMyStuff = () => {
         <div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="unlockMyStuff()">Unlock</button></div>
       </div>
     </div>`;
+  document.body.classList.add("modal-open");
   document.getElementById("modalOverlay").classList.add("open");
 };
 
@@ -982,6 +1024,10 @@ window.showMyStuff = () => {
         )
         .join("")}
     </div>`;
+  setMobileActions([
+    { label: "Add page", action: "openAddStuffPageModal()", primary: true },
+    { label: "Command", action: "openCommandPalette()" },
+  ]);
 };
 
 window.openAddStuffPageModal = () => {
@@ -998,6 +1044,7 @@ window.openAddStuffPageModal = () => {
         <div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveStuffPage()">Save page</button></div>
       </div>
     </div>`;
+  document.body.classList.add("modal-open");
   document.getElementById("modalOverlay").classList.add("open");
 };
 
@@ -1030,6 +1077,10 @@ window.openStuffPage = (id) => {
   document.getElementById("tabsRow").innerHTML = "";
   document.getElementById("mainContent").innerHTML =
     `<div class="stuff-viewer"><div class="stuff-viewer-bar"><div class="stuff-viewer-title">${esc(page.title)}</div><button class="btn-ghost" onclick="showMyStuff()">Back to My stuff</button></div><iframe class="stuff-frame" src="${esc(page.url)}" title="${esc(page.title)}"></iframe></div>`;
+  setMobileActions([
+    { label: "Back", action: "showMyStuff()" },
+    { label: "Open tab", action: `window.open('${jsArg(page.url)}','_blank','noopener')`, primary: true },
+  ]);
 };
 
 function scriptPlainText(s) {
@@ -1128,6 +1179,14 @@ function showScript(id) {
   ).join("");
 
   renderContent(id);
+  const safeId = jsArg(id);
+  setMobileActions([
+    { label: "Add", action: `openAddBlock('${safeId}')`, primary: true },
+    { label: "Import", action: `openImportScriptModal('${jsArg(s.projectId)}')` },
+    { label: "Copy", action: `copyScriptText('${safeId}')` },
+    { label: "Export", action: `downloadScriptText('${safeId}')` },
+    { label: "Edit", action: `openEditScriptModal('${safeId}')` },
+  ]);
 }
 
 window.switchTab = (v, id) => {
@@ -1429,6 +1488,7 @@ window.openModal = (html, extraClass = "") => {
   box.removeAttribute("style");
   box.className = `modal${extraClass ? ` ${extraClass}` : ""}`;
   box.innerHTML = html;
+  document.body.classList.add("modal-open");
   document.getElementById("modalOverlay").classList.add("open");
 };
 
@@ -1436,6 +1496,7 @@ window.closeModal = () => {
   document.getElementById("modalOverlay").classList.remove("open");
   document.getElementById("modalBox").className = "modal";
   document.getElementById("modalBox").removeAttribute("style");
+  document.body.classList.remove("modal-open");
 };
 
 window.closeModalOutside = (e) => {
@@ -1693,6 +1754,7 @@ window.openSettingsPage = () => {
   const st = settings();
   const profile = window.currentProfile || {};
   show();
+  setMobileActions([]);
   closeMobileNav();
   S.view = "settings";
   document.getElementById("topbarTitle").textContent = "Settings";
@@ -1841,6 +1903,7 @@ window.exitSettingsPage = () => {
   else {
     document.getElementById("mainView").style.display = "none";
     document.getElementById("welcomeScreen").style.display = "flex";
+    setMobileActions([]);
   }
 };
 
@@ -2024,6 +2087,7 @@ window.deleteProject = (id) => {
   renderSb();
   document.getElementById("mainView").style.display = "none";
   document.getElementById("welcomeScreen").style.display = "flex";
+  setMobileActions([]);
 };
 
 window.updateNewScriptAccent = (projectId) => {
@@ -2515,6 +2579,7 @@ window.openImportScriptModal = (projId) => {
     return;
   }
   show();
+  setMobileActions([]);
   closeMobileNav();
   document.body.classList.add("import-open");
   document.getElementById("topbarTitle").textContent = "Import script";
@@ -2534,16 +2599,16 @@ window.openImportScriptModal = (projId) => {
         </div>
         <div class="import-panel">
           <input type="hidden" id="is-proj" value="${esc(pid)}">
-          <div class="ai-step">01 · Choose the project</div>
-          <div class="project-choice-grid import-full">
+          <div class="ai-step import-project-step">01 · Choose the project</div>
+          <div class="project-choice-grid import-full import-project-grid">
             ${(S.projects || []).map((p) => `<button type="button" class="project-choice import-card${p.id === pid ? " sel" : ""}" data-project-id="${p.id}" onclick="selectImportProject(this)"><div class="project-choice-top"><span class="proj-dot" style="background:${p.color}"></span>${esc(p.name)}</div><small>${pscripts(p.id).length} script${pscripts(p.id).length !== 1 ? "s" : ""}</small></button>`).join("")}
           </div>
           <div class="divider"></div>
-          <div class="ai-step">02 · Script identity</div>
+          <div class="ai-step import-identity-step">02 · Script identity</div>
           <div class="form-group"><label class="form-label">Script name</label><div class="generate-field"><input class="form-input" id="is-name" placeholder="${settings().smartTitles ? "Leave blank and Gemini will name it" : "Imported script"}"><button class="tiny-generate-btn" type="button" onclick="openImportGenerateMenu('name', this)">Generate</button></div></div>
-          <div class="form-group"><label class="form-label">Platforms</label><div class="plats-row">${PLATFORMS.map((p) => `<label><input type="checkbox" value="${p}" checked style="accent-color:var(--teal)"> ${p}</label>`).join("")}</div></div>
+          <div class="form-group import-platforms-group"><label class="form-label">Platforms</label><div class="plats-row">${PLATFORMS.map((p) => `<label><input type="checkbox" value="${p}" checked style="accent-color:var(--teal)"> ${p}</label>`).join("")}</div></div>
           <div class="divider"></div>
-          <div class="ai-step">03 · Paste the full script</div>
+          <div class="ai-step import-script-step">03 · Paste the full script</div>
           <div class="script-drop-zone full generate-field"><textarea class="import-ta" id="is-raw" placeholder="Paste the messy version: bullets, captions, ideas, shot notes, voiceover, everything. Gemini will sort the structure." autofocus></textarea><button class="tiny-generate-btn" type="button" onclick="openImportGenerateMenu('script', this)">Generate</button>
             <div class="generate-menu" id="importGenerateMenu" data-mode="auto">
               <div class="generate-menu-title">Generate with Gemini</div>
