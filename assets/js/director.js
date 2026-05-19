@@ -753,7 +753,8 @@ function show() {
 
   mv.style.display = "flex";
   mv.style.flexDirection = "column";
-  mv.style.removeProperty("overflow");
+  mv.style.minHeight = "0";
+  mv.style.overflow = "hidden";
 }
 
 function mobileAction(label, action, primary = false) {
