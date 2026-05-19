@@ -1,17 +1,4 @@
-const MODEL = "gemini-2.5-flash";
-
-function send(res, status, body) {
-  res.status(status).json(body);
-}
-
-function parseGeminiJson(text) {
-  const cleaned = String(text || "")
-    .trim()
-    .replace(/^```json\s*/i, "")
-    .replace(/^```\s*/i, "")
-    .replace(/\s*```$/i, "");
-  return JSON.parse(cleaned);
-}
+import { GEMINI_MODEL, parseGeminiJson, sendJson } from "./lib/gemini.js";
 
 function slugType(label) {
   return String(label || "")
@@ -25,8 +12,10 @@ function slugType(label) {
 function normalizeCustomTypes(types) {
   if (!Array.isArray(types)) return [];
   return types
-    .map(type => {
-      const label = String(type?.label || type?.id || "").trim().slice(0, 28);
+    .map((type) => {
+      const label = String(type?.label || type?.id || "")
+        .trim()
+        .slice(0, 28);
       const id = slugType(type?.id || label);
       return id && label ? { id, label } : null;
     })
@@ -35,14 +24,22 @@ function normalizeCustomTypes(types) {
 }
 
 function normalizeBlock(block, customTypes) {
-  const allowed = new Set(["shot", "transition", "subtitle", "voiceover", "speech", "direction", ...customTypes.map(t => t.id)]);
+  const allowed = new Set([
+    "shot",
+    "transition",
+    "subtitle",
+    "voiceover",
+    "speech",
+    "direction",
+    ...customTypes.map((t) => t.id),
+  ]);
   const rawType = slugType(block?.type);
   const type = allowed.has(rawType) ? rawType : "direction";
   return {
     type,
     shotName: String(block?.shotName || ""),
     desc: String(block?.desc || ""),
-    spoken: String(block?.spoken || "")
+    spoken: String(block?.spoken || ""),
   };
 }
 
@@ -64,18 +61,25 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   if (req.method === "OPTIONS") return res.status(204).end();
-  if (req.method !== "POST") return send(res, 405, { error: "Method not allowed" });
+  if (req.method !== "POST")
+    return sendJson(res, 405, { error: "Method not allowed" });
 
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return send(res, 500, { error: "Missing GEMINI_API_KEY" });
+  if (!apiKey) return sendJson(res, 500, { error: "Missing GEMINI_API_KEY" });
 
   const rawScript = String(req.body?.rawScript || "").trim();
   const tone = String(req.body?.tone || "punchy").slice(0, 40);
-  const creativity = Math.max(0, Math.min(100, Number(req.body?.creativity ?? 52)));
+  const creativity = Math.max(
+    0,
+    Math.min(100, Number(req.body?.creativity ?? 52)),
+  );
   const autoShots = req.body?.autoShots !== false;
   const customTypes = normalizeCustomTypes(req.body?.customTypes);
-  if (!rawScript) return send(res, 400, { error: "Paste a script first." });
-  if (rawScript.length > 20000) return send(res, 400, { error: "Script is too long. Try a shorter version." });
+  if (!rawScript) return sendJson(res, 400, { error: "Paste a script first." });
+  if (rawScript.length > 20000)
+    return sendJson(res, 400, {
+      error: "Script is too long. Try a shorter version.",
+    });
 
   const prompt = `Sort this creator script into Director production blocks.
 
@@ -84,7 +88,7 @@ Return JSON only, with this exact shape:
   "title": "short script title",
   "blocks": [
     {
-      "type": "shot | transition | subtitle | voiceover | speech | direction${customTypes.length ? " | " + customTypes.map(t => t.id).join(" | ") : ""}",
+      "type": "shot | transition | subtitle | voiceover | speech | direction${customTypes.length ? " | " + customTypes.map((t) => t.id).join(" | ") : ""}",
       "shotName": "short label, or empty string",
       "desc": "visual/action/editing description, or empty string",
       "spoken": "spoken caption/voiceover text, or empty string"
@@ -104,7 +108,7 @@ Block rules:
 - Use "subtitle" for on-screen text, captions, lower-thirds, title cards, disclaimers that appear visually, or text overlays.
 - Use "transition" for edit moves. Prefer Jack's standard transition names when possible: HARD CUT, PUSH IN, PULL OUT, OVERHEAD SHOT, WHOOSH CUT, TRACKING SHOT, WHIP PAN, PHONE THROW TRANSITION, CUTAWAY, GOLDEN REVEAL.
 - Use "direction" for notes, reminders, pacing, pause markers, props, lighting/audio reminders, source reminders, compliance reminders, or anything that should not be spoken/shown directly.
-${customTypes.length ? `- You may use these custom types only when they are the best fit: ${customTypes.map(t => `${t.id} (${t.label})`).join(", ")}.` : ""}
+${customTypes.length ? `- You may use these custom types only when they are the best fit: ${customTypes.map((t) => `${t.id} (${t.label})`).join(", ")}.` : ""}
 
 Content-specific rules:
 - If the script is investing/markets/finance and does not already include a disclaimer, add a short "direction" or "subtitle" block near the end reminding Jack to include "not financial advice".
@@ -127,7 +131,7 @@ ${rawScript}`;
 
   try {
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -135,30 +139,40 @@ ${rawScript}`;
           contents: [{ role: "user", parts: [{ text: prompt }] }],
           generationConfig: {
             temperature: 0.15 + (creativity / 100) * 0.55,
-            responseMimeType: "application/json"
-          }
-        })
-      }
+            responseMimeType: "application/json",
+          },
+        }),
+      },
     );
 
     const data = await geminiRes.json();
     if (!geminiRes.ok) {
       console.error("Gemini error:", data);
-      return send(res, 502, { error: "Gemini could not sort this script." });
+      return sendJson(res, 502, {
+        error: "Gemini could not sort this script.",
+      });
     }
 
-    const text = data?.candidates?.[0]?.content?.parts?.map(part => part.text || "").join("") || "";
+    const text =
+      data?.candidates?.[0]?.content?.parts
+        ?.map((part) => part.text || "")
+        .join("") || "";
     const parsed = parseGeminiJson(text);
-    const blocks = Array.isArray(parsed.blocks) ? parsed.blocks.map(block => normalizeBlock(block, customTypes)) : [];
+    const blocks = Array.isArray(parsed.blocks)
+      ? parsed.blocks.map((block) => normalizeBlock(block, customTypes))
+      : [];
 
-    if (!blocks.length) return send(res, 422, { error: "Gemini did not return any script blocks." });
+    if (!blocks.length)
+      return sendJson(res, 422, {
+        error: "Gemini did not return any script blocks.",
+      });
 
-    return send(res, 200, {
+    return sendJson(res, 200, {
       title: String(parsed.title || "Imported script").slice(0, 80),
-      blocks
+      blocks,
     });
   } catch (error) {
     console.error(error);
-    return send(res, 500, { error: "Could not sort the script." });
+    return sendJson(res, 500, { error: "Could not sort the script." });
   }
 }

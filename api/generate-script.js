@@ -1,17 +1,4 @@
-const MODEL = "gemini-2.5-flash";
-
-function send(res, status, body) {
-  res.status(status).json(body);
-}
-
-function parseGeminiJson(text) {
-  const cleaned = String(text || "")
-    .trim()
-    .replace(/^```json\s*/i, "")
-    .replace(/^```\s*/i, "")
-    .replace(/\s*```$/i, "");
-  return JSON.parse(cleaned);
-}
+import { GEMINI_MODEL, parseGeminiJson, sendJson } from "./lib/gemini.js";
 
 const CREATOR_CONTEXT = `
 Creator context:
@@ -64,23 +51,38 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   if (req.method === "OPTIONS") return res.status(204).end();
-  if (req.method !== "POST") return send(res, 405, { error: "Method not allowed" });
+  if (req.method !== "POST")
+    return sendJson(res, 405, { error: "Method not allowed" });
 
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return send(res, 500, { error: "Missing GEMINI_API_KEY" });
+  if (!apiKey) return sendJson(res, 500, { error: "Missing GEMINI_API_KEY" });
 
   const mode = req.body?.mode === "custom" ? "custom" : "auto";
-  const instructions = String(req.body?.instructions || "").trim().slice(0, 4000);
-  const currentName = String(req.body?.currentName || "").trim().slice(0, 160);
-  const currentScript = String(req.body?.currentScript || "").trim().slice(0, 12000);
-  const platforms = Array.isArray(req.body?.platforms) ? req.body.platforms.map(p => String(p).slice(0, 30)).join(", ") : "TikTok, Instagram, YouTube, X";
-  const length = ["short", "medium", "long"].includes(req.body?.length) ? req.body.length : "short";
-  const tone = String(req.body?.tone || "punchy").trim().slice(0, 40);
-  const format = String(req.body?.format || "talking-head").trim().slice(0, 60);
+  const instructions = String(req.body?.instructions || "")
+    .trim()
+    .slice(0, 4000);
+  const currentName = String(req.body?.currentName || "")
+    .trim()
+    .slice(0, 160);
+  const currentScript = String(req.body?.currentScript || "")
+    .trim()
+    .slice(0, 12000);
+  const platforms = Array.isArray(req.body?.platforms)
+    ? req.body.platforms.map((p) => String(p).slice(0, 30)).join(", ")
+    : "TikTok, Instagram, YouTube, X";
+  const length = ["short", "medium", "long"].includes(req.body?.length)
+    ? req.body.length
+    : "short";
+  const tone = String(req.body?.tone || "punchy")
+    .trim()
+    .slice(0, 40);
+  const format = String(req.body?.format || "talking-head")
+    .trim()
+    .slice(0, 60);
   const brainstorm = req.body?.brainstorm === true;
 
   if (mode === "custom" && !instructions && !currentName && !currentScript) {
-    return send(res, 400, { error: "Tell Gemini what you want first." });
+    return sendJson(res, 400, { error: "Tell Gemini what you want first." });
   }
 
   const prompt = `Generate a creator script for Director, Jack Casey Dickson's short-form script manager.
@@ -119,36 +121,46 @@ Output rules:
 
   try {
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [{ role: "user", parts: [{ text: prompt }] }],
           generationConfig: {
-            temperature: brainstorm ? 0.82 : (mode === "custom" ? 0.62 : 0.78),
-            responseMimeType: "application/json"
-          }
-        })
-      }
+            temperature: brainstorm ? 0.82 : mode === "custom" ? 0.62 : 0.78,
+            responseMimeType: "application/json",
+          },
+        }),
+      },
     );
 
     const data = await geminiRes.json();
     if (!geminiRes.ok) {
       console.error("Gemini generate error:", data);
-      return send(res, 502, { error: "Gemini could not generate a script." });
+      return sendJson(res, 502, {
+        error: "Gemini could not generate a script.",
+      });
     }
 
-    const text = data?.candidates?.[0]?.content?.parts?.map(part => part.text || "").join("") || "";
+    const text =
+      data?.candidates?.[0]?.content?.parts
+        ?.map((part) => part.text || "")
+        .join("") || "";
     const parsed = parseGeminiJson(text);
-    const title = String(parsed.title || "").trim().slice(0, 80);
+    const title = String(parsed.title || "")
+      .trim()
+      .slice(0, 80);
     const script = String(parsed.script || "").trim();
 
-    if (!title || !script) return send(res, 422, { error: "Gemini did not return a complete script." });
+    if (!title || !script)
+      return sendJson(res, 422, {
+        error: "Gemini did not return a complete script.",
+      });
 
-    return send(res, 200, { title, script });
+    return sendJson(res, 200, { title, script });
   } catch (error) {
     console.error(error);
-    return send(res, 500, { error: "Could not generate script." });
+    return sendJson(res, 500, { error: "Could not generate script." });
   }
 }
