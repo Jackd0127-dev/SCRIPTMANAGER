@@ -6,7 +6,6 @@ Static tools for ScriptAI content planning and reference pages.
 
 - `index.html` - private launcher for the project pages.
 - `scriptai.html` - Director, the script planning workspace.
-- `ni-rewire-guide.html` - Northern Ireland house rewire guide.
 
 ## Structure
 
@@ -27,4 +26,4 @@ Run the local checks:
 npm run check
 ```
 
-To preview the static pages locally, serve the repository root with a static file server and open one of the HTML files.
+To preview the static pages locally, serve the repository root with a static file server and open `index.html` or `scriptai.html`.

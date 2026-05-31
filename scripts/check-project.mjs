@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 
-const htmlFiles = ["index.html", "scriptai.html", "ni-rewire-guide.html"];
+const htmlFiles = ["index.html", "scriptai.html"];
 const jsFiles = [
   "api/generate-script.js",
   "api/sort-script.js",
@@ -10,8 +10,6 @@ const jsFiles = [
   "assets/js/launcher.js",
   "assets/js/director-auth.js",
   "assets/js/director.js",
-  "assets/js/ni-rewire-mobile.js",
-  "assets/js/ni-rewire-guide.js",
 ];
 
 const failures = [];
@@ -56,12 +54,6 @@ const directorJs = readFileSync("assets/js/director.js", "utf8");
 assert(
   !directorJs.includes("MY_STUFF_PASSWORD ="),
   "Director contains a plaintext My stuff password constant",
-);
-
-const rewireCss = readFileSync("assets/css/ni-rewire-guide.css", "utf8");
-assert(
-  !rewireCss.includes(":root{-sidebar"),
-  "NI rewire CSS contains a single-dash sidebar custom property",
 );
 
 if (failures.length) {

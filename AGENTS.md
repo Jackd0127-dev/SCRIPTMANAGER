@@ -12,7 +12,7 @@ These instructions apply to the whole `SCRIPTMANAGER` repository.
 ## Commands
 
 - Run `npm run check` before committing.
-- For local browser testing, serve the repository root with any static server and open `index.html`, `scriptai.html`, or `ni-rewire-guide.html`.
+- For local browser testing, serve the repository root with any static server and open `index.html` or `scriptai.html`.
 - API routes require `GEMINI_API_KEY` in the deployment environment.
 
 ## Editing Rules
