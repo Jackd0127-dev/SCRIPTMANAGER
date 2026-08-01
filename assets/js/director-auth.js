@@ -62,6 +62,9 @@ function renderLoadedWorkspace() {
 
   window.renderSb();
 
+  // Report against the requested ID before a fallback selection rewrites the URL.
+  window.reportNovasFlowScriptStatus?.();
+
   if (!window.selProject || !window.selScript) {
     setTimeout(renderLoadedWorkspace, 50);
 
@@ -124,10 +127,10 @@ function renderSidebarFallback() {
   const scripts = Array.isArray(window.S.scripts) ? window.S.scripts : [];
 
   const statusColors = {
-    draft: "#f8c84e",
-    ready: "#28d17c",
-    shot: "#ff4d8d",
-    posted: "#8f6dff",
+    draft: "#c18a36",
+    ready: "#4f9470",
+    shot: "#d36752",
+    posted: "#806bab",
   };
 
   if (!projects.length) {
@@ -147,7 +150,7 @@ function renderSidebarFallback() {
       const active =
         window.S.apid === project.id && !window.S.asid ? " active" : "";
 
-      return `<div class="nav-project${active}" style="--project-color:${color};--project-soft:color-mix(in srgb, ${color} 12%, transparent);--project-border:color-mix(in srgb, ${color} 34%, transparent);--project-shadow:color-mix(in srgb, ${color} 16%, transparent)" onclick="window.selProject&&selProject('${sidebarEsc(project.id)}')"><button class="project-toggle" type="button" aria-label="Toggle scripts"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="proj-dot" style="background:${color}"></div><div class="proj-name">${sidebarEsc(project.name || "Untitled project")}</div><div class="proj-count">${projectScripts.length}</div></div><div class="project-scripts">${projectScripts.map((script) => `<div class="nav-script${window.S.asid === script.id ? " active" : ""}" onclick="window.selScript&&selScript('${sidebarEsc(script.id)}')"><div class="script-pip" style="background:${statusColors[script.status] || "#ccc"}"></div><div class="script-nav-name">${sidebarEsc(script.name || "Untitled script")}</div></div>`).join("")}</div>`;
+      return `<div class="nav-project${active}" style="--project-color:${color};--project-soft:color-mix(in srgb, ${color} 12%, transparent);--project-border:color-mix(in srgb, ${color} 34%, transparent);--project-shadow:color-mix(in srgb, ${color} 16%, transparent)" onclick="window.selProject&&selProject('${sidebarEsc(project.id)}')"><button class="project-toggle" type="button" aria-label="Toggle scripts"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="proj-dot" style="background:${color};color:${color}"></div><div class="proj-name">${sidebarEsc(project.name || "Untitled project")}</div><div class="proj-count">${projectScripts.length}</div></div><div class="project-scripts">${projectScripts.map((script) => `<div class="nav-script${window.S.asid === script.id ? " active" : ""}" onclick="window.selScript&&selScript('${sidebarEsc(script.id)}')"><div class="script-pip" style="background:${statusColors[script.status] || "#ccc"};color:${statusColors[script.status] || "#ccc"}"></div><div class="script-nav-name">${sidebarEsc(script.name || "Untitled script")}</div></div>`).join("")}</div>`;
     })
     .join("");
 }
@@ -368,11 +371,17 @@ async function loadUser(user) {
   unsubscribe = onSnapshot(
     userRef,
     (snap) => {
+      const keepSettingsOpen = window.S?.view === "settings";
       hydrateWorkspaceData(snap.exists() ? snap.data() : {}, window.S || {});
 
       applySettings();
 
-      renderLoadedWorkspace();
+      if (keepSettingsOpen && window.openSettingsPage) {
+        window.S.view = "settings";
+        window.openSettingsPage();
+      } else {
+        renderLoadedWorkspace();
+      }
     },
     (error) => {
       console.error("Workspace listener error:", error);

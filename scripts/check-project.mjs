@@ -84,6 +84,14 @@ assert(
   "ScriptAI is missing the automatic Novas Flow content handshake",
 );
 assert(
+  directorJs.includes(
+    'NOVAS_FLOW_STATUS_MESSAGE_TYPE = "novas-flow:script-status"',
+  ) &&
+    directorJs.includes("reportNovasFlowScriptStatus") &&
+    directorAuthJs.includes("window.reportNovasFlowScriptStatus?.()"),
+  "ScriptAI is missing the authenticated linked-script status handshake",
+);
+assert(
   directorJs.includes("linkedContentActionHtml") &&
     directorJs.includes("View content"),
   "Connected scripts are missing the reciprocal content link",
@@ -108,8 +116,34 @@ assert(
   "ScriptAI autosave setting is not enforced",
 );
 assert(
+  directorAuthJs.includes('window.S?.view === "settings"') &&
+    directorJs.includes('id="settingsSaveStatus"'),
+  "Saving settings can navigate away from the settings screen",
+);
+assert(
+  directorJs.includes("window.openAddMultipleBlocks") &&
+    directorJs.includes("window.createMultipleBlocks") &&
+    directorJs.includes('"multi-block-modal"'),
+  "ScriptAI is missing the multi-block editor",
+);
+assert(
+  directorJs.includes('deleteIconButton("Delete project"') &&
+    directorJs.includes('deleteIconButton("Delete script"'),
+  "Project or script views are missing direct delete controls",
+);
+assert(
+  !directorJs.includes('id: "copy-active"') &&
+    !directorJs.includes("window.resetBlocks"),
+  "Removed script Copy or Reset actions are still exposed",
+);
+assert(
   vercelConfig.includes("X-Content-Type-Options"),
   "Vercel security headers are missing",
+);
+assert(
+  vercelConfig.includes("frame-ancestors 'self' https://content.novasagency.com") &&
+    !vercelConfig.includes('"X-Frame-Options", "value": "DENY"'),
+  "ScriptAI cannot receive trusted linked-script verification frames",
 );
 
 for (const privateTerm of ["Jack Doyle", "Casey", "New Money", "Curate"]) {

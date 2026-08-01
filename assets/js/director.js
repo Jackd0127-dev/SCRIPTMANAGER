@@ -37,6 +37,7 @@ const SCRIPT_QUERY_KEY = "script";
 const NOVAS_FLOW_MESSAGE_TYPE = "novas-flow:script-selected";
 const NOVAS_FLOW_READY_MESSAGE_TYPE = "novas-flow:ready";
 const NOVAS_FLOW_CONTENT_MESSAGE_TYPE = "novas-flow:content-context";
+const NOVAS_FLOW_STATUS_MESSAGE_TYPE = "novas-flow:script-status";
 const NOVAS_FLOW_ALLOWED_ORIGINS = new Set([
   "https://content.novasagency.com",
   "http://localhost:3000",
@@ -69,9 +70,23 @@ function requestedNovasFlowContentId() {
   return safeScriptId(query.get("content"));
 }
 
+function requestedNovasFlowStatusOrigin() {
+  const query = new URLSearchParams(window.location.search);
+  if (query.get("verify") !== "novas-flow") return "";
+  const candidate = String(query.get("origin") || "").replace(/\/$/, "");
+  return NOVAS_FLOW_ALLOWED_ORIGINS.has(candidate) ? candidate : "";
+}
+
+function requestedNovasFlowStatusContentId() {
+  const query = new URLSearchParams(window.location.search);
+  if (query.get("verify") !== "novas-flow") return "";
+  return safeScriptId(query.get("content"));
+}
+
 let activeNovasFlowOrigin = requestedNovasFlowOrigin();
 let novasFlowReadySent = false;
 let processedNovasFlowConnection = "";
+let novasFlowStatusSent = false;
 
 function updateScriptUrl(id) {
   const safeId = safeScriptId(id);
@@ -85,16 +100,16 @@ window.getRequestedScriptId = requestedScriptId;
 window.getNovasFlowConnectOrigin = requestedNovasFlowOrigin;
 
 const COLORS = [
-  "#c85743",
-  "#725b8f",
-  "#526f91",
-  "#4b8264",
-  "#aa7a26",
-  "#8d5f4e",
-  "#68717c",
-  "#d8d3cb",
-  "#242321",
-  "#ffffff",
+  "#c95f48",
+  "#7b68a6",
+  "#527d9d",
+  "#4f8b6b",
+  "#bd8535",
+  "#a76c59",
+  "#66788b",
+  "#d29a68",
+  "#3c4655",
+  "#8f7398",
 ];
 
 const STATUSES = ["draft", "ready", "shot", "posted"];
@@ -124,10 +139,10 @@ const CUSTOM_TYPE_COLORS = [
 const TC = BASE_TC;
 
 const SC = {
-  draft: "#aa7a26",
-  ready: "#4b8264",
-  shot: "#c85743",
-  posted: "#725b8f",
+  draft: "#c18a36",
+  ready: "#4f9470",
+  shot: "#d36752",
+  posted: "#806bab",
 };
 
 function demoWorkspaceTemplate() {
@@ -352,6 +367,7 @@ window.startDemoWorkspace = () => {
   window.showScreen?.("app");
   applySettings();
   renderSb();
+  window.reportNovasFlowScriptStatus?.();
   const requestedDemoScript = window.getRequestedScriptId?.();
   if (requestedDemoScript && scr(requestedDemoScript))
     selScript(requestedDemoScript);
@@ -801,12 +817,12 @@ window.renderSb = function (filter = "") {
     const active = S.apid === p.id && !S.asid;
     const style = projectStyleVars(p.color);
 
-    h += `<div class="nav-project${active ? " active" : ""}${collapsed ? " collapsed" : ""}" style="${style}" onclick="selProject('${p.id}')"><button class="project-toggle" type="button" aria-label="${collapsed ? "Show" : "Hide"} ${esc(p.name)} scripts" onclick="event.stopPropagation();toggleProjectScripts('${p.id}')"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="proj-dot" style="background:${p.color}"></div><div class="proj-name">${esc(p.name)}</div><div class="proj-count">${scripts.length}</div></div>`;
+    h += `<div class="nav-project${active ? " active" : ""}${collapsed ? " collapsed" : ""}" style="${style}" onclick="selProject('${p.id}')"><button class="project-toggle" type="button" aria-label="${collapsed ? "Show" : "Hide"} ${esc(p.name)} scripts" onclick="event.stopPropagation();toggleProjectScripts('${p.id}')"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="proj-dot" style="background:${p.color};color:${p.color}"></div><div class="proj-name">${esc(p.name)}</div><div class="proj-count">${scripts.length}</div></div>`;
 
     h += `<div class="project-scripts${collapsed ? " collapsed" : ""}" id="scripts-${p.id}">`;
 
     scripts.forEach((s) => {
-      h += `<div class="nav-script${S.asid === s.id ? " active" : ""}" onclick="selScript('${s.id}')"><div class="script-pip" style="background:${SC[s.status] || "#ccc"}"></div><div class="script-nav-name">${esc(s.name)}</div></div>`;
+      h += `<div class="nav-script${S.asid === s.id ? " active" : ""}" onclick="selScript('${s.id}')"><div class="script-pip" style="background:${SC[s.status] || "#ccc"};color:${SC[s.status] || "#ccc"}"></div><div class="script-nav-name">${esc(s.name)}</div></div>`;
     });
 
     h += "</div>";
@@ -861,6 +877,10 @@ function show() {
 
 function mobileAction(label, action, primary = false) {
   return `<button class="mobile-context-action${primary ? " primary" : ""}" type="button" onclick="${esc(action)}">${esc(label)}</button>`;
+}
+
+function deleteIconButton(label, action) {
+  return `<button class="btn-ghost btn-danger icon-action-btn" type="button" onclick="${esc(action)}" aria-label="${esc(label)}" title="${esc(label)}"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v5m4-5v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
 }
 
 function setMobileActions(actions = []) {
@@ -1128,6 +1148,30 @@ window.beginNovasFlowConnection = () => {
   );
 };
 
+window.reportNovasFlowScriptStatus = () => {
+  const origin = requestedNovasFlowStatusOrigin();
+  const contentId = requestedNovasFlowStatusContentId();
+  const scriptId = requestedScriptId();
+  if (!origin || !contentId || !scriptId || novasFlowStatusSent) return;
+
+  const opener = window.opener && !window.opener.closed ? window.opener : null;
+  const target = opener || (window.parent !== window ? window.parent : null);
+  if (!target) return;
+
+  novasFlowStatusSent = true;
+  target.postMessage(
+    {
+      type: NOVAS_FLOW_STATUS_MESSAGE_TYPE,
+      contentId,
+      scriptId,
+      exists: Boolean(scr(scriptId)),
+    },
+    origin,
+  );
+
+  if (opener) window.setTimeout(window.close.bind(window), 250);
+};
+
 window.addEventListener("message", (event) => {
   if (
     !activeNovasFlowOrigin ||
@@ -1223,7 +1267,7 @@ window.showProjectFilter = (id, filter = "all") => {
   document.getElementById("topbarSub").innerHTML =
     `<span style="font-size:12px;color:var(--text3)">${meta.label}</span>`;
   document.getElementById("topbarRight").innerHTML =
-    `<button class="btn-ghost" onclick="showProject('${id}')">All scripts</button><button class="btn-ghost edit-script-btn" onclick="openEditProjectModal('${id}')">Edit</button>`;
+    `<button class="btn-ghost" onclick="showProject('${id}')">All scripts</button>${deleteIconButton("Delete project", `deleteProject('${jsArg(id)}')`)}<button class="btn-ghost edit-script-btn" onclick="openEditProjectModal('${id}')">Edit</button>`;
   document.getElementById("tabsRow").innerHTML = "";
   const empty = `<div class="empty" style="${style}"><div class="empty-title">No ${meta.label.toLowerCase()} yet</div><div class="empty-sub">When scripts match this status they will appear here.</div><div class="empty-actions"><button class="action-card create-action" onclick="openNewScriptModal('${id}')"><strong>Create script</strong><span>Start from an idea, title, or quick production brief.</span></button><button class="action-card import-action" onclick="openImportScriptModal('${id}')"><strong>Import script</strong><span>Paste a full draft and let AI sort it into blocks.</span></button></div></div>`;
   document.getElementById("mainContent").innerHTML = `
@@ -1249,6 +1293,8 @@ window.showProjectFilter = (id, filter = "all") => {
     },
     { label: "Import", action: `openImportScriptModal('${safeId}')` },
     { label: "Generate", action: `openGenerateScriptModal('${safeId}')` },
+    { label: "Delete", action: `deleteProject('${safeId}')` },
+    { label: "Edit", action: `openEditProjectModal('${safeId}')` },
   ]);
 };
 
@@ -1274,7 +1320,7 @@ function showProject(id) {
     `<span style="font-size:12px;color:var(--text3)">${scripts.length} script${scripts.length !== 1 ? "s" : ""}</span>${dueSoon ? `<span class="due soon">${dueSoon} need attention</span>` : ""}`;
 
   document.getElementById("topbarRight").innerHTML =
-    `<button class="btn-ghost edit-script-btn" onclick="openEditProjectModal('${id}')">Edit</button>`;
+    `${deleteIconButton("Delete project", `deleteProject('${jsArg(id)}')`)}<button class="btn-ghost edit-script-btn" onclick="openEditProjectModal('${id}')">Edit</button>`;
 
   document.getElementById("tabsRow").innerHTML = "";
 
@@ -1291,6 +1337,7 @@ function showProject(id) {
       },
       { label: "Import", action: `openImportScriptModal('${safeId}')` },
       { label: "Generate", action: `openGenerateScriptModal('${safeId}')` },
+      { label: "Delete", action: `deleteProject('${safeId}')` },
       { label: "Edit", action: `openEditProjectModal('${safeId}')` },
     ]);
     return;
@@ -1320,6 +1367,7 @@ function showProject(id) {
     },
     { label: "Import", action: `openImportScriptModal('${safeId}')` },
     { label: "Generate", action: `openGenerateScriptModal('${safeId}')` },
+    { label: "Delete", action: `deleteProject('${safeId}')` },
     { label: "Edit", action: `openEditProjectModal('${safeId}')` },
   ]);
 }
@@ -1520,24 +1568,6 @@ function scriptPlainText(s) {
   return lines.join("\n");
 }
 
-window.copyScriptText = async (id) => {
-  const s = scr(id);
-  if (!s) return;
-  const text = scriptPlainText(s);
-  try {
-    await navigator.clipboard.writeText(text);
-    showToast("Script copied to clipboard.");
-  } catch (e) {
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand("copy");
-    ta.remove();
-    showToast("Script copied to clipboard.");
-  }
-};
-
 window.downloadScriptText = (id) => {
   const s = scr(id);
   if (!s) return;
@@ -1579,7 +1609,7 @@ function showScript(id) {
   const contentAction = linkedContentActionHtml(s);
   document.getElementById("topbarRight").innerHTML = connectionMode
     ? connectionActionHtml(s)
-    : `<button class="btn-ghost" onclick="openAddBlock('${id}')">Add block</button><button class="btn-ghost" onclick="copyScriptText('${id}')">Copy</button><button class="btn-ghost" onclick="downloadScriptText('${id}')">Export</button><button class="btn-ghost edit-script-btn" onclick="openEditScriptModal('${id}')">Edit</button><button class="btn-ghost" onclick="resetBlocks('${id}')">Reset</button>${contentAction}`;
+    : `<button class="btn-ghost" onclick="openAddBlock('${id}')">Add block</button><button class="btn-ghost" onclick="openAddMultipleBlocks('${id}')">Add multiple</button><button class="btn-ghost" onclick="downloadScriptText('${id}')">Export</button>${contentAction}${deleteIconButton("Delete script", `deleteScript('${jsArg(id)}')`)}<button class="btn-ghost edit-script-btn" onclick="openEditScriptModal('${id}')">Edit</button>`;
 
   const TABS = [
     { id: "full", label: "Full script" },
@@ -1605,16 +1635,19 @@ function showScript(id) {
             action: `sendScriptToNovasFlow('${safeId}')`,
             primary: true,
           },
-          { label: "Copy", action: `copyScriptText('${safeId}')` },
         ]
       : [
           { label: "Add", action: `openAddBlock('${safeId}')`, primary: true },
           {
+            label: "Add multiple",
+            action: `openAddMultipleBlocks('${safeId}')`,
+          },
+          {
             label: "Import",
             action: `openImportScriptModal('${jsArg(s.projectId)}')`,
           },
-          { label: "Copy", action: `copyScriptText('${safeId}')` },
           { label: "Export", action: `downloadScriptText('${safeId}')` },
+          { label: "Delete", action: `deleteScript('${safeId}')` },
           { label: "Edit", action: `openEditScriptModal('${safeId}')` },
           linkedContentUrl(s)
             ? {
@@ -1641,15 +1674,6 @@ window.cycleStatus = (id) => {
   s.status = STATUSES[(STATUSES.indexOf(s.status) + 1) % STATUSES.length];
   save();
   showScript(id);
-};
-
-window.resetBlocks = (id) => {
-  scr(id).blocks.forEach((b) => {
-    b.done = false;
-    b.cut = false;
-  });
-  save();
-  renderContent(id);
 };
 
 function renderContent(id) {
@@ -1679,7 +1703,7 @@ function renderFull(s, el) {
     <div class="script-summary-main">
       <div class="script-summary-title"><strong>Shoot progress</strong><span style="font-size:12px;font-weight:800" data-pct>${pct}%</span></div>
       <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%"></div></div>
-      <div class="script-summary-meta" data-prog-sub>${done} of ${s.blocks.length} blocks marked done${cut ? ` · ${cut} cut` : ""}. Use Copy or Export when the plan is ready to share.</div>
+      <div class="script-summary-meta" data-prog-sub>${done} of ${s.blocks.length} blocks marked done${cut ? ` · ${cut} cut` : ""}. Use Export when the plan is ready to share.</div>
     </div>
     <div class="script-summary-stat"><span>Blocks</span><strong>${s.blocks.length}</strong></div>
     <div class="script-summary-stat"><span>Shots</span><strong>${shots}</strong></div>
@@ -1831,6 +1855,101 @@ window.createBlock = (sid) => {
     done: false,
     cut: false,
   });
+  save();
+  closeModal();
+  showScript(sid);
+};
+
+let multipleBlockRowSequence = 0;
+
+function multipleBlockRowHtml() {
+  const rowNumber = ++multipleBlockRowSequence;
+  const selectId = `multi-block-type-${rowNumber}`;
+  return `<section class="multi-block-editor" data-multi-block>
+    <div class="multi-block-editor-head"><strong>Block <span data-multi-block-number>${rowNumber}</span></strong><button class="multi-block-remove" type="button" onclick="removeMultipleBlockRow(this)" aria-label="Remove block">Remove</button></div>
+    <div class="block-detail-grid">
+      <div class="form-group"><label class="form-label" for="${selectId}">Type</label><div class="type-control"><select class="form-select" id="${selectId}" data-field="type">${blockTypeOptions()}</select><button class="btn-ghost" type="button" onclick="openCustomTypeCreator('${selectId}')">Custom</button></div></div>
+      <div class="form-group"><label class="form-label">Shot label</label><input class="form-input" data-field="shot" placeholder="Hook, product shot, CTA"></div>
+    </div>
+    <div class="multi-block-copy-grid">
+      <div class="form-group"><label class="form-label">Detail / direction</label><textarea class="notes-ta" data-field="desc" placeholder="Camera move, framing, transition, action..."></textarea></div>
+      <div class="form-group"><label class="form-label">Spoken / on-screen text</label><textarea class="notes-ta" data-field="spoken" placeholder="Voiceover, subtitle, caption, hook line..."></textarea></div>
+    </div>
+    <div class="form-group"><label class="form-label">Notes</label><input class="form-input" data-field="notes" placeholder="Props, timing, retakes, reminders..."></div>
+  </section>`;
+}
+
+window.updateMultipleBlockRows = () => {
+  const rows = [...document.querySelectorAll("[data-multi-block]")];
+  rows.forEach((row, index) => {
+    const number = row.querySelector("[data-multi-block-number]");
+    if (number) number.textContent = String(index + 1);
+  });
+  const count = document.getElementById("multipleBlockCount");
+  if (count)
+    count.textContent = `${rows.length} block${rows.length === 1 ? "" : "s"} ready to fill`;
+  rows.forEach((row) => {
+    const remove = row.querySelector(".multi-block-remove");
+    if (remove) remove.disabled = rows.length === 1;
+  });
+};
+
+window.addMultipleBlockRow = () => {
+  const rows = document.getElementById("multipleBlockRows");
+  if (!rows) return;
+  rows.insertAdjacentHTML("beforeend", multipleBlockRowHtml());
+  updateMultipleBlockRows();
+  rows.lastElementChild?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+};
+
+window.removeMultipleBlockRow = (button) => {
+  if (document.querySelectorAll("[data-multi-block]").length <= 1) return;
+  button.closest("[data-multi-block]")?.remove();
+  updateMultipleBlockRows();
+};
+
+window.openAddMultipleBlocks = (sid) => {
+  if (!scr(sid)) return;
+  multipleBlockRowSequence = 0;
+  openModal(
+    `<div class="multi-block-shell">
+      <div class="multi-block-heading"><div><div class="modal-title">Add multiple blocks</div><div class="modal-subtitle">Build several production blocks in one pass. Empty rows are ignored.</div></div><span class="multi-block-count" id="multipleBlockCount"></span></div>
+      <div class="multi-block-rows" id="multipleBlockRows">${multipleBlockRowHtml()}${multipleBlockRowHtml()}${multipleBlockRowHtml()}</div>
+      <div class="multi-block-footer"><button class="btn-ghost multi-block-add" type="button" onclick="addMultipleBlockRow()">+ Add another block</button><span class="multi-block-validation" id="multipleBlockValidation" role="status" aria-live="polite"></span><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="createMultipleBlocks('${jsArg(sid)}')">Add blocks</button></div></div>
+    </div>`,
+    "multi-block-modal",
+  );
+  updateMultipleBlockRows();
+};
+
+window.createMultipleBlocks = (sid) => {
+  const s = scr(sid);
+  if (!s) return;
+  const blocks = [...document.querySelectorAll("[data-multi-block]")]
+    .map((row) => {
+      const value = (field) =>
+        row.querySelector(`[data-field="${field}"]`)?.value.trim() || "";
+      return {
+        id: uid(),
+        type: normalizeClientType(value("type")),
+        shotName: value("shot"),
+        desc: value("desc"),
+        spoken: value("spoken"),
+        notes: value("notes"),
+        done: false,
+        cut: false,
+      };
+    })
+    .filter((block) =>
+      [block.shotName, block.desc, block.spoken, block.notes].some(Boolean),
+    );
+  if (!blocks.length) {
+    const validation = document.getElementById("multipleBlockValidation");
+    if (validation)
+      validation.textContent = "Add content to at least one block first.";
+    return;
+  }
+  s.blocks.push(...blocks);
   save();
   closeModal();
   showScript(sid);
@@ -2061,14 +2180,6 @@ function commandItems() {
       0,
       {
         kind: "action",
-        id: "copy-active",
-        icon: "C",
-        title: "Copy active script",
-        sub: scr(S.asid).name,
-        tag: "Script",
-      },
-      {
-        kind: "action",
         id: "download-active",
         icon: "D",
         title: "Download active script",
@@ -2169,7 +2280,6 @@ window.runCommand = (kind, id) => {
   if (id === "my-stuff") window.location.href = "index.html";
   if (id === "export") exportWorkspace();
   if (id === "demo") startDemoWorkspace();
-  if (id === "copy-active") copyScriptText(S.asid);
   if (id === "download-active") downloadScriptText(S.asid);
 };
 
@@ -2292,6 +2402,7 @@ window.openSettingsPage = () => {
 
         <div class="settings-savebar">
           <button class="btn-ghost" onclick="openSettingsPage()">Reset changes</button>
+          <span class="settings-save-status" id="settingsSaveStatus" role="status" aria-live="polite"></span>
           <button class="btn" onclick="saveSettings()">Save settings</button>
         </div>
       </div>
@@ -2351,11 +2462,18 @@ window.saveSettings = async () => {
     Notification.permission === "default"
   )
     Notification.requestPermission();
+  const status = document.getElementById("settingsSaveStatus");
+  if (status) {
+    status.className = "settings-save-status saving";
+    status.textContent = "Saving…";
+  }
   const saved = window.saveNow ? await window.saveNow() : (save(), true);
-  document.getElementById("topbarSub").innerHTML =
-    saved === false
-      ? `<span style="font-size:12px;color:var(--red)">Settings could not be saved</span>`
-      : `<span style="font-size:12px;color:var(--green)">Settings saved</span>`;
+  const updatedStatus = document.getElementById("settingsSaveStatus");
+  if (updatedStatus) {
+    updatedStatus.className = `settings-save-status ${saved === false ? "error" : "success"}`;
+    updatedStatus.textContent =
+      saved === false ? "Settings could not be saved" : "Settings saved";
+  }
 };
 
 window.exportWorkspace = () => {
@@ -2412,26 +2530,36 @@ window.showUsageModal = () => {
   );
 };
 
-const COLOR_LABELS = [
-  "Ink",
-  "Signal",
-  "Mint",
-  "Gold",
-  "Blue",
-  "Peach",
-  "Violet",
-  "Leaf",
-  "Coral",
-  "Aqua",
-];
+function projectColorFieldHtml(prefix, selected = COLORS[0]) {
+  const color = validAccent(selected);
+  return `<div class="project-color-field">
+    <input class="project-color-picker" id="${prefix}-color" type="color" value="${color}" aria-label="Project accent colour" oninput="syncProjectColor('${prefix}',this.value,'picker')">
+    <input class="form-input project-color-hex" id="${prefix}-colorHex" value="${color}" maxlength="7" spellcheck="false" aria-label="Project accent colour hex" oninput="syncProjectColor('${prefix}',this.value,'hex')">
+    <span class="project-color-preview" id="${prefix}-colorPreview" style="--preview-color:${color}" aria-hidden="true"></span>
+  </div>`;
+}
 
-function colorPickerHtml(selected = COLORS[0]) {
-  return `<div class="color-grid">${COLORS.map((c, i) => `<div class="color-dot color-orb${selected === c ? " sel" : ""}" style="background:${c};color:${c}" data-c="${c}" data-label="${COLOR_LABELS[i] || "Tone"}" onclick="selColor(this)"></div>`).join("")}</div>`;
+window.syncProjectColor = (prefix, rawValue, source) => {
+  const value = String(rawValue || "").trim();
+  const picker = document.getElementById(`${prefix}-color`);
+  const hex = document.getElementById(`${prefix}-colorHex`);
+  const preview = document.getElementById(`${prefix}-colorPreview`);
+  if (source === "picker" && hex) hex.value = value;
+  if (!/^#[0-9a-f]{6}$/i.test(value)) return;
+  if (source === "hex" && picker) picker.value = value;
+  if (preview) preview.style.setProperty("--preview-color", value);
+};
+
+function projectColorValue(prefix, fallback = COLORS[0]) {
+  const value = document.getElementById(`${prefix}-colorHex`)?.value;
+  return /^#[0-9a-f]{6}$/i.test(String(value || "").trim())
+    ? String(value).trim()
+    : validAccent(fallback);
 }
 
 window.openNewProjectModal = () => {
   openModal(
-    `<div class="premium-modal-shell"><div class="premium-modal-content"><div class="modal-title">New project</div><div class="modal-subtitle">Create a colour-coded production space. The colour drives the project cards, filtered pages, and script accents.</div><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="np-name" placeholder="e.g. August content" autofocus></div><div class="form-group"><label class="form-label">Colour system</label>${colorPickerHtml(COLORS[0])}</div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="createProject()">Create</button></div></div></div>`,
+    `<div class="project-modal-content"><div class="modal-title">New project</div><div class="modal-subtitle">Create a focused space for scripts that belong together.</div><div class="form-group"><label class="form-label" for="np-name">Project name</label><input class="form-input" id="np-name" placeholder="e.g. August content" autofocus onkeydown="if(event.key==='Enter')createProject()"></div><div class="form-group"><label class="form-label" for="np-color">Accent colour</label>${projectColorFieldHtml("np", COLORS[0])}<div class="field-help">This exact colour is used on the project card and sidebar marker.</div></div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="createProject()">Create project</button></div></div>`,
     "premium-modal",
   );
 };
@@ -2439,8 +2567,7 @@ window.openNewProjectModal = () => {
 window.createProject = () => {
   const name = document.getElementById("np-name").value.trim();
   if (!name) return;
-  const color =
-    document.querySelector(".color-dot.sel")?.dataset.c || COLORS[0];
+  const color = projectColorValue("np", COLORS[0]);
   const p = { id: uid(), name, color };
   if (!S.projects) S.projects = [];
   S.projects.push(p);
@@ -2453,7 +2580,7 @@ window.createProject = () => {
 window.openEditProjectModal = (id) => {
   const p = proj(id);
   openModal(
-    `<div class="premium-modal-shell"><div class="premium-modal-content"><div class="modal-title">Edit project</div><div class="modal-subtitle">Tune the project identity without changing its scripts or saved progress.</div><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="ep-name" value="${esc(p.name)}"></div><div class="form-group"><label class="form-label">Colour system</label>${colorPickerHtml(p.color)}</div><div class="modal-actions"><button class="btn-ghost btn-danger" onclick="deleteProject('${id}')">Delete project</button><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveProject('${id}')">Save</button></div></div></div>`,
+    `<div class="project-modal-content"><div class="modal-title">Edit project</div><div class="modal-subtitle">Update the project identity without changing its scripts or progress.</div><div class="form-group"><label class="form-label" for="ep-name">Project name</label><input class="form-input" id="ep-name" value="${esc(p.name)}"></div><div class="form-group"><label class="form-label" for="ep-color">Accent colour</label>${projectColorFieldHtml("ep", p.color)}<div class="field-help">The preview matches the colour used throughout this project.</div></div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveProject('${id}')">Save project</button></div></div>`,
     "premium-modal",
   );
 };
@@ -2461,7 +2588,7 @@ window.openEditProjectModal = (id) => {
 window.saveProject = (id) => {
   const p = proj(id);
   p.name = document.getElementById("ep-name").value.trim() || p.name;
-  p.color = document.querySelector(".color-dot.sel")?.dataset.c || p.color;
+  p.color = projectColorValue("ep", p.color);
   save();
   closeModal();
   renderSb();
@@ -2469,6 +2596,7 @@ window.saveProject = (id) => {
 };
 
 window.deleteProject = (id) => {
+  if (!proj(id)) return;
   if (!confirm("Delete this project and all its scripts?")) return;
   S.projects = S.projects.filter((p) => p.id !== id);
   S.scripts = S.scripts.filter((s) => s.projectId !== id);
@@ -3000,7 +3128,7 @@ window.openImportScriptModal = (projId) => {
           <input type="hidden" id="is-proj" value="${esc(pid)}">
           <div class="ai-step import-project-step">01 · Choose the project</div>
           <div class="project-choice-grid import-full import-project-grid">
-            ${(S.projects || []).map((p) => `<button type="button" class="project-choice import-card${p.id === pid ? " sel" : ""}" data-project-id="${p.id}" onclick="selectImportProject(this)"><div class="project-choice-top"><span class="proj-dot" style="background:${p.color}"></span>${esc(p.name)}</div><small>${pscripts(p.id).length} script${pscripts(p.id).length !== 1 ? "s" : ""}</small></button>`).join("")}
+            ${(S.projects || []).map((p) => `<button type="button" class="project-choice import-card${p.id === pid ? " sel" : ""}" data-project-id="${p.id}" onclick="selectImportProject(this)"><div class="project-choice-top"><span class="proj-dot" style="background:${p.color};color:${p.color}"></span>${esc(p.name)}</div><small>${pscripts(p.id).length} script${pscripts(p.id).length !== 1 ? "s" : ""}</small></button>`).join("")}
           </div>
           <div class="divider"></div>
           <div class="ai-step import-identity-step">02 · Script identity</div>
@@ -3256,7 +3384,7 @@ window.importScriptWithAI = async () => {
 window.openEditScriptModal = (id) => {
   const s = scr(id);
   openModal(
-    `<div class="modal-title">Edit script</div><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="es-name" value="${esc(s.name)}"></div><div class="form-group"><label class="form-label">Status</label><div class="status-row">${STATUSES.map((opt) => `<div class="status-chip badge badge-${opt}${s.status === opt ? " sel" : ""}" data-s="${opt}" onclick="selStatus(this)">${opt}</div>`).join("")}</div></div><div class="form-group"><label class="form-label">Due date</label><input class="form-input" id="es-due" type="date" value="${esc(s.due || "")}"></div><div class="form-group"><label class="form-label">Platforms</label><div class="plats-row">${PLATFORMS.map((p) => `<label><input type="checkbox" value="${esc(p)}" ${(s.platforms || []).includes(p) ? "checked" : ""} style="accent-color:var(--text)"> ${esc(p)}</label>`).join("")}</div></div><div class="modal-actions"><button class="btn-ghost btn-danger" onclick="deleteScript('${id}')">Delete script</button><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveScript('${id}')">Save</button></div>`,
+    `<div class="modal-title">Edit script</div><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="es-name" value="${esc(s.name)}"></div><div class="form-group"><label class="form-label">Status</label><div class="status-row">${STATUSES.map((opt) => `<div class="status-chip badge badge-${opt}${s.status === opt ? " sel" : ""}" data-s="${opt}" onclick="selStatus(this)">${opt}</div>`).join("")}</div></div><div class="form-group"><label class="form-label">Due date</label><input class="form-input" id="es-due" type="date" value="${esc(s.due || "")}"></div><div class="form-group"><label class="form-label">Platforms</label><div class="plats-row">${PLATFORMS.map((p) => `<label><input type="checkbox" value="${esc(p)}" ${(s.platforms || []).includes(p) ? "checked" : ""} style="accent-color:var(--text)"> ${esc(p)}</label>`).join("")}</div></div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveScript('${id}')">Save</button></div>`,
   );
 };
 
@@ -3276,6 +3404,7 @@ window.saveScript = (id) => {
 
 window.deleteScript = (id) => {
   const s = scr(id);
+  if (!s || !confirm("Delete this script?")) return;
   const pid = s.projectId;
   S.scripts = S.scripts.filter((x) => x.id !== id);
   if (S.asid === id) S.asid = null;
