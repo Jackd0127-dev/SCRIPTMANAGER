@@ -119,7 +119,7 @@
               id="loginPassword"
               type="password"
               placeholder="••••••••"
-              onkeydown="if(event.key==='Enter')doLogin()"
+              onkeydown="if (event.key === 'Enter') doLogin();"
             />
           </div>
 
@@ -160,7 +160,7 @@
               id="signupPassword"
               type="password"
               placeholder="Min 6 characters"
-              onkeydown="if(event.key==='Enter')doSignup()"
+              onkeydown="if (event.key === 'Enter') doSignup();"
             />
           </div>
 
@@ -316,7 +316,7 @@
 
             <button
               class="sb-btn stuff-accent"
-              onclick="window.location.href='index.html'"
+              onclick="window.location.href = 'index.html'"
             >
               My stuff
             </button>
@@ -404,7 +404,15 @@
       </div>
     </div>
 
-    <div class="saving" id="savingIndicator">Saving…</div>
+    <button
+      class="saving"
+      id="savingIndicator"
+      type="button"
+      onclick="saveNow()"
+      aria-live="polite"
+    >
+      Saving…
+    </button>
 
     <div class="ai-job-toast" id="aiJobToast"></div>
 

@@ -6,13 +6,13 @@ Creator context:
 - Never invent personal history, employment, client results, income, audience size, product success, or expertise.
 
 Voice:
-- Natural UK phrasing unless the creator context requests something else.
+- Natural phrasing in the preferred language supplied by the creator.
 - Plainspoken, direct, honest, and grounded.
 - No fake guru language.
 - No American hype phrases.
 - No corporate motivational filler.
 - No exaggerated certainty.
-- The creator should sound like a real person documenting what he is learning, building, noticing, or changing.
+- The creator should sound like a real person documenting what they are learning, building, noticing, or changing.
 
 Visual rules:
 - No screen recordings unless explicitly requested.
@@ -21,9 +21,9 @@ Visual rules:
 
 Production modes:
 1. Cinematic/polished:
-   - Indoors, Canon EOS 77D, DJI Mic Mini, Final Cut Pro, clean lighting, controlled framing.
+   - Clean lighting, controlled framing, intentional sound, and polished editing using the creator's available setup.
 2. Casual/authentic:
-   - iPhone, DJI Mic Mini, rougher, faster, diary-like, filmed anywhere.
+   - Faster, diary-like, lightly edited, and practical to film with the creator's available setup.
 
 Standard transitions:
 - HARD CUT
@@ -404,7 +404,7 @@ Before returning the JSON, silently improve the script by checking:
 4. Is the payoff clear?
 5. Can the creator film this today?
 6. Does it avoid fake hype?
-7. Does it sound natural in a UK/Northern Irish voice?
+7. Does it sound natural in the creator's preferred language and voice?
 8. Is finance content safe and non-advisory?
 9. Is the script the correct length?
 10. Would a stranger understand why they should keep watching?`;

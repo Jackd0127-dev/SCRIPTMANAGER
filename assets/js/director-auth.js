@@ -100,6 +100,8 @@ function renderLoadedWorkspace() {
       document.getElementById("welcomeScreen").style.display = "flex";
     }
   }
+
+  window.beginNovasFlowConnection?.();
 }
 
 function sidebarEsc(v) {
@@ -615,59 +617,75 @@ function stateForSave() {
   return data;
 }
 
-window.save = () => {
-  if (window.isDemoMode) {
-    const ind = document.getElementById("savingIndicator");
-    ind.classList.add("show");
-    clearTimeout(saveTimeout);
-    saveTimeout = setTimeout(() => {
+function demoStateForSave() {
+  return {
+    demoVersion: 2,
+    projects: window.S.projects || [],
+    scripts: window.S.scripts || [],
+    settings: window.S.settings || {},
+    apid: window.S.apid || null,
+    asid: window.S.asid || null,
+    view: window.S.view || "full",
+  };
+}
+
+window.saveNow = async () => {
+  const ind = document.getElementById("savingIndicator");
+  clearTimeout(saveTimeout);
+  ind.classList.remove("error", "unsaved");
+  ind.classList.add("show");
+  ind.textContent = "Saving…";
+  try {
+    if (window.isDemoMode) {
       localStorage.setItem(
         "directorDemoWorkspace",
-        JSON.stringify({
-          demoVersion: 2,
-          projects: window.S.projects || [],
-          scripts: window.S.scripts || [],
-          settings: window.S.settings || {},
-          apid: window.S.apid || null,
-          asid: window.S.asid || null,
-          view: window.S.view || "full",
-        }),
+        JSON.stringify(demoStateForSave()),
       );
-      ind.classList.remove("show");
-    }, 220);
-    return;
-  }
-
-  if (!currentUser) return;
-
-  const ind = document.getElementById("savingIndicator");
-
-  ind.classList.add("show");
-
-  clearTimeout(saveTimeout);
-
-  saveTimeout = setTimeout(async () => {
-    try {
+    } else {
+      if (!currentUser) return false;
       await setDoc(doc(db, "users", currentUser.uid), stateForSave(), {
         merge: true,
       });
-    } catch (e) {
-      console.error("Workspace save failed.");
-      ind.textContent = "Save failed";
-      ind.classList.add("error");
-      window.showToast?.("ScriptAI could not save. Check your connection and try again.");
-      setTimeout(() => {
-        ind.classList.remove("show", "error");
-        ind.textContent = "Saving…";
-      }, 2400);
-      return;
     }
-
-    ind.classList.remove("error");
-    ind.textContent = "Saved";
-    ind.classList.remove("show");
+  } catch (e) {
+    console.error("Workspace save failed.");
+    ind.textContent = "Save failed";
+    ind.classList.add("error");
+    window.showToast?.(
+      "ScriptAI could not save. Check your connection and try again.",
+    );
     setTimeout(() => {
+      ind.classList.remove("show", "error");
       ind.textContent = "Saving…";
-    }, 400);
-  }, 800);
+    }, 2400);
+    return false;
+  }
+  ind.textContent = "Saved";
+  ind.classList.remove("show");
+  setTimeout(() => {
+    ind.textContent = "Saving…";
+  }, 400);
+  return true;
+};
+
+window.save = () => {
+  const ind = document.getElementById("savingIndicator");
+  if (window.S?.settings?.autosave === false) {
+    clearTimeout(saveTimeout);
+    ind.textContent = "Save changes";
+    ind.classList.remove("error");
+    ind.classList.add("show", "unsaved");
+    return;
+  }
+  if (!window.isDemoMode && !currentUser) return;
+  ind.classList.remove("error", "unsaved");
+  ind.classList.add("show");
+  ind.textContent = "Saving…";
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(
+    () => {
+      void window.saveNow();
+    },
+    window.isDemoMode ? 220 : 800,
+  );
 };

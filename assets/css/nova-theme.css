@@ -4,13 +4,13 @@
   --nova-card: oklch(0.998 0.001 85);
   --nova-primary: #c85743;
   --nova-primary-deep: #a94434;
+  --nova-on-primary: #ffffff;
   --nova-border: oklch(0.895 0.006 75);
   --nova-muted: oklch(0.51 0.01 70);
   --nova-soft: oklch(0.952 0.004 80);
   --nova-ring: rgba(200, 87, 67, 0.22);
   --nova-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.86) inset,
-    0 16px 42px rgba(24, 24, 26, 0.045);
+    0 1px 0 rgba(255, 255, 255, 0.86) inset, 0 16px 42px rgba(24, 24, 26, 0.045);
   --bg: var(--nova-canvas);
   --surface: var(--nova-card);
   --surface2: var(--nova-soft);
@@ -38,13 +38,25 @@
   --amber: #966a1d;
   --amber-bg: #fbf4e6;
   --page-bg:
-    radial-gradient(circle at 78% -10%, rgba(200, 87, 67, 0.065), transparent 30rem),
+    radial-gradient(
+      circle at 78% -10%,
+      rgba(200, 87, 67, 0.065),
+      transparent 30rem
+    ),
     var(--nova-canvas);
   --auth-bg:
-    radial-gradient(circle at 50% 0%, rgba(200, 87, 67, 0.075), transparent 25rem),
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(200, 87, 67, 0.075),
+      transparent 25rem
+    ),
     var(--nova-canvas);
   --app-bg: var(--page-bg);
-  --surface-gradient: linear-gradient(145deg, rgba(255, 255, 255, 0.99), rgba(250, 249, 247, 0.98));
+  --surface-gradient: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.99),
+    rgba(250, 249, 247, 0.98)
+  );
   --item-bg: rgba(255, 255, 255, 0.88);
   --control-bg: rgba(255, 255, 255, 0.78);
   --sidebar-bg: rgba(250, 249, 247, 0.96);
@@ -101,7 +113,11 @@ body.theme-dark {
   --amber: #d3ac62;
   --amber-bg: rgba(170, 122, 38, 0.14);
   --page-bg:
-    radial-gradient(circle at 78% -10%, rgba(200, 87, 67, 0.1), transparent 30rem),
+    radial-gradient(
+      circle at 78% -10%,
+      rgba(200, 87, 67, 0.1),
+      transparent 30rem
+    ),
     var(--nova-canvas);
   --auth-bg: var(--page-bg);
   --app-bg: var(--page-bg);
@@ -112,8 +128,8 @@ body.theme-dark {
   --topbar-bg: rgba(20, 20, 20, 0.92);
   --tabs-bg: rgba(20, 20, 20, 0.94);
   --modal-bg: #1e1e1e;
-  --button-bg: #c85743;
-  --button-text: #fff;
+  --button-bg: var(--nova-primary);
+  --button-text: var(--nova-on-primary);
   --overlay-bg: rgba(0, 0, 0, 0.68);
   --shadow-soft: 0 24px 70px rgba(0, 0, 0, 0.38);
   --shadow-tight: 0 12px 30px rgba(0, 0, 0, 0.24);
@@ -148,7 +164,7 @@ a,
   border: 1px solid color-mix(in oklab, var(--nova-primary) 90%, #000);
   border-radius: 9px;
   background: var(--nova-primary);
-  color: #fff;
+  color: var(--nova-on-primary);
   font-weight: 600;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.18) inset,
@@ -157,6 +173,18 @@ a,
     transform 180ms ease,
     background 180ms ease,
     box-shadow 180ms ease;
+}
+
+.global-project-btn,
+.edit-script-btn {
+  box-sizing: border-box;
+  width: 110px;
+  min-width: 110px;
+  height: 38px;
+  min-height: 38px;
+  padding: 0 13px;
+  border-radius: 9px;
+  white-space: nowrap;
 }
 
 .btn:hover,
@@ -207,6 +235,17 @@ a,
   box-shadow: var(--shadow-tight);
 }
 
+.topbar-right .edit-script-btn,
+.topbar-right .edit-script-btn:hover {
+  border: 1px solid #111111;
+  background: #ffffff;
+  color: #111111;
+}
+
+.linked-content-btn {
+  text-decoration: none;
+}
+
 .btn-danger,
 .btn-ghost.btn-danger {
   border-color: color-mix(in oklab, var(--red) 28%, var(--border));
@@ -237,6 +276,15 @@ a,
 .script-drop-zone textarea:focus {
   border-color: var(--nova-primary);
   box-shadow: var(--focus);
+}
+
+.form-select {
+  appearance: none;
+  padding-right: 38px;
+  background-image: url("../icons/chevron-down.svg");
+  background-position: right 10px center;
+  background-repeat: no-repeat;
+  background-size: 14px 14px;
 }
 
 .form-label,
@@ -444,7 +492,8 @@ a,
   align-items: center;
   gap: 10px;
   padding: 10px 16px;
-  border-bottom: 1px solid color-mix(in oklab, var(--nova-primary) 18%, var(--border));
+  border-bottom: 1px solid
+    color-mix(in oklab, var(--nova-primary) 18%, var(--border));
   background: color-mix(in oklab, var(--nova-primary) 7%, var(--surface));
   color: var(--text);
 }
@@ -461,7 +510,7 @@ a,
   place-items: center;
   border-radius: 8px;
   background: var(--nova-primary);
-  color: #fff;
+  color: var(--nova-on-primary);
   font-weight: 700;
 }
 
@@ -500,6 +549,28 @@ a,
   box-shadow: var(--nova-shadow);
 }
 
+.project-empty-state {
+  width: 100%;
+  min-height: 100%;
+  padding: 48px 24px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.project-empty-state .empty-title {
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.project-empty-state .empty-sub {
+  max-width: 420px;
+  color: var(--text2);
+  font-size: 13px;
+}
+
 .script-summary {
   gap: 10px;
 }
@@ -521,7 +592,12 @@ a,
 }
 
 .block {
-  border-left: 3px solid color-mix(in oklab, var(--block-color, var(--nova-primary)) 60%, var(--border));
+  border-left: 3px solid
+    color-mix(
+      in oklab,
+      var(--block-color, var(--nova-primary)) 60%,
+      var(--border)
+    );
   background: var(--item-bg);
   box-shadow: 0 4px 16px rgba(24, 24, 26, 0.025);
 }
@@ -661,7 +737,11 @@ a,
 .generate-script-copy {
   padding: 38px;
   background:
-    radial-gradient(circle at 18% 15%, rgba(255, 255, 255, 0.16), transparent 18rem),
+    radial-gradient(
+      circle at 18% 15%,
+      rgba(255, 255, 255, 0.16),
+      transparent 18rem
+    ),
     linear-gradient(145deg, #ad4c3a, #c85743 58%, #d77764);
   color: #fff;
 }
@@ -746,6 +826,13 @@ a,
   box-shadow: var(--shadow-tight);
 }
 
+.saving.unsaved {
+  pointer-events: auto;
+  cursor: pointer;
+  border-color: color-mix(in oklab, var(--nova-primary) 32%, var(--border));
+  color: color-mix(in oklab, var(--nova-primary) 82%, var(--text));
+}
+
 .saving.error {
   border-color: color-mix(in oklab, var(--red) 35%, var(--border));
   color: var(--red);
@@ -765,7 +852,7 @@ a,
 .brand-mark,
 .lock-mark {
   background: var(--nova-primary);
-  color: #fff;
+  color: var(--nova-on-primary);
 }
 
 .brand-title,

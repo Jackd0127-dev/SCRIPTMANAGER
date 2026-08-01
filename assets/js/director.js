@@ -35,6 +35,8 @@ window.S = {
 
 const SCRIPT_QUERY_KEY = "script";
 const NOVAS_FLOW_MESSAGE_TYPE = "novas-flow:script-selected";
+const NOVAS_FLOW_READY_MESSAGE_TYPE = "novas-flow:ready";
+const NOVAS_FLOW_CONTENT_MESSAGE_TYPE = "novas-flow:content-context";
 const NOVAS_FLOW_ALLOWED_ORIGINS = new Set([
   "https://content.novasagency.com",
   "http://localhost:3000",
@@ -60,6 +62,16 @@ function requestedNovasFlowOrigin() {
   const candidate = String(query.get("origin") || "").replace(/\/$/, "");
   return NOVAS_FLOW_ALLOWED_ORIGINS.has(candidate) ? candidate : "";
 }
+
+function requestedNovasFlowContentId() {
+  const query = new URLSearchParams(window.location.search);
+  if (query.get("connect") !== "novas-flow") return "";
+  return safeScriptId(query.get("content"));
+}
+
+let activeNovasFlowOrigin = requestedNovasFlowOrigin();
+let novasFlowReadySent = false;
+let processedNovasFlowConnection = "";
 
 function updateScriptUrl(id) {
   const safeId = safeScriptId(id);
@@ -347,6 +359,7 @@ window.startDemoWorkspace = () => {
   else if (S.apid && proj(S.apid)) selProject(S.apid);
   else if (S.projects[0]) selProject(S.projects[0].id);
   showToast("Demo workspace loaded. Changes stay in this browser.");
+  window.beginNovasFlowConnection?.();
 };
 
 function demoTitleFromText(text, fallback = "Generated creator script") {
@@ -479,7 +492,10 @@ const esc = (v) =>
       ],
   );
 
-const jsArg = (v) => String(v ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+const jsArg = (v) =>
+  String(v ?? "")
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'");
 
 function slugType(label) {
   return String(label || "")
@@ -596,6 +612,38 @@ function hexToRgb(hex) {
   };
 }
 
+function validAccent(value) {
+  return /^#[0-9a-f]{6}$/i.test(String(value || ""))
+    ? String(value)
+    : "#c85743";
+}
+
+function shadeHex(hex, amount) {
+  const { r, g, b } = hexToRgb(hex);
+  const channel = (value) =>
+    Math.max(0, Math.min(255, value + amount))
+      .toString(16)
+      .padStart(2, "0");
+  return `#${channel(r)}${channel(g)}${channel(b)}`;
+}
+
+function accentText(hex) {
+  const { r, g, b } = hexToRgb(hex);
+  return (r * 299 + g * 587 + b * 114) / 1000 > 170 ? "#111111" : "#ffffff";
+}
+
+function generationCreatorContext() {
+  const st = settings();
+  return [
+    st.role ? `Creator role: ${st.role}` : "",
+    st.handle ? `Creator handle: ${st.handle}` : "",
+    st.language ? `Preferred output language: ${st.language}` : "",
+    st.creatorContext || "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
 function projectStyleVars(color) {
   const { r, g, b } = hexToRgb(color);
   return `--project-color:${color};--project-soft:rgba(${r},${g},${b},0.10);--project-border:rgba(${r},${g},${b},0.30);--project-shadow:rgba(${r},${g},${b},0.13)`;
@@ -621,17 +669,21 @@ function applySettings() {
   );
   document.body.classList.toggle("density-compact", st.density === "compact");
   document.body.classList.toggle("density-spacious", st.density === "spacious");
-  document.documentElement.style.setProperty(
-    "--accent",
-    st.accent || "#c85743",
-  );
-  clearTimeout(sessionTimer);
-  if (st.sessionTimeout !== "never" && window.currentProfile?.email) {
-    sessionTimer = setTimeout(
-      () => doSignout(),
-      Number(st.sessionTimeout || 30) * 60000,
-    );
-  }
+  const accent = validAccent(st.accent);
+  const { r, g, b } = hexToRgb(accent);
+  const root = document.documentElement.style;
+  root.setProperty("--accent", accent);
+  root.setProperty("--nova-primary", accent);
+  root.setProperty("--nova-primary-deep", shadeHex(accent, -24));
+  root.setProperty("--nova-on-primary", accentText(accent));
+  root.setProperty("--nova-ring", `rgba(${r}, ${g}, ${b}, 0.22)`);
+  root.setProperty("--teal", accent);
+  root.setProperty("--teal-rgb", `${r}, ${g}, ${b}`);
+  root.setProperty("--coral", accent);
+  root.setProperty("--coral-rgb", `${r}, ${g}, ${b}`);
+  root.setProperty("--button-bg", accent);
+  root.setProperty("--button-text", accentText(accent));
+  resetSessionTimer();
   const label =
     st.displayName ||
     st.handle ||
@@ -643,6 +695,24 @@ function applySettings() {
   if (emailEl) emailEl.textContent = label;
   if (avatarEl) avatarEl.textContent = label[0]?.toUpperCase() || "?";
 }
+
+function resetSessionTimer() {
+  clearTimeout(sessionTimer);
+  const timeout = settings().sessionTimeout;
+  if (timeout !== "never" && window.currentProfile?.email) {
+    sessionTimer = setTimeout(() => doSignout(), Number(timeout || 30) * 60000);
+  }
+}
+
+["pointerdown", "keydown"].forEach((eventName) =>
+  document.addEventListener(eventName, resetSessionTimer, { passive: true }),
+);
+
+window
+  .matchMedia?.("(prefers-color-scheme: dark)")
+  .addEventListener?.("change", () => {
+    if (settings().theme === "system") applySettings();
+  });
 
 function notifyUser(title, body) {
   const st = settings();
@@ -810,19 +880,268 @@ window.setMobileActions = setMobileActions;
 function renderConnectionBanner() {
   const banner = document.getElementById("connectionBanner");
   if (!banner) return;
-  const connectMode = Boolean(requestedNovasFlowOrigin());
+  const connectMode = Boolean(activeNovasFlowOrigin);
   banner.hidden = !connectMode;
   document.body.classList.toggle("novas-connect-mode", connectMode);
+  const heading = banner.querySelector("strong");
+  const detail = banner.querySelector("small");
+  if (heading)
+    heading.textContent = requestedNovasFlowContentId()
+      ? "Connecting this content to ScriptAI"
+      : "Choose a script for Novas Flow";
+  if (detail)
+    detail.textContent = requestedNovasFlowContentId()
+      ? "Your saved content details will create the linked script automatically."
+      : "Select a script, then use Connect to Novas Flow.";
 }
 
 function connectionActionHtml(script) {
-  if (!requestedNovasFlowOrigin()) return "";
+  if (!activeNovasFlowOrigin || requestedNovasFlowContentId()) return "";
   return `<button class="btn connect-script-btn" type="button" onclick="sendScriptToNovasFlow('${jsArg(script.id)}')">Connect to Novas Flow</button>`;
 }
 
+function linkedContentUrl(script) {
+  const link = script?.novasFlow;
+  const origin = String(link?.origin || "").replace(/\/$/, "");
+  const contentId = safeScriptId(link?.contentId);
+  if (!NOVAS_FLOW_ALLOWED_ORIGINS.has(origin) || !contentId) return "";
+  return `${origin}/content/${encodeURIComponent(contentId)}`;
+}
+
+function linkedContentActionHtml(script) {
+  const url = linkedContentUrl(script);
+  if (!url) return "";
+  return `<a class="btn-ghost linked-content-btn" href="${esc(url)}" target="_blank" rel="noopener noreferrer">View content</a>`;
+}
+
+function postScriptSelection(script, origin = activeNovasFlowOrigin) {
+  if (!script || !origin || !window.opener || window.opener.closed)
+    return false;
+  window.opener.postMessage(
+    {
+      type: NOVAS_FLOW_MESSAGE_TYPE,
+      script: { id: script.id, title: script.name },
+    },
+    origin,
+  );
+  return true;
+}
+
+function clearNovasFlowConnectQuery(scriptId) {
+  const next = new URL(window.location.href);
+  next.searchParams.delete("connect");
+  next.searchParams.delete("origin");
+  next.searchParams.delete("content");
+  next.searchParams.set(SCRIPT_QUERY_KEY, scriptId);
+  window.history.replaceState(null, "", next);
+}
+
+function textWithin(value, max) {
+  return typeof value === "string" && value.length <= max ? value.trim() : null;
+}
+
+function normalizeNovasFlowContent(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const id = safeScriptId(value.id);
+  const title = textWithin(value.title, 240);
+  const fields = {
+    description: textWithin(value.description, 5000),
+    targetAudience: textWithin(value.targetAudience, 2000),
+    masterFormat: textWithin(value.masterFormat, 100),
+    hook: textWithin(value.hook, 2000),
+    script: textWithin(value.script, 30000),
+    masterCaption: textWithin(value.masterCaption, 10000),
+    callToAction: textWithin(value.callToAction, 1000),
+    notes: textWithin(value.notes, 10000),
+  };
+  if (!id || !title || Object.values(fields).some((field) => field === null))
+    return null;
+  if (!Array.isArray(value.platforms) || value.platforms.length > 4)
+    return null;
+  const platforms = [...new Set(value.platforms)];
+  if (
+    platforms.some(
+      (platform) =>
+        typeof platform !== "string" || !PLATFORMS.includes(platform),
+    )
+  )
+    return null;
+  if (!Array.isArray(value.references) || value.references.length > 50)
+    return null;
+  const references = [];
+  for (const reference of value.references) {
+    if (typeof reference !== "string" || reference.length > 2000) return null;
+    try {
+      const url = new URL(reference);
+      if (!["http:", "https:"].includes(url.protocol)) return null;
+      references.push(url.toString());
+    } catch (_) {
+      return null;
+    }
+  }
+  return { id, title, ...fields, platforms, references };
+}
+
+function novasFlowBlock(type, shotName, desc = "", spoken = "") {
+  return {
+    id: uid(),
+    type,
+    shotName,
+    desc,
+    spoken,
+    notes: "",
+    done: false,
+    cut: false,
+  };
+}
+
+function novasFlowBlocks(content) {
+  const blocks = [];
+  const brief = [
+    content.description,
+    content.targetAudience ? `Audience: ${content.targetAudience}` : "",
+    content.masterFormat ? `Format: ${content.masterFormat}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+  if (brief) blocks.push(novasFlowBlock("direction", "Brief", brief));
+  if (content.hook)
+    blocks.push(novasFlowBlock("speech", "Hook", "", content.hook));
+  if (content.script)
+    blocks.push(novasFlowBlock("speech", "Script", "", content.script));
+  if (content.masterCaption)
+    blocks.push(
+      novasFlowBlock("subtitle", "Master caption", "", content.masterCaption),
+    );
+  if (content.callToAction)
+    blocks.push(
+      novasFlowBlock("speech", "Call to action", "", content.callToAction),
+    );
+  if (!blocks.length)
+    blocks.push(novasFlowBlock("direction", "Brief", content.title));
+  return blocks;
+}
+
+function novasFlowNotes(content) {
+  return [
+    content.notes,
+    content.references.length
+      ? `References:\n${content.references.join("\n")}`
+      : "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}
+
+function novasFlowProject() {
+  const preferred =
+    proj(settings().defaultProject) || proj(S.apid) || S.projects?.[0];
+  if (preferred) return preferred;
+  const project = {
+    id: uid(),
+    name: "Novas Flow",
+    color: settings().accent || "#c85743",
+  };
+  if (!Array.isArray(S.projects)) S.projects = [];
+  S.projects.push(project);
+  return project;
+}
+
+async function connectNovasFlowContent(rawContent) {
+  const origin = activeNovasFlowOrigin;
+  const content = normalizeNovasFlowContent(rawContent);
+  if (!origin || !content || content.id !== requestedNovasFlowContentId()) {
+    showToast("ScriptAI could not verify the content connection.");
+    return;
+  }
+  const connectionKey = `${origin}:${content.id}`;
+  const existing = (S.scripts || []).find(
+    (script) =>
+      script.novasFlow?.origin === origin &&
+      script.novasFlow?.contentId === content.id,
+  );
+  if (processedNovasFlowConnection === connectionKey && existing) {
+    postScriptSelection(existing, origin);
+    return;
+  }
+  processedNovasFlowConnection = connectionKey;
+  const project = existing
+    ? proj(existing.projectId) || novasFlowProject()
+    : novasFlowProject();
+  const linkedAt = new Date().toISOString();
+  const next = {
+    ...(existing || {}),
+    id: existing?.id || uid(),
+    projectId: project.id,
+    name: content.title,
+    status: existing?.status || "draft",
+    due: existing?.due || "",
+    platforms: content.platforms,
+    notes: novasFlowNotes(content),
+    blocks: novasFlowBlocks(content),
+    novasFlow: {
+      origin,
+      contentId: content.id,
+      contentTitle: content.title,
+      connectedAt: existing?.novasFlow?.connectedAt || linkedAt,
+      syncedAt: linkedAt,
+    },
+  };
+  if (existing) Object.assign(existing, next);
+  else {
+    if (!Array.isArray(S.scripts)) S.scripts = [];
+    S.scripts.push(next);
+  }
+  S.apid = project.id;
+  S.asid = next.id;
+  try {
+    if (window.saveNow) {
+      const saved = await window.saveNow();
+      if (saved === false) throw new Error("save failed");
+    } else save();
+  } catch (_) {
+    processedNovasFlowConnection = "";
+    showToast("The connected script could not be saved. Try again.");
+    return;
+  }
+  clearNovasFlowConnectQuery(next.id);
+  activeNovasFlowOrigin = "";
+  renderSb();
+  selScript(next.id);
+  postScriptSelection(next, origin);
+  showToast(`Connected “${next.name}” to Novas Flow.`);
+}
+
+window.beginNovasFlowConnection = () => {
+  renderConnectionBanner();
+  const origin = activeNovasFlowOrigin;
+  const contentId = requestedNovasFlowContentId();
+  if (!origin || !contentId || novasFlowReadySent) return;
+  if (!window.opener || window.opener.closed) {
+    showToast("Return to Novas Flow and open Connect script again.");
+    return;
+  }
+  novasFlowReadySent = true;
+  window.opener.postMessage(
+    { type: NOVAS_FLOW_READY_MESSAGE_TYPE, contentId },
+    origin,
+  );
+};
+
+window.addEventListener("message", (event) => {
+  if (
+    !activeNovasFlowOrigin ||
+    event.origin !== activeNovasFlowOrigin ||
+    event.source !== window.opener ||
+    event.data?.type !== NOVAS_FLOW_CONTENT_MESSAGE_TYPE
+  )
+    return;
+  void connectNovasFlowContent(event.data.content);
+});
+
 window.sendScriptToNovasFlow = (id) => {
   const script = scr(safeScriptId(id));
-  const origin = requestedNovasFlowOrigin();
+  const origin = activeNovasFlowOrigin;
   if (!script || !origin) {
     showToast("Open ScriptAI from the Connect script button in Novas Flow.");
     return;
@@ -831,15 +1150,8 @@ window.sendScriptToNovasFlow = (id) => {
     showToast("Return to Novas Flow and open Connect script again.");
     return;
   }
-  window.opener.postMessage(
-    {
-      type: NOVAS_FLOW_MESSAGE_TYPE,
-      script: { id: script.id, title: script.name },
-    },
-    origin,
-  );
+  postScriptSelection(script, origin);
   showToast(`Connected “${script.name}” to Novas Flow.`);
-  window.setTimeout(() => window.close(), 260);
 };
 
 async function directorApiFetch(path, options = {}) {
@@ -911,7 +1223,7 @@ window.showProjectFilter = (id, filter = "all") => {
   document.getElementById("topbarSub").innerHTML =
     `<span style="font-size:12px;color:var(--text3)">${meta.label}</span>`;
   document.getElementById("topbarRight").innerHTML =
-    `<button class="btn-ghost" onclick="showProject('${id}')">All scripts</button><button class="btn-ghost" onclick="openEditProjectModal('${id}')">Edit</button>`;
+    `<button class="btn-ghost" onclick="showProject('${id}')">All scripts</button><button class="btn-ghost edit-script-btn" onclick="openEditProjectModal('${id}')">Edit</button>`;
   document.getElementById("tabsRow").innerHTML = "";
   const empty = `<div class="empty" style="${style}"><div class="empty-title">No ${meta.label.toLowerCase()} yet</div><div class="empty-sub">When scripts match this status they will appear here.</div><div class="empty-actions"><button class="action-card create-action" onclick="openNewScriptModal('${id}')"><strong>Create script</strong><span>Start from an idea, title, or quick production brief.</span></button><button class="action-card import-action" onclick="openImportScriptModal('${id}')"><strong>Import script</strong><span>Paste a full draft and let AI sort it into blocks.</span></button></div></div>`;
   document.getElementById("mainContent").innerHTML = `
@@ -930,7 +1242,11 @@ window.showProjectFilter = (id, filter = "all") => {
   const safeId = jsArg(id);
   setMobileActions([
     { label: "Overview", action: `showProject('${safeId}')` },
-    { label: "Create", action: `openNewScriptModal('${safeId}')`, primary: true },
+    {
+      label: "Create",
+      action: `openNewScriptModal('${safeId}')`,
+      primary: true,
+    },
     { label: "Import", action: `openImportScriptModal('${safeId}')` },
     { label: "Generate", action: `openGenerateScriptModal('${safeId}')` },
   ]);
@@ -958,17 +1274,21 @@ function showProject(id) {
     `<span style="font-size:12px;color:var(--text3)">${scripts.length} script${scripts.length !== 1 ? "s" : ""}</span>${dueSoon ? `<span class="due soon">${dueSoon} need attention</span>` : ""}`;
 
   document.getElementById("topbarRight").innerHTML =
-    `<button class="btn-ghost" onclick="openEditProjectModal('${id}')">Edit</button>`;
+    `<button class="btn-ghost edit-script-btn" onclick="openEditProjectModal('${id}')">Edit</button>`;
 
   document.getElementById("tabsRow").innerHTML = "";
 
   const el = document.getElementById("mainContent");
 
   if (!scripts.length) {
-    el.innerHTML = `<div class="empty" style="${style}"><div class="empty-title">No scripts yet</div><div class="empty-sub">Start clean or bring in a draft and let ScriptAI structure it.</div><div class="empty-actions"><button class="action-card create-action" onclick="openNewScriptModal('${id}')"><strong>Create script</strong><span>Start from an idea, title, or quick production brief.</span></button><button class="action-card import-action" onclick="openImportScriptModal('${id}')"><strong>Import script</strong><span>Paste a full draft and let AI sort it into blocks.</span></button></div></div>`;
+    el.innerHTML = `<div class="empty project-empty-state" style="${style}"><div class="empty-title">No scripts yet</div><div class="empty-sub">Start clean or bring in a draft and let ScriptAI structure it.</div><div class="empty-actions"><button class="action-card create-action" onclick="openNewScriptModal('${id}')"><strong>Create script</strong><span>Start from an idea, title, or quick production brief.</span></button><button class="action-card import-action" onclick="openImportScriptModal('${id}')"><strong>Import script</strong><span>Paste a full draft and let AI sort it into blocks.</span></button></div></div>`;
     const safeId = jsArg(id);
     setMobileActions([
-      { label: "Create", action: `openNewScriptModal('${safeId}')`, primary: true },
+      {
+        label: "Create",
+        action: `openNewScriptModal('${safeId}')`,
+        primary: true,
+      },
       { label: "Import", action: `openImportScriptModal('${safeId}')` },
       { label: "Generate", action: `openGenerateScriptModal('${safeId}')` },
       { label: "Edit", action: `openEditProjectModal('${safeId}')` },
@@ -993,7 +1313,11 @@ function showProject(id) {
   el.innerHTML = h;
   const safeId = jsArg(id);
   setMobileActions([
-    { label: "Create", action: `openNewScriptModal('${safeId}')`, primary: true },
+    {
+      label: "Create",
+      action: `openNewScriptModal('${safeId}')`,
+      primary: true,
+    },
     { label: "Import", action: `openImportScriptModal('${safeId}')` },
     { label: "Generate", action: `openGenerateScriptModal('${safeId}')` },
     { label: "Edit", action: `openEditProjectModal('${safeId}')` },
@@ -1161,7 +1485,11 @@ window.openStuffPage = (id) => {
     `<div class="stuff-viewer"><div class="stuff-viewer-bar"><div class="stuff-viewer-title">${esc(page.title)}</div><button class="btn-ghost" onclick="showMyStuff()">Back to My stuff</button></div><iframe class="stuff-frame" src="${esc(page.url)}" title="${esc(page.title)}"></iframe></div>`;
   setMobileActions([
     { label: "Back", action: "showMyStuff()" },
-    { label: "Open tab", action: `window.open('${jsArg(page.url)}','_blank','noopener')`, primary: true },
+    {
+      label: "Open tab",
+      action: `window.open('${jsArg(page.url)}','_blank','noopener')`,
+      primary: true,
+    },
   ]);
 };
 
@@ -1248,9 +1576,10 @@ function showScript(id) {
     `<span class="badge badge-${s.status}" style="cursor:pointer" onclick="cycleStatus('${id}')">${s.status}</span>${s.due ? `<span class="due${ds ? " " + ds : ""}">${fmtDate(s.due)}</span>` : ""} ${(s.platforms || []).map((p) => `<span class="plat plat-${esc(p).toLowerCase()}">${esc(p)}</span>`).join("")}`;
 
   const connectionMode = Boolean(requestedNovasFlowOrigin());
+  const contentAction = linkedContentActionHtml(s);
   document.getElementById("topbarRight").innerHTML = connectionMode
     ? connectionActionHtml(s)
-    : `<button class="btn-ghost" onclick="openAddBlock('${id}')">Add block</button><button class="btn-ghost" onclick="copyScriptText('${id}')">Copy</button><button class="btn-ghost" onclick="downloadScriptText('${id}')">Export</button><button class="btn-ghost" onclick="openEditScriptModal('${id}')">Edit</button><button class="btn-ghost" onclick="resetBlocks('${id}')">Reset</button>`;
+    : `<button class="btn-ghost" onclick="openAddBlock('${id}')">Add block</button><button class="btn-ghost" onclick="copyScriptText('${id}')">Copy</button><button class="btn-ghost" onclick="downloadScriptText('${id}')">Export</button><button class="btn-ghost edit-script-btn" onclick="openEditScriptModal('${id}')">Edit</button><button class="btn-ghost" onclick="resetBlocks('${id}')">Reset</button>${contentAction}`;
 
   const TABS = [
     { id: "full", label: "Full script" },
@@ -1287,9 +1616,20 @@ function showScript(id) {
           { label: "Copy", action: `copyScriptText('${safeId}')` },
           { label: "Export", action: `downloadScriptText('${safeId}')` },
           { label: "Edit", action: `openEditScriptModal('${safeId}')` },
+          linkedContentUrl(s)
+            ? {
+                label: "View content",
+                action: `openLinkedContent('${safeId}')`,
+              }
+            : null,
         ],
   );
 }
+
+window.openLinkedContent = (id) => {
+  const url = linkedContentUrl(scr(safeScriptId(id)));
+  if (url) window.open(url, "_blank");
+};
 
 window.switchTab = (v, id) => {
   S.view = v;
@@ -1976,7 +2316,7 @@ window.exitSettingsPage = () => {
   }
 };
 
-window.saveSettings = () => {
+window.saveSettings = async () => {
   const bool = (id) => !!document.getElementById(id)?.checked;
   const val = (id) => document.getElementById(id)?.value || "";
   S.settings = {
@@ -2011,9 +2351,11 @@ window.saveSettings = () => {
     Notification.permission === "default"
   )
     Notification.requestPermission();
-  save();
+  const saved = window.saveNow ? await window.saveNow() : (save(), true);
   document.getElementById("topbarSub").innerHTML =
-    `<span style="font-size:12px;color:var(--green)">Settings saved</span>`;
+    saved === false
+      ? `<span style="font-size:12px;color:var(--red)">Settings could not be saved</span>`
+      : `<span style="font-size:12px;color:var(--green)">Settings saved</span>`;
 };
 
 window.exportWorkspace = () => {
@@ -2158,7 +2500,8 @@ window.selectScriptPreset = (el) => {
 };
 
 window.openNewScriptModal = (projId) => {
-  const pid = projId || S.apid || S.projects?.[0]?.id;
+  const pid =
+    projId || settings().defaultProject || S.apid || S.projects?.[0]?.id;
   if (!S.projects || !S.projects.length) {
     openNewProjectModal();
     return;
@@ -2276,7 +2619,8 @@ window.toggleBrainstormMode = (el) => {
 };
 
 window.openGenerateScriptModal = (projId) => {
-  const pid = projId || S.apid || S.projects?.[0]?.id;
+  const pid =
+    projId || settings().defaultProject || S.apid || S.projects?.[0]?.id;
   if (!S.projects || !S.projects.length) {
     openNewProjectModal();
     return;
@@ -2306,7 +2650,7 @@ window.openGenerateScriptModal = (projId) => {
         <div class="form-group"><label class="form-label">Length</label><select class="form-select" id="gs-length"><option value="short">Short: 15-30 sec</option><option value="medium" selected>Medium: 30-60 sec</option><option value="long">Long: 60-120 sec</option></select></div>
       </div>
       <div class="script-create-grid">
-        <div class="form-group"><label class="form-label">Tone</label><select class="form-select" id="gs-tone"><option>punchy</option><option>cinematic</option><option>clean</option><option>high-energy</option><option>educational</option><option>luxury</option></select></div>
+        <div class="form-group"><label class="form-label">Tone</label><select class="form-select" id="gs-tone">${["punchy", "cinematic", "clean", "high-energy", "educational", "luxury"].map((tone) => `<option${tone === settings().aiTone ? " selected" : ""}>${tone}</option>`).join("")}</select></div>
         <div class="form-group"><label class="form-label">Format</label><select class="form-select" id="gs-format"><option value="talking-head">Talking to camera</option><option value="voiceover">Voiceover with b-roll</option><option value="product-demo">Product demo</option><option value="short-ad">Short ad</option><option value="story">Story-driven</option></select></div>
       </div>
       <div class="form-group"><label class="form-label">Mode</label><div class="preset-row"><button type="button" class="preset-chip brainstorm-chip sel" data-mode="script" onclick="toggleBrainstormMode(this)">Write script</button><button type="button" class="preset-chip brainstorm-chip" data-mode="brainstorm" onclick="toggleBrainstormMode(this)">Brainstorm ideas</button></div></div>
@@ -2374,7 +2718,7 @@ window.generateScriptPreview = async () => {
         format: document.getElementById("gs-format").value,
         brainstorm: mode === "brainstorm",
         platforms,
-        creatorContext: settings().creatorContext,
+        creatorContext: generationCreatorContext(),
       }),
     });
     const raw = await res.text();
@@ -2460,7 +2804,7 @@ window.saveGeneratedScript = async () => {
         creativity: Number(st.aiCreativity),
         autoShots: st.aiAutoShots,
         customTypes: customTypesPayload(),
-        creatorContext: st.creatorContext,
+        creatorContext: generationCreatorContext(),
       }),
     });
     const raw = await res.text();
@@ -2601,7 +2945,7 @@ window.generateImportScript = async () => {
         currentName,
         currentScript,
         platforms,
-        creatorContext: settings().creatorContext,
+        creatorContext: generationCreatorContext(),
       }),
     });
     const raw = await res.text();
@@ -2849,7 +3193,7 @@ window.importScriptWithAI = async () => {
         creativity: Number(st.aiCreativity),
         autoShots: st.aiAutoShots,
         customTypes: customTypesPayload(),
-        creatorContext: st.creatorContext,
+        creatorContext: generationCreatorContext(),
       }),
     });
     const raw = await res.text();

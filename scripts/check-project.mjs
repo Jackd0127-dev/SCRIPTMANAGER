@@ -52,6 +52,8 @@ for (const file of jsFiles) {
 }
 
 const directorJs = readFileSync("assets/js/director.js", "utf8");
+const directorAuthJs = readFileSync("assets/js/director-auth.js", "utf8");
+const novaThemeCss = readFileSync("assets/css/nova-theme.css", "utf8");
 const promptJs = readFileSync("api/lib/gemini-prompts.js", "utf8");
 const scriptHtml = readFileSync("scriptai.html", "utf8");
 const vercelConfig = readFileSync("vercel.json", "utf8");
@@ -76,6 +78,36 @@ assert(
   "ScriptAI is missing the Novas Flow connection surface",
 );
 assert(
+  directorJs.includes(
+    'NOVAS_FLOW_CONTENT_MESSAGE_TYPE = "novas-flow:content-context"',
+  ) && directorJs.includes("beginNovasFlowConnection"),
+  "ScriptAI is missing the automatic Novas Flow content handshake",
+);
+assert(
+  directorJs.includes("linkedContentActionHtml") &&
+    directorJs.includes("View content"),
+  "Connected scripts are missing the reciprocal content link",
+);
+assert(
+  !directorJs.includes("window.setTimeout(() => window.close()"),
+  "ScriptAI still closes the connected browser tab",
+);
+assert(
+  existsSync("assets/icons/chevron-down.svg") &&
+    novaThemeCss.includes('background-image: url("../icons/chevron-down.svg")'),
+  "ScriptAI selects are missing the shared Lucide dropdown arrow",
+);
+assert(
+  directorJs.includes('root.setProperty("--nova-primary", accent)') &&
+    directorJs.includes("generationCreatorContext()"),
+  "ScriptAI appearance or generation settings are not applied",
+);
+assert(
+  directorAuthJs.includes("window.saveNow = async") &&
+    directorAuthJs.includes("settings?.autosave === false"),
+  "ScriptAI autosave setting is not enforced",
+);
+assert(
   vercelConfig.includes("X-Content-Type-Options"),
   "Vercel security headers are missing",
 );
@@ -88,7 +120,10 @@ for (const privateTerm of ["Jack Doyle", "Casey", "New Money", "Curate"]) {
 }
 
 const { isAllowedOrigin } = await import("../api/lib/request-security.js");
-assert(isAllowedOrigin("https://scriptai.space"), "Production origin is denied");
+assert(
+  isAllowedOrigin("https://scriptai.space"),
+  "Production origin is denied",
+);
 assert(
   isAllowedOrigin("http://localhost:3000"),
   "Local development origin is denied",
