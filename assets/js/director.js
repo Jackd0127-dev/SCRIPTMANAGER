@@ -2,10 +2,11 @@ window.DEFAULT_SETTINGS = {
   displayName: "",
   role: "Creator",
   handle: "",
+  creatorContext: "",
   language: "English",
   timezone: "Europe/London",
-  theme: "system",
-  accent: "#00cbbf",
+  theme: "light",
+  accent: "#c85743",
   density: "comfortable",
   defaultView: "full",
   defaultProject: "",
@@ -15,19 +16,8 @@ window.DEFAULT_SETTINGS = {
   aiCreativity: "52",
   aiAutoShots: true,
   aiBackgroundImports: true,
-  emailNotifications: true,
-  pushNotifications: false,
-  dueReminders: true,
-  importNotifications: true,
-  weeklyDigest: true,
-  twoFactor: false,
-  publicProfile: false,
-  analytics: true,
+  browserNotifications: false,
   sessionTimeout: "30",
-  drive: false,
-  notion: false,
-  slack: false,
-  plan: "Creator",
   keyboardShortcuts: true,
   customTypes: [],
 };
@@ -43,16 +33,55 @@ window.S = {
   settings: { ...window.DEFAULT_SETTINGS },
 };
 
+const SCRIPT_QUERY_KEY = "script";
+const NOVAS_FLOW_MESSAGE_TYPE = "novas-flow:script-selected";
+const NOVAS_FLOW_ALLOWED_ORIGINS = new Set([
+  "https://content.novasagency.com",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "http://localhost:3100",
+  "http://127.0.0.1:3100",
+]);
+
+function safeScriptId(value) {
+  const id = String(value || "").trim();
+  return /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(id) ? id : "";
+}
+
+function requestedScriptId() {
+  return safeScriptId(
+    new URLSearchParams(window.location.search).get(SCRIPT_QUERY_KEY),
+  );
+}
+
+function requestedNovasFlowOrigin() {
+  const query = new URLSearchParams(window.location.search);
+  if (query.get("connect") !== "novas-flow") return "";
+  const candidate = String(query.get("origin") || "").replace(/\/$/, "");
+  return NOVAS_FLOW_ALLOWED_ORIGINS.has(candidate) ? candidate : "";
+}
+
+function updateScriptUrl(id) {
+  const safeId = safeScriptId(id);
+  if (!safeId) return;
+  const next = new URL(window.location.href);
+  next.searchParams.set(SCRIPT_QUERY_KEY, safeId);
+  window.history.replaceState(null, "", next);
+}
+
+window.getRequestedScriptId = requestedScriptId;
+window.getNovasFlowConnectOrigin = requestedNovasFlowOrigin;
+
 const COLORS = [
-  "#00cbbf",
-  "#ff4d8d",
-  "#8f6dff",
-  "#f8c84e",
-  "#28d17c",
-  "#ff8a4c",
-  "#00a3ff",
-  "#d7d7d7",
-  "#050505",
+  "#c85743",
+  "#725b8f",
+  "#526f91",
+  "#4b8264",
+  "#aa7a26",
+  "#8d5f4e",
+  "#68717c",
+  "#d8d3cb",
+  "#242321",
   "#ffffff",
 ];
 
@@ -61,32 +90,32 @@ const STATUSES = ["draft", "ready", "shot", "posted"];
 const PLATFORMS = ["TikTok", "Instagram", "YouTube", "X"];
 
 const BASE_TC = {
-  shot: "#ff8a4c",
-  transition: "#8f6dff",
-  subtitle: "#28d17c",
-  voiceover: "#b89cff",
-  speech: "#ff4d8d",
-  direction: "#f8c84e",
+  shot: "#c85743",
+  transition: "#725b8f",
+  subtitle: "#4b8264",
+  voiceover: "#526f91",
+  speech: "#a94434",
+  direction: "#aa7a26",
 };
 
 const CUSTOM_TYPE_COLORS = [
-  "#00cbbf",
-  "#ff4d8d",
-  "#f8c84e",
-  "#8f6dff",
-  "#28d17c",
-  "#00a3ff",
-  "#ff8a4c",
-  "#d9335f",
+  "#c85743",
+  "#725b8f",
+  "#aa7a26",
+  "#526f91",
+  "#4b8264",
+  "#8d5f4e",
+  "#68717c",
+  "#a94434",
 ];
 
 const TC = BASE_TC;
 
 const SC = {
-  draft: "#f8c84e",
-  ready: "#28d17c",
-  shot: "#ff4d8d",
-  posted: "#8f6dff",
+  draft: "#aa7a26",
+  ready: "#4b8264",
+  shot: "#c85743",
+  posted: "#725b8f",
 };
 
 function demoWorkspaceTemplate() {
@@ -96,8 +125,8 @@ function demoWorkspaceTemplate() {
   const soon = new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10);
   return {
     projects: [
-      { id: "demo-launch", name: "Creator Launch", color: "#00cbbf" },
-      { id: "demo-retainer", name: "Client Retainers", color: "#8f6dff" },
+      { id: "demo-launch", name: "Creator Launch", color: "#c85743" },
+      { id: "demo-retainer", name: "Client Retainers", color: "#725b8f" },
     ],
     scripts: [
       {
@@ -166,7 +195,7 @@ function demoWorkspaceTemplate() {
       {
         id: "demo-script-product",
         projectId: "demo-launch",
-        name: "Director Product Teaser",
+        name: "ScriptAI Product Teaser",
         status: "draft",
         due: nextWeek,
         platforms: ["YouTube", "X"],
@@ -189,7 +218,7 @@ function demoWorkspaceTemplate() {
             shotName: "",
             desc: "",
             spoken:
-              "Director turns scattered ideas into a production plan you can actually shoot.",
+              "ScriptAI turns scattered ideas into a production plan you can actually shoot.",
             notes: "",
             done: false,
             cut: false,
@@ -265,7 +294,7 @@ function demoWorkspaceTemplate() {
     settings: {
       ...window.DEFAULT_SETTINGS,
       displayName: "Demo Creator",
-      accent: "#00cbbf",
+      accent: "#c85743",
       defaultView: "full",
     },
   };
@@ -302,7 +331,7 @@ window.startDemoWorkspace = () => {
     settings: { ...window.DEFAULT_SETTINGS, ...(data.settings || {}) },
   };
   window.currentProfile = {
-    email: "demo@director.local",
+    email: "demo@scriptai.local",
     displayName: "Demo Creator",
     provider: "demo",
   };
@@ -311,7 +340,10 @@ window.startDemoWorkspace = () => {
   window.showScreen?.("app");
   applySettings();
   renderSb();
-  if (S.asid && scr(S.asid)) selScript(S.asid);
+  const requestedDemoScript = window.getRequestedScriptId?.();
+  if (requestedDemoScript && scr(requestedDemoScript))
+    selScript(requestedDemoScript);
+  else if (S.asid && scr(S.asid)) selScript(S.asid);
   else if (S.apid && proj(S.apid)) selProject(S.apid);
   else if (S.projects[0]) selProject(S.projects[0].id);
   showToast("Demo workspace loaded. Changes stay in this browser.");
@@ -340,7 +372,7 @@ function demoGeneratedScript(payload = {}) {
   const title = payload.currentName || `${topic} Hook`;
   const script = [
     `Hook: Most creators do not need more ideas. They need a cleaner way to turn one idea into something they can actually shoot.`,
-    `Shot: Open on the messy notes, then cut to a clean Director project view.`,
+    `Shot: Open on the messy notes, then cut to a clean ScriptAI project view.`,
     `Speech: Here is the simple system: capture the idea, split it into shots, mark what is done, and export the final plan.`,
     `Subtitle: Plan it once. Shoot it faster.`,
     `Transition: Quick zoom from the project card into the script blocks.`,
@@ -399,7 +431,7 @@ function demoBlocksFromText(rawScript) {
   ];
 }
 
-const uid = () => Math.random().toString(36).substr(2, 9);
+const uid = () => window.crypto.randomUUID();
 
 const proj = (id) => S.projects.find((p) => p.id === id);
 
@@ -591,7 +623,7 @@ function applySettings() {
   document.body.classList.toggle("density-spacious", st.density === "spacious");
   document.documentElement.style.setProperty(
     "--accent",
-    st.accent || "#00cbbf",
+    st.accent || "#c85743",
   );
   clearTimeout(sessionTimer);
   if (st.sessionTimeout !== "never" && window.currentProfile?.email) {
@@ -614,11 +646,9 @@ function applySettings() {
 
 function notifyUser(title, body) {
   const st = settings();
-  if (!st.pushNotifications && !st.importNotifications) return;
+  if (!st.browserNotifications) return;
   if (!("Notification" in window)) return;
   if (Notification.permission === "granted") new Notification(title, { body });
-  else if (Notification.permission !== "denied" && st.pushNotifications)
-    Notification.requestPermission();
 }
 
 function showToast(message, actionLabel = "", action = "") {
@@ -632,6 +662,8 @@ function showToast(message, actionLabel = "", action = "") {
     actionLabel ? 12000 : 4200,
   );
 }
+
+window.showToast = showToast;
 
 const mobileNavQuery = window.matchMedia("(max-width: 780px)");
 
@@ -775,6 +807,54 @@ function setMobileActions(actions = []) {
 
 window.setMobileActions = setMobileActions;
 
+function renderConnectionBanner() {
+  const banner = document.getElementById("connectionBanner");
+  if (!banner) return;
+  const connectMode = Boolean(requestedNovasFlowOrigin());
+  banner.hidden = !connectMode;
+  document.body.classList.toggle("novas-connect-mode", connectMode);
+}
+
+function connectionActionHtml(script) {
+  if (!requestedNovasFlowOrigin()) return "";
+  return `<button class="btn connect-script-btn" type="button" onclick="sendScriptToNovasFlow('${jsArg(script.id)}')">Connect to Novas Flow</button>`;
+}
+
+window.sendScriptToNovasFlow = (id) => {
+  const script = scr(safeScriptId(id));
+  const origin = requestedNovasFlowOrigin();
+  if (!script || !origin) {
+    showToast("Open ScriptAI from the Connect script button in Novas Flow.");
+    return;
+  }
+  if (!window.opener || window.opener.closed) {
+    showToast("Return to Novas Flow and open Connect script again.");
+    return;
+  }
+  window.opener.postMessage(
+    {
+      type: NOVAS_FLOW_MESSAGE_TYPE,
+      script: { id: script.id, title: script.name },
+    },
+    origin,
+  );
+  showToast(`Connected “${script.name}” to Novas Flow.`);
+  window.setTimeout(() => window.close(), 260);
+};
+
+async function directorApiFetch(path, options = {}) {
+  const token = await window.getDirectorIdToken?.();
+  if (!token) throw new Error("Sign in before using ScriptAI generation.");
+  return fetch(path, {
+    ...options,
+    credentials: "same-origin",
+    headers: {
+      ...(options.headers || {}),
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
 window.selProject = function (id) {
   S.apid = id;
   S.asid = null;
@@ -782,6 +862,7 @@ window.selProject = function (id) {
   renderSb();
   showProject(id);
   closeMobileNav();
+  renderConnectionBanner();
 };
 
 const PROJECT_FILTERS = {
@@ -884,7 +965,7 @@ function showProject(id) {
   const el = document.getElementById("mainContent");
 
   if (!scripts.length) {
-    el.innerHTML = `<div class="empty" style="${style}"><div class="empty-title">No scripts yet</div><div class="empty-sub">Start clean or bring in a draft and let Director structure it.</div><div class="empty-actions"><button class="action-card create-action" onclick="openNewScriptModal('${id}')"><strong>Create script</strong><span>Start from an idea, title, or quick production brief.</span></button><button class="action-card import-action" onclick="openImportScriptModal('${id}')"><strong>Import script</strong><span>Paste a full draft and let AI sort it into blocks.</span></button></div></div>`;
+    el.innerHTML = `<div class="empty" style="${style}"><div class="empty-title">No scripts yet</div><div class="empty-sub">Start clean or bring in a draft and let ScriptAI structure it.</div><div class="empty-actions"><button class="action-card create-action" onclick="openNewScriptModal('${id}')"><strong>Create script</strong><span>Start from an idea, title, or quick production brief.</span></button><button class="action-card import-action" onclick="openImportScriptModal('${id}')"><strong>Import script</strong><span>Paste a full draft and let AI sort it into blocks.</span></button></div></div>`;
     const safeId = jsArg(id);
     setMobileActions([
       { label: "Create", action: `openNewScriptModal('${safeId}')`, primary: true },
@@ -1135,19 +1216,23 @@ window.downloadScriptText = (id) => {
   const blob = new Blob([scriptPlainText(s)], { type: "text/plain" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `${slugType(s.name) || "director-script"}.txt`;
+  a.download = `${slugType(s.name) || "scriptai-script"}.txt`;
   a.click();
   URL.revokeObjectURL(a.href);
   showToast("Script download started.");
 };
 
 window.selScript = function (id) {
-  S.asid = id;
-  S.apid = scr(id)?.projectId;
+  const safeId = safeScriptId(id);
+  if (!safeId || !scr(safeId)) return;
+  S.asid = safeId;
+  S.apid = scr(safeId)?.projectId;
   S.view = settings().defaultView || "full";
+  updateScriptUrl(safeId);
   renderSb();
-  showScript(id);
+  showScript(safeId);
   closeMobileNav();
+  renderConnectionBanner();
 };
 
 function showScript(id) {
@@ -1163,7 +1248,7 @@ function showScript(id) {
     `<span class="badge badge-${s.status}" style="cursor:pointer" onclick="cycleStatus('${id}')">${s.status}</span>${s.due ? `<span class="due${ds ? " " + ds : ""}">${fmtDate(s.due)}</span>` : ""} ${(s.platforms || []).map((p) => `<span class="plat plat-${esc(p).toLowerCase()}">${esc(p)}</span>`).join("")}`;
 
   document.getElementById("topbarRight").innerHTML =
-    `<button class="btn-ghost" onclick="openAddBlock('${id}')">Add block</button><button class="btn-ghost" onclick="copyScriptText('${id}')">Copy</button><button class="btn-ghost" onclick="downloadScriptText('${id}')">Export</button><button class="btn-ghost" onclick="openEditScriptModal('${id}')">Edit</button><button class="btn-ghost" onclick="resetBlocks('${id}')">Reset</button>`;
+    `${connectionActionHtml(s)}<button class="btn-ghost" onclick="openAddBlock('${id}')">Add block</button><button class="btn-ghost" onclick="copyScriptText('${id}')">Copy</button><button class="btn-ghost" onclick="downloadScriptText('${id}')">Export</button><button class="btn-ghost" onclick="openEditScriptModal('${id}')">Edit</button><button class="btn-ghost" onclick="resetBlocks('${id}')">Reset</button>`;
 
   const TABS = [
     { id: "full", label: "Full script" },
@@ -1642,7 +1727,7 @@ function commandItems() {
       id: "demo",
       icon: "P",
       title: "Preview demo workspace",
-      sub: "Explore Director without signing in",
+      sub: "Explore ScriptAI without signing in",
       tag: "Demo",
     });
   const projects = (S.projects || []).map((p) => ({
@@ -1760,19 +1845,19 @@ window.openSettingsPage = () => {
   S.view = "settings";
   document.getElementById("topbarTitle").textContent = "Settings";
   document.getElementById("topbarSub").innerHTML =
-    `<span style="font-size:12px;color:var(--text3)">Profile, workspace, AI, notifications, privacy, billing, and data</span>`;
+    `<span style="font-size:12px;color:var(--text3)">Profile, workspace, ScriptAI preferences, privacy, and data</span>`;
   document.getElementById("topbarRight").innerHTML =
     `<button class="btn-ghost" onclick="exitSettingsPage()">Done</button>`;
   document.getElementById("tabsRow").innerHTML = "";
   document.getElementById("mainContent").innerHTML = `
     <div class="settings-shell">
       <div class="settings-nav">
-        ${["account", "appearance", "workspace", "ai", "notifications", "privacy", "integrations", "billing", "data", "shortcuts"].map((id, i) => `<button class="${i === 0 ? "active" : ""}" data-target="${id}" onclick="scrollSettings('${id}')">${id[0].toUpperCase() + id.slice(1)}</button>`).join("")}
+        ${["account", "appearance", "workspace", "ai", "privacy", "data", "shortcuts"].map((id, i) => `<button class="${i === 0 ? "active" : ""}" data-target="${id}" onclick="scrollSettings('${id}')">${id === "ai" ? "ScriptAI" : id[0].toUpperCase() + id.slice(1)}</button>`).join("")}
       </div>
       <div class="settings-stack">
         <section class="settings-section" id="settings-account">
           <h3>Account</h3>
-          <p>Control the identity Director uses across scripts, exports, collaboration, and generated production notes.</p>
+          <p>Control the identity and context ScriptAI uses for your workspace and generated drafts.</p>
           <div class="settings-grid">
             <div class="form-group"><label class="form-label">Display name</label><input class="form-input" id="set-displayName" value="${esc(st.displayName || profile.displayName || "")}" placeholder="Your name"></div>
             <div class="form-group"><label class="form-label">Creator handle</label><input class="form-input" id="set-handle" value="${esc(st.handle)}" placeholder="@yourhandle"></div>
@@ -1780,6 +1865,7 @@ window.openSettingsPage = () => {
             <div class="form-group"><label class="form-label">Role</label><input class="form-input" id="set-role" value="${esc(st.role)}" placeholder="Creator, Producer, Editor"></div>
             ${settingsSelect("set-language", "Language", st.language, ["English", "Spanish", "French", "German", "Portuguese", "Japanese"])}
             ${settingsSelect("set-timezone", "Timezone", st.timezone, ["Europe/London", "America/New_York", "America/Los_Angeles", "Europe/Paris", "Asia/Tokyo", "Australia/Sydney"])}
+            <div class="form-group settings-grid-wide"><label class="form-label">Creator context</label><textarea class="notes-ta" id="set-creatorContext" style="min-height:110px" maxlength="3000" placeholder="Your audience, content pillars, voice, filming setup, and anything ScriptAI should respect.">${esc(st.creatorContext || "")}</textarea><span class="field-help">This context is sent only when you use ScriptAI generation.</span></div>
           </div>
         </section>
 
@@ -1800,62 +1886,29 @@ window.openSettingsPage = () => {
           <div class="settings-grid">
             ${settingsSelect("set-defaultProject", "Default project", st.defaultProject || "", ["", ...(S.projects || []).map((p) => p.id)])}
             ${toggleLine("set-autosave", "Autosave changes", "Save edits automatically while you work.", st.autosave)}
-            ${toggleLine("set-smartTitles", "Smart script titles", "Let Director suggest clearer names for imported scripts.", st.smartTitles)}
+            ${toggleLine("set-smartTitles", "Smart script titles", "Let ScriptAI suggest clearer names for imported scripts.", st.smartTitles)}
             <div class="form-group"><label class="form-label">New script template</label><textarea class="notes-ta" id="set-template" style="min-height:88px" placeholder="Hook, setup, payoff, CTA...">${esc(st.template || "")}</textarea></div>
           </div>
         </section>
 
         <section class="settings-section" id="settings-ai">
-          <h3>AI assistant</h3>
-          <p>Tune how Gemini turns raw drafts into shootable blocks and how much creative structure it should add.</p>
+          <h3>ScriptAI generation</h3>
+          <p>Tune how Gemini turns a brief or raw draft into clean, shootable blocks.</p>
           <div class="settings-grid">
             ${settingsSelect("set-aiTone", "AI tone", st.aiTone, ["punchy", "cinematic", "clean", "high-energy", "educational", "luxury"])}
             <div class="form-group"><label class="form-label">Creativity</label><div class="range-row"><input id="set-aiCreativity" type="range" min="0" max="100" value="${esc(st.aiCreativity)}" oninput="document.getElementById('set-aiCreativityVal').textContent=this.value"><span id="set-aiCreativityVal">${esc(st.aiCreativity)}</span></div></div>
             ${toggleLine("set-aiAutoShots", "Auto-create shot plan", "Split raw text into shots, transitions, captions, voiceover, and directions.", st.aiAutoShots)}
             ${toggleLine("set-aiBackgroundImports", "Background imports", "Keep Gemini working when the import window is closed.", st.aiBackgroundImports)}
-          </div>
-        </section>
-
-        <section class="settings-section" id="settings-notifications">
-          <h3>Notifications</h3>
-          <p>Pick which reminders are worth interrupting you for during planning, filming, and posting.</p>
-          <div class="settings-grid">
-            ${toggleLine("set-emailNotifications", "Email notifications", "Important account, billing, and workspace updates.", st.emailNotifications)}
-            ${toggleLine("set-pushNotifications", "Push notifications", "Browser alerts for time-sensitive script work.", st.pushNotifications)}
-            ${toggleLine("set-dueReminders", "Due reminders", "Warnings when scripts are close to their due date.", st.dueReminders)}
-            ${toggleLine("set-importNotifications", "AI import finished", "Tell me when background Gemini imports are ready.", st.importNotifications)}
-            ${toggleLine("set-weeklyDigest", "Weekly digest", "A short summary of progress, blockers, and ready scripts.", st.weeklyDigest)}
+            ${toggleLine("set-browserNotifications", "Browser completion alert", "Notify this browser when a background ScriptAI import finishes.", st.browserNotifications)}
           </div>
         </section>
 
         <section class="settings-section" id="settings-privacy">
           <h3>Privacy & security</h3>
-          <p>Manage session behaviour, sharing defaults, account protection, and product analytics.</p>
+          <p>ScriptAI uses your verified Firebase account to keep each workspace separate.</p>
           <div class="settings-grid">
-            ${toggleLine("set-twoFactor", "Two-factor authentication", "Require an extra verification step on sign in.", st.twoFactor)}
-            ${toggleLine("set-publicProfile", "Public creator profile", "Allow shared script packs to show your profile.", st.publicProfile)}
-            ${toggleLine("set-analytics", "Product analytics", "Share anonymous usage signals to improve Director.", st.analytics)}
             ${settingsSelect("set-sessionTimeout", "Session timeout", st.sessionTimeout, ["15", "30", "60", "never"])}
-          </div>
-        </section>
-
-        <section class="settings-section" id="settings-integrations">
-          <h3>Integrations</h3>
-          <p>Connect the services a production workflow usually needs. These controls are ready for provider wiring.</p>
-          <div class="settings-grid three">
-            ${toggleLine("set-drive", "Google Drive", "Sync exports and backup script packs.", st.drive)}
-            ${toggleLine("set-notion", "Notion", "Send approved scripts into a content calendar.", st.notion)}
-            ${toggleLine("set-slack", "Slack", "Post ready-to-shoot scripts to your team.", st.slack)}
-          </div>
-        </section>
-
-        <section class="settings-section" id="settings-billing">
-          <h3>Billing</h3>
-          <p>Review plan controls, receipts, AI usage, invoices, seats, and upgrade state.</p>
-          <div class="settings-grid">
-            ${settingsSelect("set-plan", "Plan", st.plan, ["Starter", "Creator", "Studio", "Agency"])}
-            <div class="setting-line"><div><strong>Gemini usage</strong><span>${S.scripts?.filter((s) => s.notes === "Imported with Gemini.").length || 0} AI imports saved in this workspace.</span></div><button class="btn-ghost" type="button" onclick="showUsageModal()">Usage</button></div>
-            <div class="setting-line"><div><strong>Invoices</strong><span>Download receipts and manage billing email.</span></div><button class="btn-ghost" type="button" onclick="showBillingModal()">Manage</button></div>
+            <div class="setting-line settings-grid-wide"><div><strong>What is stored</strong><span>Your projects, scripts, blocks, and preferences are saved to the Firebase workspace for your signed-in account. Script deep links contain only an opaque script ID.</span></div></div>
           </div>
         </section>
 
@@ -1867,7 +1920,6 @@ window.openSettingsPage = () => {
             <button class="btn-ghost" onclick="document.getElementById('workspaceImport').click()">Restore workspace</button>
             <input id="workspaceImport" type="file" accept="application/json" style="display:none" onchange="importWorkspaceFile(this.files?.[0])">
             <button class="btn-ghost" onclick="openImportScriptModal()">Import script</button>
-            <button class="btn-ghost btn-danger" onclick="alert('Account deletion needs a backend confirmation flow before it can run safely.')">Delete account</button>
           </div>
         </section>
 
@@ -1916,6 +1968,7 @@ window.saveSettings = () => {
     displayName: val("set-displayName"),
     role: val("set-role"),
     handle: val("set-handle"),
+    creatorContext: val("set-creatorContext").slice(0, 3000),
     language: val("set-language"),
     timezone: val("set-timezone"),
     theme: val("set-theme"),
@@ -1931,24 +1984,13 @@ window.saveSettings = () => {
     aiCreativity: val("set-aiCreativity"),
     aiAutoShots: bool("set-aiAutoShots"),
     aiBackgroundImports: bool("set-aiBackgroundImports"),
-    emailNotifications: bool("set-emailNotifications"),
-    pushNotifications: bool("set-pushNotifications"),
-    dueReminders: bool("set-dueReminders"),
-    importNotifications: bool("set-importNotifications"),
-    weeklyDigest: bool("set-weeklyDigest"),
-    twoFactor: bool("set-twoFactor"),
-    publicProfile: bool("set-publicProfile"),
-    analytics: bool("set-analytics"),
+    browserNotifications: bool("set-browserNotifications"),
     sessionTimeout: val("set-sessionTimeout"),
-    drive: bool("set-drive"),
-    notion: bool("set-notion"),
-    slack: bool("set-slack"),
-    plan: val("set-plan"),
     keyboardShortcuts: bool("set-keyboardShortcuts"),
   };
   applySettings();
   if (
-    S.settings.pushNotifications &&
+    S.settings.browserNotifications &&
     "Notification" in window &&
     Notification.permission === "default"
   )
@@ -1975,7 +2017,7 @@ window.exportWorkspace = () => {
   );
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "director-workspace.json";
+  a.download = "scriptai-workspace.json";
   a.click();
   URL.revokeObjectURL(a.href);
 };
@@ -2012,13 +2054,6 @@ window.showUsageModal = () => {
   );
 };
 
-window.showBillingModal = () => {
-  const st = settings();
-  openModal(
-    `<div class="modal-title">Billing</div><div class="setting-line"><div><strong>${esc(st.plan)} plan</strong><span>Your selected plan changes the workspace label and usage context. Payment processing can be connected later.</span></div><span class="settings-chip">${esc(st.plan)}</span></div><div class="divider"></div><div class="mini-action-row"><button class="btn-ghost" onclick="exportWorkspace()">Download data</button><button class="btn-ghost" onclick="showUsageModal()">View usage</button></div><div class="modal-actions"><button class="btn" onclick="closeModal()">Done</button></div>`,
-  );
-};
-
 const COLOR_LABELS = [
   "Ink",
   "Signal",
@@ -2038,7 +2073,7 @@ function colorPickerHtml(selected = COLORS[0]) {
 
 window.openNewProjectModal = () => {
   openModal(
-    `<div class="premium-modal-shell"><div class="premium-modal-content"><div class="modal-title">New project</div><div class="modal-subtitle">Create a colour-coded production space. The colour drives the project cards, filtered pages, and script accents.</div><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="np-name" placeholder="e.g. Curate Launch" autofocus></div><div class="form-group"><label class="form-label">Colour system</label>${colorPickerHtml(COLORS[0])}</div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="createProject()">Create</button></div></div></div>`,
+    `<div class="premium-modal-shell"><div class="premium-modal-content"><div class="modal-title">New project</div><div class="modal-subtitle">Create a colour-coded production space. The colour drives the project cards, filtered pages, and script accents.</div><div class="form-group"><label class="form-label">Name</label><input class="form-input" id="np-name" placeholder="e.g. August content" autofocus></div><div class="form-group"><label class="form-label">Colour system</label>${colorPickerHtml(COLORS[0])}</div><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="createProject()">Create</button></div></div></div>`,
     "premium-modal",
   );
 };
@@ -2124,7 +2159,7 @@ window.openNewScriptModal = (projId) => {
     <div class="script-create-visual">
       <div class="script-create-kicker">Create script</div>
       <h2>Turn a rough idea into a shoot plan.</h2>
-      <p>Only the idea is optional. Pick a project, add a quick brief if you have one, and Director will open a clean script workspace.</p>
+      <p>Only the idea is optional. Pick a project, add a quick brief if you have one, and ScriptAI will open a clean script workspace.</p>
     </div>
     <div class="script-create-panel">
       <div class="modal-title">New script</div>
@@ -2312,7 +2347,7 @@ window.generateScriptPreview = async () => {
     return;
   }
   try {
-    const res = await fetch("/api/generate-script", {
+    const res = await directorApiFetch("/api/generate-script", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -2323,6 +2358,7 @@ window.generateScriptPreview = async () => {
         format: document.getElementById("gs-format").value,
         brainstorm: mode === "brainstorm",
         platforms,
+        creatorContext: settings().creatorContext,
       }),
     });
     const raw = await res.text();
@@ -2365,7 +2401,7 @@ window.saveGeneratedScript = async () => {
   }
   btn.disabled = true;
   btn.textContent = "Saving...";
-  msg.textContent = "Sorting the preview into Director blocks...";
+  msg.textContent = "Sorting the preview into ScriptAI blocks...";
   if (window.isDemoMode) {
     const blocks = demoBlocksFromText(generatedScriptPreview.script).map(
       (b) => ({
@@ -2399,7 +2435,7 @@ window.saveGeneratedScript = async () => {
   }
   try {
     const st = settings();
-    const res = await fetch("/api/sort-script", {
+    const res = await directorApiFetch("/api/sort-script", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -2408,6 +2444,7 @@ window.saveGeneratedScript = async () => {
         creativity: Number(st.aiCreativity),
         autoShots: st.aiAutoShots,
         customTypes: customTypesPayload(),
+        creatorContext: st.creatorContext,
       }),
     });
     const raw = await res.text();
@@ -2539,7 +2576,7 @@ window.generateImportScript = async () => {
     return;
   }
   try {
-    const res = await fetch("/api/generate-script", {
+    const res = await directorApiFetch("/api/generate-script", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -2548,6 +2585,7 @@ window.generateImportScript = async () => {
         currentName,
         currentScript,
         platforms,
+        creatorContext: settings().creatorContext,
       }),
     });
     const raw = await res.text();
@@ -2596,7 +2634,7 @@ window.openImportScriptModal = (projId) => {
       <div class="import-shell">
         <div class="import-copy">
           <h1>Time for AI to take over.</h1>
-          <p>Send your script. Gemini will automatically sort it into a clean, shootable Director plan with shots, transitions, subtitles, voiceover, directions, and notes you can actually follow.</p>
+          <p>Send your script. Gemini will automatically sort it into a clean, shootable ScriptAI plan with shots, transitions, subtitles, voiceover, directions, and notes you can actually follow.</p>
         </div>
         <div class="import-panel">
           <input type="hidden" id="is-proj" value="${esc(pid)}">
@@ -2685,8 +2723,8 @@ function renderAiWorking(job) {
         <div>
           <div class="ai-spinner" aria-hidden="true"><div class="ai-spinner-dot"></div></div>
           <h1>Gemini is working.</h1>
-          <p>Scanning the full script, detecting filming beats, and rebuilding everything into a fluent Director plan ready to shoot.</p>
-          <div class="working-steps"><span>Reading pacing</span><span>Mapping shots &amp; dialogue</span><span>Building Director blocks</span></div>
+          <p>Scanning the full script, detecting filming beats, and rebuilding everything into a fluent ScriptAI plan ready to shoot.</p>
+          <div class="working-steps"><span>Reading pacing</span><span>Mapping shots &amp; dialogue</span><span>Building ScriptAI blocks</span></div>
         </div>
       </div>
     </section>`;
@@ -2705,7 +2743,7 @@ function renderAiComplete(job, scriptId) {
             </svg>
           </div>
           <h1>Your script is ready.</h1>
-          <p>Gemini sorted it into a Director-friendly plan with blocks for filming, captions, voiceover, transitions, and edit notes.</p>
+          <p>Gemini sorted it into a ScriptAI plan with blocks for filming, captions, voiceover, transitions, and edit notes.</p>
           <div class="modal-actions" style="justify-content:center;margin-top:28px"><button class="glass-btn" onclick="closeImportPage()">Close</button><button class="btn" onclick="document.body.classList.remove('import-open');selScript('${scriptId}')">Open script</button></div>
         </div>
       </div>
@@ -2786,7 +2824,7 @@ window.importScriptWithAI = async () => {
   }
   try {
     const st = settings();
-    const res = await fetch("/api/sort-script", {
+    const res = await directorApiFetch("/api/sort-script", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -2795,6 +2833,7 @@ window.importScriptWithAI = async () => {
         creativity: Number(st.aiCreativity),
         autoShots: st.aiAutoShots,
         customTypes: customTypesPayload(),
+        creatorContext: st.creatorContext,
       }),
     });
     const raw = await res.text();
@@ -2842,7 +2881,7 @@ window.importScriptWithAI = async () => {
     if (modalOpen && !job.background) renderAiComplete(job, s.id);
     else {
       showAiToast("Gemini finished sorting your script.", true);
-      notifyUser("Director import ready", `${name} is ready to open.`);
+      notifyUser("ScriptAI import ready", `${name} is ready to open.`);
     }
   } catch (e) {
     if (activeAiJob?.id === job.id) activeAiJob = null;

@@ -1,21 +1,12 @@
 const CREATOR_CONTEXT = `
 Creator context:
-- Creator: Jack Casey Dickson, solo iOS developer from Northern Ireland, posting as @jackcaseydickson.
-- Core project: Curate, a SwiftUI/Xcode iPhone app for sorting/culling messy camera rolls, built alongside a full-time job.
-- Platforms: TikTok, Instagram Reels, YouTube Shorts, and X.
-- Audience: tech-aware people in their 20s-30s, beginner investors, indie devs, iOS learners, builders, and people interested in wealth, productivity, and building useful things.
-- Goal: build a personal brand from zero followers with practical, honest, watchable short-form content that can later support ads, sponsors, app growth, and audience trust.
-
-Content pillars:
-1. Investing/markets/finance:
-   - Stocks, ETFs, bonds, crypto, portfolio lessons, beginner investing, global markets, property aspiration, money habits, risk, mistakes, compounding, and real portfolio reflections.
-2. Dev/iOS/app building:
-   - Curate build-in-public, SwiftUI, Xcode, indie dev, coding with AI, design decisions, bugs, shipping, app store journey, product thinking, and building around a full-time job.
-3. Builder mindset crossover:
-   - Building software, building wealth, working full time, consistency, leverage, risk, focus, learning in public, systems, and long-term improvement.
+- The user is an individual creator planning practical short-form content.
+- Platforms may include TikTok, Instagram Reels, YouTube Shorts, and X.
+- Use the creator context supplied with the request when it is present.
+- Never invent personal history, employment, client results, income, audience size, product success, or expertise.
 
 Voice:
-- Natural UK/Northern Irish phrasing.
+- Natural UK phrasing unless the creator context requests something else.
 - Plainspoken, direct, honest, and grounded.
 - No fake guru language.
 - No American hype phrases.
@@ -26,7 +17,7 @@ Voice:
 Visual rules:
 - No screen recordings unless explicitly requested.
 - Prefer face-to-camera, voiceover, filmed phone/laptop/iPad screens, desk B-roll, walking/car clips, app shots, typing, debugging, charts blurred in the background, and simple text overlays.
-- Visuals must be realistic for Jack to film alone.
+- Visuals must be realistic for one creator to film.
 
 Production modes:
 1. Cinematic/polished:
@@ -74,7 +65,7 @@ A strong hook should usually use one of these patterns:
    - "Your camera roll is probably worse than you think."
 
 6. Outcome teaser:
-   - "I finally fixed the part of Curate that felt clunky."
+   - "I finally fixed the part of the app that felt clunky."
    - "Today showed me exactly why diversification matters."
 
 Hook rules:
@@ -97,7 +88,7 @@ Script system:
 Create short-form scripts that are practical, filmable, and built for retention.
 
 Primary goal:
-- Generate a script Jack can film today.
+- Generate a script the creator can film today.
 - One video = one clear idea.
 - Do not create five competing points.
 - The script should feel like a real creator speaking, not a marketing assistant writing content.
@@ -142,7 +133,7 @@ Retention rules:
 - Prefer one memorable point over several shallow points.
 
 Script formatting:
-- Make scripts easy for Director to sort later into production blocks.
+- Make scripts easy for ScriptAI to sort later into production blocks.
 - Use clear labels:
   [TITLE]
   [HOOK]
@@ -166,7 +157,7 @@ Length guidance:
 - If the requested length conflicts with the idea, simplify the idea rather than bloating the script.
 
 Filmability rules:
-- Include B-roll that Jack can realistically film alone.
+- Include B-roll that one creator can realistically film alone.
 - No screen recordings unless explicitly requested.
 - Replace screen recording ideas with filmed phone/laptop/iPad shots.
 - Use realistic shots:
@@ -174,8 +165,8 @@ Filmability rules:
   - desk setup
   - typing
   - Xcode blurred on laptop
-  - Curate on iPhone
-  - Trading 212/Crypto.com filmed but sensitive details hidden
+  - the creator's product on a phone
+  - finance apps filmed with sensitive details hidden
   - walking shot
   - car clip
   - coffee/desk reset
@@ -188,7 +179,7 @@ Before finalising, internally check:
 - Is the video about one clear idea?
 - Is there a real tension or reason to keep watching?
 - Does the viewer get a clear payoff?
-- Does it sound like Jack, not a generic creator?
+- Does it sound like the creator context, not a generic marketing assistant?
 - Can it be filmed today?
 `;
 
@@ -227,8 +218,8 @@ Pillar rules:
   - "what I learned as a beginner investor"
   - "how I think about risk while building income"
 
-2. Dev / iOS / app-building:
-- Make the script specific to Curate, SwiftUI, Xcode, app design, debugging, AI-assisted coding, or building around work.
+2. Dev / app-building:
+- Make the script specific to the product, tools, design decision, bug, release, or trade-off supplied by the user.
 - Avoid generic coding advice unless requested.
 - Show the real trade-off:
   - speed vs quality
@@ -255,7 +246,7 @@ Pillar rules:
   - working full time limits time, so systems matter
   - leverage comes from code, content, capital, and audience
 - Do not make it sound like a fake motivational speech.
-- Keep it grounded in Jack's actual life.
+- Keep it grounded in facts the creator supplied.
 `;
 
 const NEGATIVE_PATTERNS = `
@@ -284,18 +275,11 @@ Avoid these weak patterns:
 `;
 
 const SORTING_CONTEXT = `
-Director sorting context:
-- Creator: Jack Casey Dickson, solo iOS developer from Northern Ireland, posting as @jackcaseydickson.
+ScriptAI sorting context:
 - Content is short-form vertical video for TikTok, Instagram Reels, YouTube Shorts, and X.
-- The goal of sorting is to turn a raw creator script into practical production blocks Jack can film and edit.
-
-Pillars to recognise:
-1. Investing/markets/finance:
-   - stocks, ETFs, bonds, crypto, Trading 212, Crypto.com, portfolio lessons, beginner investing, global markets, money habits, risk, property aspiration.
-2. Dev/iOS/app building:
-   - Curate, SwiftUI, Xcode, indie dev, app design, AI-assisted coding, bugs, shipping, working full time.
-3. Builder crossover:
-   - building wealth, building software, leverage, consistency, systems, risk, documenting the process.
+- The goal is to turn the creator's raw script into practical production blocks they can film and edit.
+- Preserve any named products, tools, projects, audience details, and voice from the supplied script or creator context.
+- Do not add personal facts that were not supplied.
 
 Visual style:
 - No screen recordings unless explicitly required.
@@ -305,8 +289,8 @@ Visual style:
   - desk setup
   - laptop/iPad/phone close-up
   - Xcode blurred in background
-  - Curate on iPhone
-  - Trading 212/Crypto.com filmed with private details hidden
+  - the creator's product on a phone
+  - finance apps filmed with private details hidden
   - walking/car clips
   - typing shots
   - over-shoulder setup
@@ -338,6 +322,7 @@ Sorting goal:
 
 export function buildGenerateScriptPrompt({
   brainstorm,
+  creatorContext,
   currentName,
   currentScript,
   format,
@@ -357,7 +342,7 @@ ${PILLAR_RULES}
 
 ${NEGATIVE_PATTERNS}
 
-Generate a creator script for Director, Jack Casey Dickson's short-form script manager.
+Generate a creator script for ScriptAI, a short-form script workspace.
 
 Return JSON only, with this exact shape:
 {
@@ -367,13 +352,14 @@ Return JSON only, with this exact shape:
 
 Request context:
 - Platforms: ${platforms || "general social video"}.
+- Creator context: ${creatorContext || "No additional creator context supplied. Do not invent personal facts."}.
 - Length: ${length === "short" ? "15-30 seconds" : length === "long" ? "60-120 seconds" : "30-60 seconds"}.
 - Tone: ${tone}.
 - Format: ${format}.
 - Brainstorm mode: ${brainstorm ? "include 3-5 concise concept options before the chosen script" : "write the strongest complete script directly"}.
 - Current script name, if any: ${currentName || "none"}.
 - Current draft, if any: ${currentScript || "none"}.
-- Mode: ${mode === "custom" ? "custom follows the user instructions closely" : "auto chooses a strong concept for Jack's pillars"}.
+- Mode: ${mode === "custom" ? "custom follows the user instructions closely" : "auto chooses a strong concept from the supplied brief and creator context"}.
 - User instructions: ${instructions || "Choose a strong original concept."}
 
 Creative rules:
@@ -387,8 +373,8 @@ Creative rules:
 - Avoid generic creator cliches.
 - Avoid bloated explanations.
 - Avoid fake certainty.
-- Avoid making Jack sound like a guru.
-- Make it sound like Jack is documenting, learning, building, investing, or reflecting honestly.
+- Avoid making the creator sound like a guru.
+- Make it sound like a real person documenting, learning, building, teaching, or reflecting honestly.
 
 Output quality:
 - Make the title specific, searchable, and under 80 characters.
@@ -396,7 +382,7 @@ Output quality:
 - Spoken sections should be tight and filmable.
 - Include direct-to-camera speech when the format is talking-head or talking to camera.
 - Include practical shot ideas, transition labels, on-screen text, caption, CTA, and notes/reminders where useful.
-- Use UK spelling and natural UK/Northern Irish-friendly phrasing.
+- Use UK spelling unless the creator context requests another language or locale.
 - No markdown fences.
 - Do not include anything outside the JSON object.
 
@@ -408,7 +394,7 @@ Finance safety:
   - Add a verify-before-filming note if the script depends on current data.
 
 Dev safety:
-- If the topic is app-building, preserve the Curate, SwiftUI, Xcode, solo dev, AI coding, and full-time-job context where relevant.
+- If the topic is app-building, preserve the named product, tools, constraints, and real trade-offs supplied by the user.
 - Do not imply screen recordings unless explicitly requested. Use filmed device/laptop shots instead.
 
 Before returning the JSON, silently improve the script by checking:
@@ -416,7 +402,7 @@ Before returning the JSON, silently improve the script by checking:
 2. Is the idea focused on one point?
 3. Is there tension before the lesson?
 4. Is the payoff clear?
-5. Can Jack film this today?
+5. Can the creator film this today?
 6. Does it avoid fake hype?
 7. Does it sound natural in a UK/Northern Irish voice?
 8. Is finance content safe and non-advisory?
@@ -427,13 +413,17 @@ Before returning the JSON, silently improve the script by checking:
 export function buildSortScriptPrompt({
   autoShots,
   creativity,
+  creatorContext,
   customTypes,
   rawScript,
   tone,
 }) {
   return `${SORTING_CONTEXT}
 
-Sort this creator script into Director production blocks.
+Creator context supplied by the user:
+${creatorContext || "None. Preserve only facts present in the raw script."}
+
+Sort this creator script into ScriptAI production blocks.
 
 Return JSON only, with:
 {
@@ -472,7 +462,7 @@ Content-specific rules:
 - Finance scripts must include a not-financial-advice reminder if missing.
 - Finance scripts must not become buy/sell recommendations.
 - Unsourced current prices, returns, news, earnings, portfolio values, or market events should become a verify-before-filming direction.
-- Dev scripts must preserve Curate, SwiftUI, Xcode, app-building, AI coding, solo dev, and full-time-job context where present.
+- Dev scripts must preserve the named product, tools, and constraints where present.
 - Convert screen recording suggestions into filmed phone/laptop/iPad B-roll unless screen recording is explicitly required.
 
 ShotName examples:
@@ -481,7 +471,7 @@ ShotName examples:
 - Desk B-roll
 - Phone Close-Up
 - Laptop Shot
-- Curate Demo
+- Product Demo
 - Portfolio B-roll
 - Lesson
 - CTA

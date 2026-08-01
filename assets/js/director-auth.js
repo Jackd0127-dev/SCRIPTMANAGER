@@ -68,7 +68,17 @@ function renderLoadedWorkspace() {
     return;
   }
 
-  if (window.S.asid && window.S.scripts.some((s) => s.id === window.S.asid)) {
+  const requestedScriptId = window.getRequestedScriptId?.();
+
+  if (
+    requestedScriptId &&
+    window.S.scripts.some((script) => script.id === requestedScriptId)
+  ) {
+    window.selScript(requestedScriptId);
+  } else if (
+    window.S.asid &&
+    window.S.scripts.some((s) => s.id === window.S.asid)
+  ) {
     window.selScript(window.S.asid);
   } else if (
     window.S.apid &&
@@ -505,6 +515,11 @@ window.doSignout = async () => {
   await signOut(auth);
 };
 
+window.getDirectorIdToken = async () => {
+  if (window.isDemoMode || !currentUser) return null;
+  return currentUser.getIdToken();
+};
+
 window.checkVerification = async () => {
   const btn = document.getElementById("checkVerifyBtn");
 
@@ -637,9 +652,22 @@ window.save = () => {
         merge: true,
       });
     } catch (e) {
-      console.error(e);
+      console.error("Workspace save failed.");
+      ind.textContent = "Save failed";
+      ind.classList.add("error");
+      window.showToast?.("ScriptAI could not save. Check your connection and try again.");
+      setTimeout(() => {
+        ind.classList.remove("show", "error");
+        ind.textContent = "Saving…";
+      }, 2400);
+      return;
     }
 
+    ind.classList.remove("error");
+    ind.textContent = "Saved";
     ind.classList.remove("show");
+    setTimeout(() => {
+      ind.textContent = "Saving…";
+    }, 400);
   }, 800);
 };

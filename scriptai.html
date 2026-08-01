@@ -6,14 +6,15 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Director</title>
+    <title>ScriptAI</title>
 
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
 
     <link rel="stylesheet" href="assets/css/director.css" />
+    <link rel="stylesheet" href="assets/css/nova-theme.css" />
   </head>
 
   <body>
@@ -29,9 +30,9 @@
 
     <div id="loginScreen" class="auth-wrap" style="display: none">
       <div class="auth-box">
-        <div class="auth-logo">Director</div>
+        <div class="auth-logo">ScriptAI</div>
 
-        <div class="auth-sub">Your script command centre</div>
+        <div class="auth-sub">A clean workspace for scripts you can shoot.</div>
 
         <div class="social-btns">
           <button class="social-btn" id="googleBtn" onclick="doGoogle()">
@@ -81,21 +82,23 @@
         <div class="or-divider"><span>or sign in with email</span></div>
 
         <div class="auth-tabs">
-          <div
+          <button
+            type="button"
             class="auth-tab active"
             id="tabLogin"
             onclick="switchAuthTab('login')"
           >
             Sign in
-          </div>
+          </button>
 
-          <div
+          <button
+            type="button"
             class="auth-tab"
             id="tabSignup"
             onclick="switchAuthTab('signup')"
           >
             Create account
-          </div>
+          </button>
         </div>
 
         <div id="loginForm">
@@ -240,7 +243,7 @@
         <div class="sidebar" id="sidebarNav">
           <div class="sidebar-top">
             <div class="sidebar-title-row">
-              <div class="wordmark">Director</div>
+              <div class="wordmark">ScriptAI</div>
 
               <button
                 class="sidebar-close-btn"
@@ -321,6 +324,19 @@
         </div>
 
         <div class="main">
+          <div
+            class="connection-banner"
+            id="connectionBanner"
+            role="status"
+            hidden
+          >
+            <span class="connection-banner-mark" aria-hidden="true">N</span>
+            <span>
+              <strong>Choose a script for Novas Flow</strong>
+              <small>Select a script, then use Connect to Novas Flow.</small>
+            </span>
+          </div>
+
           <button
             class="global-project-btn"
             type="button"
@@ -330,7 +346,7 @@
           </button>
 
           <div id="welcomeScreen" class="content welcome">
-            <div class="welcome-title">Director</div>
+            <div class="welcome-title">ScriptAI</div>
 
             <div class="welcome-sub">
               Select a project or script from the sidebar, or create a new one.

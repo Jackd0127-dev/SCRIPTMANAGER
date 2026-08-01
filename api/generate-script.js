@@ -1,13 +1,13 @@
 import { GEMINI_MODEL, parseGeminiJson, sendJson } from "./lib/gemini.js";
 import { buildGenerateScriptPrompt } from "./lib/gemini-prompts.js";
+import { authorizeAiRequest } from "./lib/request-security.js";
 
 export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Cache-Control", "no-store");
 
-  if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== "POST")
     return sendJson(res, 405, { error: "Method not allowed" });
+  if (!(await authorizeAiRequest(req, res))) return;
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return sendJson(res, 500, { error: "Missing GEMINI_API_KEY" });
@@ -35,6 +35,9 @@ export default async function handler(req, res) {
     .trim()
     .slice(0, 60);
   const brainstorm = req.body?.brainstorm === true;
+  const creatorContext = String(req.body?.creatorContext || "")
+    .trim()
+    .slice(0, 3000);
 
   if (mode === "custom" && !instructions && !currentName && !currentScript) {
     return sendJson(res, 400, { error: "Tell Gemini what you want first." });
@@ -42,6 +45,7 @@ export default async function handler(req, res) {
 
   const prompt = buildGenerateScriptPrompt({
     brainstorm,
+    creatorContext,
     currentName,
     currentScript,
     format,
@@ -70,7 +74,7 @@ export default async function handler(req, res) {
 
     const data = await geminiRes.json();
     if (!geminiRes.ok) {
-      console.error("Gemini generate error:", data);
+      console.error(`Gemini generate request failed with ${geminiRes.status}.`);
       return sendJson(res, 502, {
         error: "Gemini could not generate a script.",
       });
@@ -84,7 +88,7 @@ export default async function handler(req, res) {
     const title = String(parsed.title || "")
       .trim()
       .slice(0, 80);
-    const script = String(parsed.script || "").trim();
+    const script = String(parsed.script || "").trim().slice(0, 30000);
 
     if (!title || !script)
       return sendJson(res, 422, {
@@ -92,8 +96,8 @@ export default async function handler(req, res) {
       });
 
     return sendJson(res, 200, { title, script });
-  } catch (error) {
-    console.error(error);
+  } catch {
+    console.error("Script generation failed.");
     return sendJson(res, 500, { error: "Could not generate script." });
   }
 }

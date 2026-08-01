@@ -1,0 +1,955 @@
+:root {
+  --nova-canvas: oklch(0.982 0.003 85);
+  --nova-ink: oklch(0.19 0.008 70);
+  --nova-card: oklch(0.998 0.001 85);
+  --nova-primary: #c85743;
+  --nova-primary-deep: #a94434;
+  --nova-border: oklch(0.895 0.006 75);
+  --nova-muted: oklch(0.51 0.01 70);
+  --nova-soft: oklch(0.952 0.004 80);
+  --nova-ring: rgba(200, 87, 67, 0.22);
+  --nova-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.86) inset,
+    0 16px 42px rgba(24, 24, 26, 0.045);
+  --bg: var(--nova-canvas);
+  --surface: var(--nova-card);
+  --surface2: var(--nova-soft);
+  --border: var(--nova-border);
+  --border2: color-mix(in oklab, var(--nova-ink) 17%, transparent);
+  --text: var(--nova-ink);
+  --text2: color-mix(in oklab, var(--nova-ink) 68%, transparent);
+  --text3: var(--nova-muted);
+  --teal: var(--nova-primary);
+  --teal-rgb: 200, 87, 67;
+  --coral: var(--nova-primary);
+  --coral-rgb: 200, 87, 67;
+  --violet: #725b8f;
+  --violet-rgb: 114, 91, 143;
+  --gold: #aa7a26;
+  --gold-rgb: 170, 122, 38;
+  --mint: #4b8264;
+  --mint-rgb: 75, 130, 100;
+  --green: #3f7d5a;
+  --green-bg: #edf6f0;
+  --red: #b84b3c;
+  --red-bg: #fbefec;
+  --blue: #526f91;
+  --blue-bg: #eef3f8;
+  --amber: #966a1d;
+  --amber-bg: #fbf4e6;
+  --page-bg:
+    radial-gradient(circle at 78% -10%, rgba(200, 87, 67, 0.065), transparent 30rem),
+    var(--nova-canvas);
+  --auth-bg:
+    radial-gradient(circle at 50% 0%, rgba(200, 87, 67, 0.075), transparent 25rem),
+    var(--nova-canvas);
+  --app-bg: var(--page-bg);
+  --surface-gradient: linear-gradient(145deg, rgba(255, 255, 255, 0.99), rgba(250, 249, 247, 0.98));
+  --item-bg: rgba(255, 255, 255, 0.88);
+  --control-bg: rgba(255, 255, 255, 0.78);
+  --sidebar-bg: rgba(250, 249, 247, 0.96);
+  --topbar-bg: rgba(247, 247, 245, 0.9);
+  --tabs-bg: rgba(247, 247, 245, 0.92);
+  --modal-bg: var(--nova-card);
+  --button-bg: var(--nova-primary);
+  --button-text: #fff;
+  --progress-bg: linear-gradient(90deg, var(--nova-primary), #dc806f);
+  --overlay-bg: rgba(24, 24, 26, 0.48);
+  --sheen: rgba(255, 255, 255, 0.68);
+  --radius: 10px;
+  --radius-sm: 8px;
+  --shadow-soft: 0 24px 70px rgba(24, 24, 26, 0.1);
+  --shadow-tight: 0 10px 28px rgba(24, 24, 26, 0.07);
+  --focus: 0 0 0 3px var(--nova-ring);
+}
+
+body,
+button,
+input,
+textarea,
+select {
+  font-family: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background: var(--page-bg);
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+body.theme-dark {
+  --nova-canvas: #141414;
+  --nova-ink: oklch(0.94 0.004 80);
+  --nova-card: oklch(0.19 0.006 70);
+  --nova-border: rgba(255, 255, 255, 0.1);
+  --nova-muted: rgba(255, 255, 255, 0.64);
+  --nova-soft: oklch(0.235 0.006 70);
+  --bg: var(--nova-canvas);
+  --surface: var(--nova-card);
+  --surface2: var(--nova-soft);
+  --border: var(--nova-border);
+  --border2: rgba(255, 255, 255, 0.18);
+  --text: var(--nova-ink);
+  --text2: rgba(255, 255, 255, 0.7);
+  --text3: rgba(255, 255, 255, 0.48);
+  --green: #77b68e;
+  --green-bg: rgba(77, 139, 99, 0.14);
+  --red: #df796a;
+  --red-bg: rgba(200, 87, 67, 0.14);
+  --blue: #8ba4c0;
+  --blue-bg: rgba(82, 111, 145, 0.16);
+  --amber: #d3ac62;
+  --amber-bg: rgba(170, 122, 38, 0.14);
+  --page-bg:
+    radial-gradient(circle at 78% -10%, rgba(200, 87, 67, 0.1), transparent 30rem),
+    var(--nova-canvas);
+  --auth-bg: var(--page-bg);
+  --app-bg: var(--page-bg);
+  --surface-gradient: linear-gradient(145deg, #202020, #191919);
+  --item-bg: rgba(31, 31, 31, 0.92);
+  --control-bg: rgba(255, 255, 255, 0.055);
+  --sidebar-bg: rgba(21, 21, 21, 0.97);
+  --topbar-bg: rgba(20, 20, 20, 0.92);
+  --tabs-bg: rgba(20, 20, 20, 0.94);
+  --modal-bg: #1e1e1e;
+  --button-bg: #c85743;
+  --button-text: #fff;
+  --overlay-bg: rgba(0, 0, 0, 0.68);
+  --shadow-soft: 0 24px 70px rgba(0, 0, 0, 0.38);
+  --shadow-tight: 0 12px 30px rgba(0, 0, 0, 0.24);
+}
+
+body.theme-light {
+  color-scheme: light;
+}
+
+body.theme-dark {
+  color-scheme: dark;
+}
+
+button,
+a,
+[onclick] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+}
+
+/* Shared controls */
+.btn,
+.auth-btn,
+.unlock-btn,
+.global-project-btn,
+.connect-script-btn {
+  min-height: 38px;
+  border: 1px solid color-mix(in oklab, var(--nova-primary) 90%, #000);
+  border-radius: 9px;
+  background: var(--nova-primary);
+  color: #fff;
+  font-weight: 600;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 8px 18px rgba(114, 47, 36, 0.12);
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.btn:hover,
+.auth-btn:hover,
+.unlock-btn:hover,
+.global-project-btn:hover,
+.connect-script-btn:hover {
+  transform: translateY(-1px);
+  background: var(--nova-primary-deep);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 10px 24px rgba(114, 47, 36, 0.17);
+}
+
+.btn-ghost,
+.sb-btn,
+.signout-btn,
+.sign-out-btn,
+.auth-demo-btn,
+.social-btn,
+.preset-chip,
+.action-card,
+.command-item {
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: color-mix(in oklab, var(--surface) 92%, transparent);
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(24, 24, 26, 0.025);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.btn-ghost:hover,
+.sb-btn:hover,
+.signout-btn:hover,
+.sign-out-btn:hover,
+.auth-demo-btn:hover,
+.social-btn:hover,
+.preset-chip:hover,
+.action-card:hover,
+.command-item:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in oklab, var(--text) 20%, transparent);
+  background: var(--surface);
+  box-shadow: var(--shadow-tight);
+}
+
+.btn-danger,
+.btn-ghost.btn-danger {
+  border-color: color-mix(in oklab, var(--red) 28%, var(--border));
+  color: var(--red);
+}
+
+.form-input,
+.form-select,
+.notes-ta,
+.search,
+.command-search,
+.auth-input,
+.script-drop-zone textarea {
+  min-height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: color-mix(in oklab, var(--surface) 90%, transparent);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(24, 24, 26, 0.025);
+}
+
+.form-input:focus,
+.form-select:focus,
+.notes-ta:focus,
+.search:focus,
+.command-search:focus,
+.auth-input:focus,
+.script-drop-zone textarea:focus {
+  border-color: var(--nova-primary);
+  box-shadow: var(--focus);
+}
+
+.form-label,
+.auth-label,
+.script-create-kicker,
+.filtered-kicker,
+.stat-label {
+  color: color-mix(in oklab, var(--nova-primary) 82%, var(--text));
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.field-help {
+  display: block;
+  margin-top: 6px;
+  color: var(--text3);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* Authentication */
+.auth-wrap,
+.auth-screen {
+  background: var(--auth-bg);
+}
+
+.auth-box,
+.auth-card {
+  border: 1px solid color-mix(in oklab, var(--text) 11%, transparent);
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--surface) 96%, transparent);
+  box-shadow: var(--shadow-soft);
+}
+
+.auth-logo,
+.auth-card h1 {
+  color: var(--text);
+  font-family: inherit;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+}
+
+.auth-sub,
+.auth-copy,
+.auth-note {
+  color: var(--text2);
+}
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface2);
+}
+
+.auth-tab {
+  min-height: 36px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text2);
+  font-weight: 600;
+}
+
+.auth-tab.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(24, 24, 26, 0.06);
+}
+
+.social-btn.apple {
+  background: var(--text);
+  color: var(--surface);
+}
+
+/* App shell */
+.app {
+  background: var(--app-bg);
+}
+
+.sidebar {
+  border-right: 1px solid var(--border);
+  background: var(--sidebar-bg);
+  box-shadow: 12px 0 34px rgba(24, 24, 26, 0.025);
+  backdrop-filter: blur(18px);
+}
+
+.sidebar-top,
+.sidebar-bottom {
+  border-color: var(--border);
+}
+
+.wordmark,
+.welcome-title,
+.topbar-title,
+.modal-title,
+.generate-preview-title,
+.filtered-title {
+  color: var(--text);
+  font-family: inherit;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+}
+
+.user-avatar {
+  background: var(--nova-primary);
+  color: #fff;
+}
+
+.profile-button:hover {
+  background: var(--surface2);
+}
+
+.nav-project,
+.nav-script {
+  min-height: 38px;
+  border-radius: 8px;
+  border-color: transparent;
+}
+
+.nav-project:hover,
+.nav-script:hover {
+  background: var(--surface2);
+}
+
+.nav-project.active,
+.nav-script.active {
+  border-color: color-mix(in oklab, var(--nova-primary) 18%, var(--border));
+  background: color-mix(in oklab, var(--nova-primary) 8%, var(--surface));
+  box-shadow: inset 3px 0 0 var(--nova-primary);
+}
+
+.proj-dot,
+.script-pip {
+  box-shadow: 0 0 0 2px color-mix(in oklab, currentColor 12%, transparent);
+}
+
+.sidebar-bottom {
+  display: grid;
+  gap: 7px;
+}
+
+.sb-btn {
+  min-height: 37px;
+  justify-content: flex-start;
+  color: var(--text2);
+}
+
+.sb-btn.command-accent,
+.sb-btn.import-accent,
+.sb-btn.stuff-accent {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text2);
+}
+
+.sb-btn.create-accent,
+.sb-btn.generate-accent {
+  border-color: color-mix(in oklab, var(--nova-primary) 32%, var(--border));
+  background: color-mix(in oklab, var(--nova-primary) 8%, var(--surface));
+  color: color-mix(in oklab, var(--nova-primary) 82%, var(--text));
+}
+
+.main {
+  background: transparent;
+}
+
+.topbar,
+.tabs {
+  border-color: var(--border);
+  background: var(--topbar-bg);
+  backdrop-filter: blur(18px);
+}
+
+.tabs {
+  background: var(--tabs-bg);
+}
+
+.tab {
+  min-height: 42px;
+  border-bottom: 2px solid transparent;
+  color: var(--text3);
+  font-weight: 550;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tab.active {
+  border-bottom-color: var(--nova-primary);
+  color: var(--text);
+}
+
+.content {
+  background: transparent;
+}
+
+.connection-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid color-mix(in oklab, var(--nova-primary) 18%, var(--border));
+  background: color-mix(in oklab, var(--nova-primary) 7%, var(--surface));
+  color: var(--text);
+}
+
+.connection-banner[hidden] {
+  display: none;
+}
+
+.connection-banner-mark {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--nova-primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+.connection-banner span:last-child {
+  display: grid;
+  gap: 1px;
+}
+
+.connection-banner strong {
+  font-size: 12px;
+}
+
+.connection-banner small {
+  color: var(--text2);
+  font-size: 11px;
+}
+
+/* Cards and script content */
+.script-summary-main,
+.script-summary-stat,
+.stat-card,
+.osc,
+.setting-line,
+.settings-section,
+.block,
+.timeline-item,
+.shot-card,
+.transition-card,
+.subtitle-card,
+.note-card,
+.empty,
+.filtered-hero {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--surface) 96%, transparent);
+  box-shadow: var(--nova-shadow);
+}
+
+.script-summary {
+  gap: 10px;
+}
+
+.script-summary-main,
+.script-summary-stat {
+  min-height: 82px;
+}
+
+.prog-wrap {
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--text) 9%, transparent);
+}
+
+.prog-fill {
+  border-radius: inherit;
+  background: var(--progress-bg);
+}
+
+.block {
+  border-left: 3px solid color-mix(in oklab, var(--block-color, var(--nova-primary)) 60%, var(--border));
+  background: var(--item-bg);
+  box-shadow: 0 4px 16px rgba(24, 24, 26, 0.025);
+}
+
+.block.done {
+  border-color: color-mix(in oklab, var(--green) 36%, var(--border));
+  background: color-mix(in oklab, var(--green-bg) 54%, var(--surface));
+}
+
+.pill,
+.badge,
+.plat,
+.due,
+.settings-chip,
+.command-tag {
+  border: 1px solid color-mix(in oklab, currentColor 16%, transparent);
+  border-radius: 999px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.legend {
+  padding: 4px 2px;
+}
+
+.legend-item {
+  color: var(--text2);
+}
+
+.icon-btn,
+.block-check,
+.block-cut {
+  border-color: var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text2);
+}
+
+.block-check:hover,
+.block-cut:hover,
+.icon-btn:hover {
+  border-color: var(--nova-primary);
+  color: var(--nova-primary);
+}
+
+/* Settings */
+.settings-shell {
+  align-items: start;
+}
+
+.settings-nav {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--surface) 95%, transparent);
+  box-shadow: var(--nova-shadow);
+}
+
+.settings-nav button {
+  border-radius: 8px;
+  color: var(--text2);
+}
+
+.settings-nav button:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.settings-nav button.active {
+  background: color-mix(in oklab, var(--nova-primary) 9%, var(--surface));
+  color: color-mix(in oklab, var(--nova-primary) 82%, var(--text));
+}
+
+.settings-section {
+  padding: 22px;
+}
+
+.settings-section h3 {
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 650;
+}
+
+.settings-section > p,
+.setting-line span,
+.modal-subtitle {
+  color: var(--text2);
+  line-height: 1.55;
+}
+
+.settings-grid-wide {
+  grid-column: 1 / -1;
+}
+
+.settings-savebar {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--surface) 94%, transparent);
+  box-shadow: var(--shadow-tight);
+}
+
+.toggle span {
+  background: color-mix(in oklab, var(--text) 13%, transparent);
+}
+
+.toggle input:checked + span {
+  background: var(--nova-primary);
+}
+
+/* Modals and AI flows */
+.modal-overlay {
+  background: var(--overlay-bg);
+  backdrop-filter: blur(3px);
+}
+
+.modal {
+  max-height: min(88vh, 920px);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--modal-bg);
+  color: var(--text);
+  box-shadow: var(--shadow-soft);
+}
+
+.script-create-modal,
+.generate-script-modal {
+  width: min(960px, calc(100vw - 32px));
+  background: var(--modal-bg);
+}
+
+.script-create-shell,
+.generate-script-shell {
+  min-height: 0;
+  background: var(--modal-bg);
+}
+
+.script-create-visual,
+.generate-script-copy {
+  padding: 38px;
+  background:
+    radial-gradient(circle at 18% 15%, rgba(255, 255, 255, 0.16), transparent 18rem),
+    linear-gradient(145deg, #ad4c3a, #c85743 58%, #d77764);
+  color: #fff;
+}
+
+.script-create-visual h2,
+.generate-script-copy h2 {
+  max-width: 10ch;
+  margin: 14px 0;
+  color: #fff;
+  font-family: inherit;
+  font-size: clamp(2rem, 4vw, 3.35rem);
+  font-weight: 650;
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.script-create-visual p,
+.generate-script-copy p {
+  max-width: 34ch;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.6;
+}
+
+.script-create-kicker {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.script-create-panel,
+.generate-script-panel {
+  padding: 30px;
+  background: var(--modal-bg);
+}
+
+.generate-preview,
+.script-drop-zone {
+  border-color: var(--border);
+  border-radius: 10px;
+  background: var(--surface2);
+}
+
+.generate-preview-body {
+  color: var(--text2);
+  line-height: 1.65;
+}
+
+.ai-meter {
+  opacity: 0.42;
+}
+
+.premium-modal-shell,
+.premium-modal-content,
+.command-shell {
+  background: var(--modal-bg);
+}
+
+.command-modal {
+  padding: 0;
+  overflow: hidden;
+}
+
+.command-head {
+  border-color: var(--border);
+}
+
+.command-item {
+  width: 100%;
+  box-shadow: none;
+}
+
+.import-page,
+.import-panel,
+.import-stage {
+  background: var(--page-bg);
+}
+
+.ai-job-toast,
+.saving {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--surface) 94%, transparent);
+  color: var(--text);
+  box-shadow: var(--shadow-tight);
+}
+
+.saving.error {
+  border-color: color-mix(in oklab, var(--red) 35%, var(--border));
+  color: var(--red);
+}
+
+/* Launcher */
+.page {
+  color: var(--text);
+}
+
+.page .topbar {
+  border: 0;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.brand-mark,
+.lock-mark {
+  background: var(--nova-primary);
+  color: #fff;
+}
+
+.brand-title,
+.intro h1,
+.card h2 {
+  color: var(--text);
+  font-family: inherit;
+  letter-spacing: -0.035em;
+}
+
+.brand-sub,
+.intro p,
+.card p,
+.destination,
+.footer {
+  color: var(--text2);
+}
+
+.status-pill,
+.count,
+.card {
+  border-color: var(--border);
+  background: color-mix(in oklab, var(--surface) 94%, transparent);
+  box-shadow: var(--nova-shadow);
+}
+
+.status-dot {
+  background: var(--green);
+}
+
+.card::before,
+.card::after {
+  display: none;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--nova-primary) 22%, var(--border));
+  box-shadow: 0 20px 48px rgba(24, 24, 26, 0.08);
+}
+
+.card-mark {
+  border: 1px solid color-mix(in oklab, var(--nova-primary) 16%, var(--border));
+  background: color-mix(in oklab, var(--nova-primary) 8%, var(--surface));
+  color: var(--nova-primary);
+}
+
+.card-kind {
+  border-color: color-mix(in oklab, var(--nova-primary) 16%, var(--border));
+  background: color-mix(in oklab, var(--nova-primary) 7%, var(--surface));
+  color: color-mix(in oklab, var(--nova-primary) 82%, var(--text));
+}
+
+.card-action {
+  color: var(--nova-primary);
+}
+
+@media (max-width: 980px) {
+  .script-create-shell,
+  .generate-script-shell {
+    grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
+  }
+
+  .script-create-visual,
+  .generate-script-copy {
+    padding: 28px;
+  }
+
+  .script-create-panel,
+  .generate-script-panel {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 780px) {
+  .mobile-menu-btn {
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: color-mix(in oklab, var(--surface) 94%, transparent);
+    color: var(--text);
+    box-shadow: var(--shadow-tight);
+  }
+
+  .sidebar {
+    box-shadow: 22px 0 70px rgba(24, 24, 26, 0.18);
+  }
+
+  .topbar {
+    align-items: flex-start;
+  }
+
+  .topbar-right {
+    width: 100%;
+    padding-top: 8px;
+    overflow-x: auto;
+  }
+
+  .connection-banner {
+    padding-inline: 12px;
+  }
+
+  .script-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .script-summary-main {
+    grid-column: 1 / -1;
+  }
+
+  .script-create-modal,
+  .generate-script-modal {
+    width: min(100% - 20px, 620px);
+  }
+
+  .script-create-shell,
+  .generate-script-shell {
+    display: block;
+  }
+
+  .script-create-visual,
+  .generate-script-copy {
+    min-height: 0;
+    padding: 24px;
+  }
+
+  .script-create-visual h2,
+  .generate-script-copy h2 {
+    max-width: 16ch;
+    font-size: 2rem;
+  }
+
+  .ai-meter {
+    display: none;
+  }
+
+  .script-create-panel,
+  .generate-script-panel {
+    padding: 22px;
+  }
+
+  .settings-section {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 520px) {
+  .auth-box,
+  .auth-card {
+    border-radius: 12px;
+  }
+
+  .content {
+    padding-inline: 14px;
+  }
+
+  .script-summary-stat {
+    min-height: 70px;
+    padding: 12px;
+  }
+
+  .block {
+    padding: 12px;
+  }
+
+  .script-create-panel,
+  .generate-script-panel,
+  .script-create-visual,
+  .generate-script-copy {
+    padding: 18px;
+  }
+
+  .script-create-grid,
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

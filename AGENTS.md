@@ -13,14 +13,14 @@ These instructions apply to the whole `SCRIPTMANAGER` repository.
 
 - Run `npm run check` before committing.
 - For local browser testing, serve the repository root with any static server and open `index.html` or `scriptai.html`.
-- API routes require `GEMINI_API_KEY` in the deployment environment.
+- API routes require `GEMINI_API_KEY` in the deployment environment and a verified Firebase ID token from an allowed ScriptAI origin.
 
 ## Editing Rules
 
 - Do not put new inline `<style>` or inline `<script>` blocks in HTML pages.
 - Do not commit `.DS_Store`, generated output, logs, or dependency folders.
 - Do not hardcode private API keys, raw passwords, or personal secrets.
-- Keep Gemini prompt changes scoped and preserve the current UK/Northern Ireland creator voice unless the user asks otherwise.
+- Keep Gemini prompt changes scoped and user-neutral. Creator-specific context must come from the signed-in user's own settings, never hardcoded repository copy.
 - The Firebase client config in `assets/js/director-auth.js` is public client configuration; do not treat it as a server secret.
 
 ## Verification

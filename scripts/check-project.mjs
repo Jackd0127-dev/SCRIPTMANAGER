@@ -7,6 +7,7 @@ const jsFiles = [
   "api/sort-script.js",
   "api/lib/gemini.js",
   "api/lib/gemini-prompts.js",
+  "api/lib/request-security.js",
   "assets/js/launcher.js",
   "assets/js/director-auth.js",
   "assets/js/director.js",
@@ -51,9 +52,50 @@ for (const file of jsFiles) {
 }
 
 const directorJs = readFileSync("assets/js/director.js", "utf8");
+const promptJs = readFileSync("api/lib/gemini-prompts.js", "utf8");
+const scriptHtml = readFileSync("scriptai.html", "utf8");
+const vercelConfig = readFileSync("vercel.json", "utf8");
 assert(
   !directorJs.includes("MY_STUFF_PASSWORD ="),
   "Director contains a plaintext My stuff password constant",
+);
+assert(
+  !directorJs.includes("Math.random"),
+  "Script identifiers still use Math.random",
+);
+assert(
+  !directorJs.match(/fetch\(["']\/api\/(?:generate|sort)-script/),
+  "AI requests bypass the authenticated request helper",
+);
+assert(
+  scriptHtml.includes('href="assets/css/nova-theme.css"'),
+  "ScriptAI does not load the Novas Flow theme",
+);
+assert(
+  scriptHtml.includes('id="connectionBanner"'),
+  "ScriptAI is missing the Novas Flow connection surface",
+);
+assert(
+  vercelConfig.includes("X-Content-Type-Options"),
+  "Vercel security headers are missing",
+);
+
+for (const privateTerm of ["Jack Doyle", "Casey", "New Money", "Curate"]) {
+  assert(
+    !promptJs.includes(privateTerm) && !directorJs.includes(privateTerm),
+    `Public ScriptAI code contains private creator context: ${privateTerm}`,
+  );
+}
+
+const { isAllowedOrigin } = await import("../api/lib/request-security.js");
+assert(isAllowedOrigin("https://scriptai.space"), "Production origin is denied");
+assert(
+  isAllowedOrigin("http://localhost:3000"),
+  "Local development origin is denied",
+);
+assert(
+  !isAllowedOrigin("https://scriptmanager.attacker.example"),
+  "Untrusted AI origin is allowed",
 );
 
 if (failures.length) {
