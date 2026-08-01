@@ -12,7 +12,7 @@ Static tools for ScriptAI content planning and reference pages.
 - `assets/css/` - page styles split out from the HTML files.
 - `assets/js/` - browser scripts split out from the HTML files.
 - `api/` - Vercel serverless handlers for Gemini script generation and sorting.
-- `api/lib/` - shared API helpers.
+- `server/` - shared server-only helpers kept outside `/api` so Vercel does not deploy them as standalone functions.
 - `scripts/` - repository validation scripts.
 - `AGENTS.md` - instructions future AI agents should follow in this repo.
 
