@@ -1247,8 +1247,10 @@ function showScript(id) {
   document.getElementById("topbarSub").innerHTML =
     `<span class="badge badge-${s.status}" style="cursor:pointer" onclick="cycleStatus('${id}')">${s.status}</span>${s.due ? `<span class="due${ds ? " " + ds : ""}">${fmtDate(s.due)}</span>` : ""} ${(s.platforms || []).map((p) => `<span class="plat plat-${esc(p).toLowerCase()}">${esc(p)}</span>`).join("")}`;
 
-  document.getElementById("topbarRight").innerHTML =
-    `${connectionActionHtml(s)}<button class="btn-ghost" onclick="openAddBlock('${id}')">Add block</button><button class="btn-ghost" onclick="copyScriptText('${id}')">Copy</button><button class="btn-ghost" onclick="downloadScriptText('${id}')">Export</button><button class="btn-ghost" onclick="openEditScriptModal('${id}')">Edit</button><button class="btn-ghost" onclick="resetBlocks('${id}')">Reset</button>`;
+  const connectionMode = Boolean(requestedNovasFlowOrigin());
+  document.getElementById("topbarRight").innerHTML = connectionMode
+    ? connectionActionHtml(s)
+    : `<button class="btn-ghost" onclick="openAddBlock('${id}')">Add block</button><button class="btn-ghost" onclick="copyScriptText('${id}')">Copy</button><button class="btn-ghost" onclick="downloadScriptText('${id}')">Export</button><button class="btn-ghost" onclick="openEditScriptModal('${id}')">Edit</button><button class="btn-ghost" onclick="resetBlocks('${id}')">Reset</button>`;
 
   const TABS = [
     { id: "full", label: "Full script" },
@@ -1266,13 +1268,27 @@ function showScript(id) {
 
   renderContent(id);
   const safeId = jsArg(id);
-  setMobileActions([
-    { label: "Add", action: `openAddBlock('${safeId}')`, primary: true },
-    { label: "Import", action: `openImportScriptModal('${jsArg(s.projectId)}')` },
-    { label: "Copy", action: `copyScriptText('${safeId}')` },
-    { label: "Export", action: `downloadScriptText('${safeId}')` },
-    { label: "Edit", action: `openEditScriptModal('${safeId}')` },
-  ]);
+  setMobileActions(
+    connectionMode
+      ? [
+          {
+            label: "Connect to Novas Flow",
+            action: `sendScriptToNovasFlow('${safeId}')`,
+            primary: true,
+          },
+          { label: "Copy", action: `copyScriptText('${safeId}')` },
+        ]
+      : [
+          { label: "Add", action: `openAddBlock('${safeId}')`, primary: true },
+          {
+            label: "Import",
+            action: `openImportScriptModal('${jsArg(s.projectId)}')`,
+          },
+          { label: "Copy", action: `copyScriptText('${safeId}')` },
+          { label: "Export", action: `downloadScriptText('${safeId}')` },
+          { label: "Edit", action: `openEditScriptModal('${safeId}')` },
+        ],
+  );
 }
 
 window.switchTab = (v, id) => {
