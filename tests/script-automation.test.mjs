@@ -8,16 +8,16 @@ import {
   parseScriptAiToken,
   tokenDigest,
   tokenHashMatches,
-} from "../api/lib/automation-token.js";
+} from "../server/automation-token.js";
 import {
   MemoryAutomationStore,
   resetMemoryAutomationStore,
-} from "../api/lib/automation-store.js";
+} from "../server/automation-store.js";
 import {
   scriptLinkStatus,
   upsertAutomatedScript,
-} from "../api/lib/script-automation.js";
-import { validateProductionScript } from "../api/lib/creator-planning-contract.js";
+} from "../server/script-automation.js";
+import { validateProductionScript } from "../server/creator-planning-contract.js";
 
 function productionScript(overrides = {}) {
   const key = "personal-creator:2026-08-02:AUG-D02-A:script";

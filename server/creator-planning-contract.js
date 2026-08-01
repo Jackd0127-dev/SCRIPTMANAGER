@@ -1,3 +1,4 @@
+// Shared server code lives outside /api so Vercel does not deploy it as a route.
 import { z } from "zod";
 
 const id = z.string().trim().min(1).max(128);

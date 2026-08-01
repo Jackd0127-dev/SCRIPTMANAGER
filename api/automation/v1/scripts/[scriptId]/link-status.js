@@ -1,6 +1,6 @@
-import { authorizeIntegrationRequest } from "../../../../lib/automation-auth.js";
-import { sendAutomationError } from "../../../../lib/automation-errors.js";
-import { scriptLinkStatus } from "../../../../lib/script-automation.js";
+import { authorizeIntegrationRequest } from "../../../../../server/automation-auth.js";
+import { sendAutomationError } from "../../../../../server/automation-errors.js";
+import { scriptLinkStatus } from "../../../../../server/script-automation.js";
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");

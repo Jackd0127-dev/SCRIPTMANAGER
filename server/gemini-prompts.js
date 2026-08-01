@@ -1,3 +1,4 @@
+// Shared server code lives outside /api so Vercel does not deploy it as a route.
 const CREATOR_CONTEXT = `
 Creator context:
 - The user is an individual creator planning practical short-form content.

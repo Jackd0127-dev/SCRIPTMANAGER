@@ -1,6 +1,6 @@
-import { GEMINI_MODEL, parseGeminiJson, sendJson } from "./lib/gemini.js";
-import { buildSortScriptPrompt } from "./lib/gemini-prompts.js";
-import { authorizeAiRequest } from "./lib/request-security.js";
+import { GEMINI_MODEL, parseGeminiJson, sendJson } from "../server/gemini.js";
+import { buildSortScriptPrompt } from "../server/gemini-prompts.js";
+import { authorizeAiRequest } from "../server/request-security.js";
 
 function slugType(label) {
   return String(label || "")

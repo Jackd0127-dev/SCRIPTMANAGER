@@ -1,3 +1,4 @@
+// Shared server code lives outside /api so Vercel does not deploy it as a route.
 const FIREBASE_API_KEY =
   process.env.FIREBASE_WEB_API_KEY ||
   "AIzaSyCaq7I65QuHhhrK3QfoaR5dbJ_M98kA6U4";

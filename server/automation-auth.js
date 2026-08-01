@@ -1,3 +1,4 @@
+// Shared server code lives outside /api so Vercel does not deploy it as a route.
 import { AutomationError, requireAutomationFeature } from "./automation-errors.js";
 import { automationStore } from "./automation-store.js";
 import {

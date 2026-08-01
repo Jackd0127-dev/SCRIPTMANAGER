@@ -3,14 +3,14 @@ import { randomUUID } from "node:crypto";
 import {
   AutomationError,
   sendAutomationError,
-} from "../../lib/automation-errors.js";
-import { authorizeAutomationUserRequest } from "../../lib/automation-auth.js";
-import { automationStore } from "../../lib/automation-store.js";
+} from "../../../server/automation-errors.js";
+import { authorizeAutomationUserRequest } from "../../../server/automation-auth.js";
+import { automationStore } from "../../../server/automation-store.js";
 import {
   createScriptAiTokenValue,
   SCRIPT_AI_AUTOMATION_SCOPES,
   tokenDigest,
-} from "../../lib/automation-token.js";
+} from "../../../server/automation-token.js";
 
 function publicToken(token) {
   return {

@@ -1,3 +1,4 @@
+// Shared server code lives outside /api so Vercel does not deploy it as a route.
 export class AutomationError extends Error {
   constructor(code, message, status = 400, retryable = false) {
     super(message);

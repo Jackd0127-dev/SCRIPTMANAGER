@@ -1,3 +1,4 @@
+// Shared server code lives outside /api so Vercel does not deploy it as a route.
 import { createHash, randomUUID } from "node:crypto";
 
 import { AutomationError } from "./automation-errors.js";

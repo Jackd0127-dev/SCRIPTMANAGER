@@ -1,6 +1,6 @@
-import { GEMINI_MODEL, parseGeminiJson, sendJson } from "./lib/gemini.js";
-import { buildGenerateScriptPrompt } from "./lib/gemini-prompts.js";
-import { authorizeAiRequest } from "./lib/request-security.js";
+import { GEMINI_MODEL, parseGeminiJson, sendJson } from "../server/gemini.js";
+import { buildGenerateScriptPrompt } from "../server/gemini-prompts.js";
+import { authorizeAiRequest } from "../server/request-security.js";
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");

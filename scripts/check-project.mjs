@@ -5,16 +5,16 @@ const htmlFiles = ["index.html", "scriptai.html"];
 const jsFiles = [
   "api/generate-script.js",
   "api/sort-script.js",
-  "api/lib/gemini.js",
-  "api/lib/gemini-prompts.js",
-  "api/lib/request-security.js",
-  "api/lib/automation-auth.js",
-  "api/lib/automation-errors.js",
-  "api/lib/automation-store.js",
-  "api/lib/automation-token.js",
-  "api/lib/creator-planning-contract.js",
-  "api/lib/firebase-admin.js",
-  "api/lib/script-automation.js",
+  "server/gemini.js",
+  "server/gemini-prompts.js",
+  "server/request-security.js",
+  "server/automation-auth.js",
+  "server/automation-errors.js",
+  "server/automation-store.js",
+  "server/automation-token.js",
+  "server/creator-planning-contract.js",
+  "server/firebase-admin.js",
+  "server/script-automation.js",
   "api/automation/v1/tokens.js",
   "api/automation/v1/context.js",
   "api/automation/v1/scripts/upsert.js",
@@ -66,7 +66,7 @@ for (const file of jsFiles) {
 const directorJs = readFileSync("assets/js/director.js", "utf8");
 const directorAuthJs = readFileSync("assets/js/director-auth.js", "utf8");
 const novaThemeCss = readFileSync("assets/css/nova-theme.css", "utf8");
-const promptJs = readFileSync("api/lib/gemini-prompts.js", "utf8");
+const promptJs = readFileSync("server/gemini-prompts.js", "utf8");
 const scriptHtml = readFileSync("scriptai.html", "utf8");
 const vercelConfig = readFileSync("vercel.json", "utf8");
 assert(
@@ -165,7 +165,7 @@ for (const privateTerm of ["Jack Doyle", "Casey", "New Money", "Curate"]) {
   );
 }
 
-const { isAllowedOrigin } = await import("../api/lib/request-security.js");
+const { isAllowedOrigin } = await import("../server/request-security.js");
 assert(
   isAllowedOrigin("https://scriptai.space"),
   "Production origin is denied",
