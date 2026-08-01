@@ -31,3 +31,13 @@ npm run check
 ```
 
 To preview the static pages locally, serve the repository root with a static file server and open `index.html` or `scriptai.html`.
+
+## Creator-planning server integration
+
+ScriptAI also supports a feature-flagged, owner-scoped server path for Content Tracker. It is separate from the browser handshake and has no social-provider publishing capability.
+
+Set `CREATOR_PLANNING_AUTOMATION_ENABLED=true` only in an authorised environment. Production uses Firebase Admin and Firestore. Local tests may set `SCRIPTAI_AUTOMATION_BACKEND=memory`; production rejects that backend. Firebase Admin uses `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, and `FIREBASE_PRIVATE_KEY`, or application-default credentials in the intended Google environment.
+
+A signed-in owner creates or revokes a one-time token in Settings → Integrations. Only its SHA-256 digest is stored. Content Tracker uses that token server-side to upsert draft scripts transactionally. Stable automation/block keys, source hashes, record versions, and exact backlinks make retries converge and surface manual-edit or link conflicts. User-created blocks and unrelated workspace fields are preserved.
+
+The flag-off rollback is non-destructive: revoke tokens and disable the flag; do not delete existing scripts or links. The coordinated Content Tracker documentation covers setup, rotation, dry-run remediation, and production verification.

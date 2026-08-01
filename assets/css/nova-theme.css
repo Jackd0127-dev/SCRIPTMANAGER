@@ -995,6 +995,7 @@ a,
 
   .settings-section {
     padding: 18px;
+    scroll-margin-top: 72px;
   }
 }
 

@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "creator-planning-remediation/v1",
+  "mode": "dry_run",
+  "generatedAt": "2026-08-01T00:00:00Z",
+  "providerActionsTaken": false,
+  "mutationPerformed": false,
+  "scripts": [
+    {
+      "experimentId": "AUG-D02-A",
+      "scriptId": "6e568426-7ceb-4c50-a74c-a2540d94d6ac",
+      "contentId": "12d164b2-bbfa-41d1-a614-d51dbf9a6f52",
+      "preserve": [
+        "scriptId",
+        "contentId",
+        "name",
+        "draftStatus",
+        "dueDate",
+        "supportedPlatforms",
+        "reciprocalLinks",
+        "userCreatedBlocks"
+      ],
+      "managedBlockPlan": [
+        {
+          "order": 0,
+          "type": "speech",
+          "source": "exact_existing_spoken_words",
+          "requiresExactMatchedCaption": true
+        },
+        {
+          "order": 1,
+          "type": "subtitle",
+          "subtitleKind": "spoken_caption",
+          "source": "exact_existing_spoken_words",
+          "timeRangeMustMatchOrder": 0
+        },
+        {
+          "order": 2,
+          "type": "shot",
+          "source": "existing_shot_direction_only",
+          "timeRangeMustOverlapOrder": 0
+        },
+        {
+          "order": 3,
+          "type": "direction",
+          "source": "existing_non_dialogue_direction_only"
+        },
+        {
+          "order": 4,
+          "type": "transition",
+          "source": "existing_transition_only"
+        }
+      ],
+      "blocker": "MANUAL_EDIT_CONFLICT_UNTIL_EXACT_SOURCE_AND_RECORD_VERSION_ARE_READ"
+    },
+    {
+      "experimentId": "AUG-D02-B",
+      "scriptId": "e7ae8488-1155-41ef-8787-c85656ca17be",
+      "contentId": "cf75794b-2410-4dfb-902a-b494c503c334",
+      "preserve": [
+        "scriptId",
+        "contentId",
+        "name",
+        "draftStatus",
+        "dueDate",
+        "supportedPlatforms",
+        "reciprocalLinks",
+        "userCreatedBlocks"
+      ],
+      "managedBlockPlan": [
+        {
+          "order": 0,
+          "type": "speech",
+          "source": "exact_existing_spoken_words",
+          "requiresExactMatchedCaption": true
+        },
+        {
+          "order": 1,
+          "type": "subtitle",
+          "subtitleKind": "spoken_caption",
+          "source": "exact_existing_spoken_words",
+          "timeRangeMustMatchOrder": 0
+        },
+        {
+          "order": 2,
+          "type": "shot",
+          "source": "existing_shot_direction_only",
+          "timeRangeMustOverlapOrder": 0
+        },
+        {
+          "order": 3,
+          "type": "direction",
+          "source": "existing_non_dialogue_direction_only"
+        },
+        {
+          "order": 4,
+          "type": "transition",
+          "source": "existing_transition_only"
+        }
+      ],
+      "blocker": "MANUAL_EDIT_CONFLICT_UNTIL_EXACT_SOURCE_AND_RECORD_VERSION_ARE_READ"
+    }
+  ]
+}

@@ -2302,6 +2302,121 @@ function settingsSelect(id, label, value, options) {
   return `<div class="form-group"><label class="form-label">${label}</label><select class="form-select" id="${id}">${options.map((opt) => `<option value="${esc(opt)}"${value === opt ? " selected" : ""}>${esc(opt)}</option>`).join("")}</select></div>`;
 }
 
+function scriptAiAutomationMessage(body, fallback) {
+  return body && typeof body.error === "string" ? body.error : fallback;
+}
+
+function renderScriptAiAutomationTokens(tokens) {
+  const panel = document.getElementById("automationTokensPanel");
+  if (!panel) return;
+  const values = Array.isArray(tokens) ? tokens : [];
+  panel.innerHTML = values.length
+    ? values
+        .map(
+          (token) => `
+            <div class="setting-line">
+              <div>
+                <strong>${esc(token.label || "Integration token")}</strong>
+                <span>Created ${esc(new Date(token.createdAt).toLocaleDateString("en-GB"))}${token.lastUsedAt ? ` · Last used ${esc(new Date(token.lastUsedAt).toLocaleDateString("en-GB"))}` : ""}</span>
+              </div>
+              ${token.revokedAt ? '<span class="settings-chip">Revoked</span>' : `<button class="btn-ghost" type="button" onclick="revokeScriptAiAutomationToken('${esc(token.id)}')">Revoke</button>`}
+            </div>`,
+        )
+        .join("")
+    : '<p class="field-help">No ScriptAI integration tokens.</p>';
+}
+
+window.loadScriptAiAutomationTokens = async () => {
+  const status = document.getElementById("automationTokenStatus");
+  if (status) status.textContent = "Loading integration tokens…";
+  try {
+    const response = await directorApiFetch("/api/automation/v1/tokens", {
+      cache: "no-store",
+    });
+    const body = await response.json().catch(() => null);
+    if (!response.ok)
+      throw new Error(
+        scriptAiAutomationMessage(body, "Integration tokens could not be loaded."),
+      );
+    renderScriptAiAutomationTokens(body.tokens);
+    if (status) status.textContent = "";
+  } catch (error) {
+    if (status)
+      status.textContent =
+        error instanceof Error
+          ? error.message
+          : "Integration tokens could not be loaded.";
+  }
+};
+
+window.generateScriptAiAutomationToken = async () => {
+  const label = document.getElementById("automationTokenLabel")?.value?.trim();
+  const status = document.getElementById("automationTokenStatus");
+  const secret = document.getElementById("automationTokenOnce");
+  if (!label) {
+    if (status) status.textContent = "Enter a token label.";
+    return;
+  }
+  if (status) status.textContent = "Generating owner-scoped token…";
+  if (secret) secret.textContent = "";
+  try {
+    const response = await directorApiFetch("/api/automation/v1/tokens", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ label }),
+    });
+    const body = await response.json().catch(() => null);
+    if (!response.ok)
+      throw new Error(
+        scriptAiAutomationMessage(body, "The integration token could not be created."),
+      );
+    if (secret) secret.textContent = body.rawToken;
+    if (status)
+      status.textContent =
+        "Token created. Copy the secret now; ScriptAI will not show it again.";
+    await loadScriptAiAutomationTokens();
+  } catch (error) {
+    if (status)
+      status.textContent =
+        error instanceof Error
+          ? error.message
+          : "The integration token could not be created.";
+  }
+};
+
+window.copyScriptAiAutomationToken = async () => {
+  const value = document.getElementById("automationTokenOnce")?.textContent || "";
+  if (!value) return;
+  await navigator.clipboard.writeText(value);
+  const status = document.getElementById("automationTokenStatus");
+  if (status) status.textContent = "Token copied.";
+};
+
+window.revokeScriptAiAutomationToken = async (id) => {
+  const status = document.getElementById("automationTokenStatus");
+  if (status) status.textContent = "Revoking token…";
+  try {
+    const response = await directorApiFetch("/api/automation/v1/tokens", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    const body = await response.json().catch(() => null);
+    if (!response.ok)
+      throw new Error(
+        scriptAiAutomationMessage(body, "The integration token could not be revoked."),
+      );
+    if (status) status.textContent = "Token revoked.";
+    await loadScriptAiAutomationTokens();
+  } catch (error) {
+    if (status)
+      status.textContent =
+        error instanceof Error
+          ? error.message
+          : "The integration token could not be revoked.";
+  }
+};
+
 window.openSettingsPage = () => {
   const st = settings();
   const profile = window.currentProfile || {};
@@ -2318,7 +2433,7 @@ window.openSettingsPage = () => {
   document.getElementById("mainContent").innerHTML = `
     <div class="settings-shell">
       <div class="settings-nav">
-        ${["account", "appearance", "workspace", "ai", "privacy", "data", "shortcuts"].map((id, i) => `<button class="${i === 0 ? "active" : ""}" data-target="${id}" onclick="scrollSettings('${id}')">${id === "ai" ? "ScriptAI" : id[0].toUpperCase() + id.slice(1)}</button>`).join("")}
+        ${["account", "appearance", "workspace", "ai", "integrations", "privacy", "data", "shortcuts"].map((id, i) => `<button class="${i === 0 ? "active" : ""}" data-target="${id}" onclick="scrollSettings('${id}')">${id === "ai" ? "ScriptAI" : id[0].toUpperCase() + id.slice(1)}</button>`).join("")}
       </div>
       <div class="settings-stack">
         <section class="settings-section" id="settings-account">
@@ -2369,6 +2484,25 @@ window.openSettingsPage = () => {
           </div>
         </section>
 
+        <section class="settings-section" id="settings-integrations">
+          <h3>Integrations</h3>
+          <p>Create a one-time ScriptAI secret for Content Tracker's planning-only connection. These tokens cannot publish to a social provider.</p>
+          <div class="settings-grid">
+            <div class="form-group settings-grid-wide">
+              <label class="form-label" for="automationTokenLabel">Token label</label>
+              <input class="form-input" id="automationTokenLabel" value="Content Tracker creator planning" maxlength="120">
+              <div class="mini-action-row">
+                <button class="btn" type="button" onclick="generateScriptAiAutomationToken()">Generate token</button>
+                <button class="btn-ghost" type="button" onclick="copyScriptAiAutomationToken()">Copy new token</button>
+              </div>
+              <code class="field-help" id="automationTokenOnce" aria-label="New ScriptAI integration token"></code>
+              <span class="field-help" id="automationTokenStatus" role="status" aria-live="polite"></span>
+            </div>
+            <div class="settings-grid-wide" id="automationTokensPanel"></div>
+            <div class="setting-line settings-grid-wide"><div><strong>Connection boundary</strong><span>Paste the new token into Content Tracker Advanced → Creator automation. Revoking a token never removes existing projects, scripts, or links.</span></div></div>
+          </div>
+        </section>
+
         <section class="settings-section" id="settings-privacy">
           <h3>Privacy & security</h3>
           <p>ScriptAI uses your verified Firebase account to keep each workspace separate.</p>
@@ -2415,6 +2549,7 @@ window.openSettingsPage = () => {
       else opt.textContent = proj(opt.value)?.name || opt.value;
     });
   }
+  void loadScriptAiAutomationTokens();
 };
 
 window.exitSettingsPage = () => {
