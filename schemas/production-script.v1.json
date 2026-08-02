@@ -2,6 +2,15 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://scriptai.space/schemas/production-script.v1.json",
   "title": "ProductionScriptV1",
+  "x-runtimeSemanticRules": [
+    "targetDurationSeconds.min must be at least 15 and must not exceed max",
+    "max above 35 requires a specific longerRuntimeReason",
+    "platforms must be the unique set TikTok Instagram YouTube",
+    "automationBlockKey and order must be unique and order must be a contiguous canonical timeline",
+    "each spoken block needs one exact time-matched spoken_caption and an overlapping shot",
+    "ordered spoken blocks must exactly cover masterSpokenText including the hook payoff and CTA or next milestone",
+    "spoken subtitle shot direction and transition fields are atomic and reject cross-type metadata or social copy"
+  ],
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -10,6 +19,10 @@
     "status",
     "dueDate",
     "targetDurationSeconds",
+    "masterSpokenText",
+    "firstSecondHook",
+    "payoff",
+    "callToActionOrNextMilestone",
     "platforms",
     "blocks",
     "productionNotes",
@@ -33,6 +46,30 @@
         "min": { "type": "integer", "minimum": 1, "maximum": 600 },
         "max": { "type": "integer", "minimum": 1, "maximum": 600 }
       }
+    },
+    "longerRuntimeReason": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "masterSpokenText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30000
+    },
+    "firstSecondHook": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "payoff": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "callToActionOrNextMilestone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
     },
     "platforms": {
       "type": "array",

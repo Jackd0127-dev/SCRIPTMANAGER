@@ -45,6 +45,7 @@ const NOVAS_FLOW_ALLOWED_ORIGINS = new Set([
   "http://localhost:3100",
   "http://127.0.0.1:3100",
 ]);
+const ShootReady = window.ScriptAiShootReady;
 
 function safeScriptId(value) {
   const id = String(value || "").trim();
@@ -575,7 +576,26 @@ function typePillClass(type) {
 }
 
 function isSpokenType(type) {
-  return type === "subtitle" || type === "voiceover" || type === "speech";
+  return ShootReady.isSpokenType(type);
+}
+
+function isVisibleTextType(type) {
+  return isSpokenType(type) || type === "subtitle";
+}
+
+function blockSeconds(block) {
+  return ShootReady.blockSeconds(block);
+}
+
+function blockVisibleText(block) {
+  return isVisibleTextType(block.type)
+    ? block.spoken || ""
+    : [block.shotName, block.desc].filter(Boolean).join(" — ");
+}
+
+function blockTypeDetail(block) {
+  if (block.type !== "subtitle") return typeLabel(block.type);
+  return ShootReady.subtitleLabel(block);
 }
 
 function blockTypeOptions(selected = "direction") {
@@ -1016,30 +1036,34 @@ function novasFlowBlock(type, shotName, desc = "", spoken = "") {
 }
 
 function novasFlowBlocks(content) {
-  const blocks = [];
   const brief = [
+    "Legacy Content Tracker browser payload. Review and atomically time this material before treating it as shoot-ready.",
     content.description,
     content.targetAudience ? `Audience: ${content.targetAudience}` : "",
     content.masterFormat ? `Format: ${content.masterFormat}` : "",
   ]
     .filter(Boolean)
     .join("\n");
-  if (brief) blocks.push(novasFlowBlock("direction", "Brief", brief));
-  if (content.hook)
-    blocks.push(novasFlowBlock("speech", "Hook", "", content.hook));
-  if (content.script)
-    blocks.push(novasFlowBlock("speech", "Script", "", content.script));
-  if (content.masterCaption)
-    blocks.push(
-      novasFlowBlock("subtitle", "Master caption", "", content.masterCaption),
-    );
-  if (content.callToAction)
-    blocks.push(
-      novasFlowBlock("speech", "Call to action", "", content.callToAction),
-    );
-  if (!blocks.length)
-    blocks.push(novasFlowBlock("direction", "Brief", content.title));
-  return blocks;
+  const preserved = [
+    content.hook ? `Unstructured hook:\n${content.hook}` : "",
+    content.script ? `Unstructured master script:\n${content.script}` : "",
+    content.callToAction
+      ? `Unstructured CTA or milestone:\n${content.callToAction}`
+      : "",
+    content.masterCaption
+      ? `Social master caption — never an in-video subtitle:\n${content.masterCaption}`
+      : "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+  const block = novasFlowBlock(
+    "direction",
+    "Unstructured brief — review required",
+    brief || content.title,
+  );
+  block.notes = preserved;
+  block.shootReady = false;
+  return [block];
 }
 
 function novasFlowNotes(content) {
@@ -1089,16 +1113,15 @@ async function connectNovasFlowContent(rawContent) {
     ? proj(existing.projectId) || novasFlowProject()
     : novasFlowProject();
   const linkedAt = new Date().toISOString();
-  const next = {
-    ...(existing || {}),
+  const browserDraft = {
     id: existing?.id || uid(),
     projectId: project.id,
-    name: content.title,
+    name: existing?.name || content.title,
     status: existing?.status || "draft",
     due: existing?.due || "",
-    platforms: content.platforms,
-    notes: novasFlowNotes(content),
-    blocks: novasFlowBlocks(content),
+    platforms: existing?.platforms || content.platforms,
+    notes: existing?.notes || novasFlowNotes(content),
+    blocks: existing?.blocks || novasFlowBlocks(content),
     novasFlow: {
       origin,
       contentId: content.id,
@@ -1107,6 +1130,7 @@ async function connectNovasFlowContent(rawContent) {
       syncedAt: linkedAt,
     },
   };
+  const next = ShootReady.mergeBrowserConnection(existing, browserDraft);
   if (existing) Object.assign(existing, next);
   else {
     if (!Array.isArray(S.scripts)) S.scripts = [];
@@ -1129,7 +1153,11 @@ async function connectNovasFlowContent(rawContent) {
   renderSb();
   selScript(next.id);
   postScriptSelection(next, origin);
-  showToast(`Connected “${next.name}” to Novas Flow.`);
+  showToast(
+    existing
+      ? `Reconnected “${next.name}” without replacing its blocks.`
+      : `Connected “${next.name}”. Review the unstructured brief before filming.`,
+  );
 }
 
 window.beginNovasFlowConnection = () => {
@@ -1551,19 +1579,13 @@ function scriptPlainText(s) {
     (s.platforms || []).length
       ? `Platforms: ${(s.platforms || []).join(", ")}`
       : "",
+    `Target runtime: ${ShootReady.runtimeLabel(s)}`,
     s.notes ? `Notes: ${s.notes}` : "",
     "",
     "Blocks",
   ].filter(Boolean);
   (s.blocks || []).forEach((b, i) => {
-    const label = typeLabel(normalizeClientType(b.type));
-    const body = isSpokenType(b.type)
-      ? b.spoken
-      : [b.shotName, b.desc].filter(Boolean).join(" - ");
-    lines.push(
-      `${String(i + 1).padStart(2, "0")}. [${label}] ${body || "Untitled block"}`,
-    );
-    if (b.notes) lines.push(`    Notes: ${b.notes}`);
+    lines.push(...ShootReady.exportBlockLines(b, i));
   });
   return lines.join("\n");
 }
@@ -1603,7 +1625,7 @@ function showScript(id) {
   const ds = dueSt(s.due);
 
   document.getElementById("topbarSub").innerHTML =
-    `<span class="badge badge-${s.status}" style="cursor:pointer" onclick="cycleStatus('${id}')">${s.status}</span>${s.due ? `<span class="due${ds ? " " + ds : ""}">${fmtDate(s.due)}</span>` : ""} ${(s.platforms || []).map((p) => `<span class="plat plat-${esc(p).toLowerCase()}">${esc(p)}</span>`).join("")}`;
+    `<span class="badge badge-${s.status}" style="cursor:pointer" onclick="cycleStatus('${id}')">${s.status}</span>${s.due ? `<span class="due${ds ? " " + ds : ""}">${fmtDate(s.due)}</span>` : ""}<span class="due">${esc(ShootReady.runtimeLabel(s))}</span> ${(s.platforms || []).map((p) => `<span class="plat plat-${esc(p).toLowerCase()}">${esc(p)}</span>`).join("")}`;
 
   const connectionMode = Boolean(requestedNovasFlowOrigin());
   const contentAction = linkedContentActionHtml(s);
@@ -1719,13 +1741,14 @@ function renderFull(s, el) {
 
   s.blocks.forEach((b) => {
     b.type = normalizeClientType(b.type);
-    const isSp = isSpokenType(b.type);
+    const isText = isVisibleTextType(b.type);
+    const txt = fp(blockVisibleText(b));
+    const link =
+      b.type === "subtitle" && b.sourceSpeechBlockKey
+        ? `<div class="block-note-preview">Linked speech: ${esc(b.sourceSpeechBlockKey)}</div>`
+        : "";
 
-    const txt = isSp
-      ? fp(b.spoken)
-      : fp(b.shotName + (b.desc ? " — " + b.desc : ""));
-
-    h += `<div class="block-row${b.done ? " done" : ""}${b.cut ? " cut" : ""}" id="bl-${b.id}" onclick="openBlockDetail('${s.id}','${b.id}')"><span class="type-pill ${typePillClass(b.type)}" style="--type-color:${typeColor(b.type)}">${esc(typeLabel(b.type))}${b.shotName && !isSp ? " · " + esc(b.shotName) : ""}</span><div class="block-main ${isSp ? "block-spoken" : "block-desc"}">${txt}${b.notes ? `<div class="block-note-preview">${esc(b.notes)}</div>` : ""}</div><button class="block-tick${b.done ? " on" : ""}" onclick="event.stopPropagation();toggle('${s.id}','${b.id}','done')" aria-label="Mark done"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1"/></svg></button><button class="block-x${b.cut ? " on" : ""}" onclick="event.stopPropagation();toggle('${s.id}','${b.id}','cut')" aria-label="Cut"><svg viewBox="0 0 12 12" fill="none"><line x1="1" y1="1" x2="11" y2="11"/><line x1="11" y1="1" x2="1" y2="11"/></svg></button></div>`;
+    h += `<div class="block-row${b.done ? " done" : ""}${b.cut ? " cut" : ""}" id="bl-${b.id}" onclick="openBlockDetail('${s.id}','${b.id}')"><span class="type-pill ${typePillClass(b.type)}" style="--type-color:${typeColor(b.type)}">${esc(blockTypeDetail(b))}${b.shotName && !isText ? " · " + esc(b.shotName) : ""} · ${esc(blockSeconds(b))}</span><div class="block-main ${isText ? "block-spoken" : "block-desc"}">${txt}${link}${b.notes ? `<div class="block-note-preview">${esc(b.notes)}</div>` : ""}</div><button class="block-tick${b.done ? " on" : ""}" onclick="event.stopPropagation();toggle('${s.id}','${b.id}','done')" aria-label="Mark done"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1"/></svg></button><button class="block-x${b.cut ? " on" : ""}" onclick="event.stopPropagation();toggle('${s.id}','${b.id}','cut')" aria-label="Cut"><svg viewBox="0 0 12 12" fill="none"><line x1="1" y1="1" x2="11" y2="11"/><line x1="11" y1="1" x2="1" y2="11"/></svg></button></div>`;
   });
 
   el.innerHTML = h;
@@ -1737,16 +1760,15 @@ function renderShots(s, el) {
   let h = `<div class="sec-hd"><div class="sec-title">Shots (${shots.length})</div></div><div class="shots-grid">`;
 
   shots.forEach((b, i) => {
-    const idx = s.blocks.indexOf(b);
+    const overlappingSpeech = ShootReady.overlappingSpokenBlocks(b, s.blocks);
+    const spoken = overlappingSpeech
+      .map(
+        (line) =>
+          `<div><strong>${esc(typeLabel(line.type))} · ${esc(blockSeconds(line))}</strong><br>${fp(line.spoken || "")}</div>`,
+      )
+      .join("");
 
-    const rel = s.blocks
-      .slice(idx + 1)
-      .filter((x) => isSpokenType(x.type))
-      .slice(0, 2)
-      .map((x) => x.spoken)
-      .join(" ");
-
-    h += `<div class="shot-card${b.done ? " done" : ""}${b.cut ? " cut" : ""}" id="bl-${b.id}" onclick="openBlockDetail('${s.id}','${b.id}')"><div class="shot-num">0${i + 1}</div><span class="type-pill pill-shot">${esc(b.shotName)}</span>${b.desc ? `<div style="font-size:12px;color:var(--text2);margin-top:6px;font-style:italic">${esc(b.desc)}</div>` : ""} ${rel ? `<div class="shot-spoken-box">${fp(rel)}</div>` : ""}${b.notes ? `<div class="block-note-preview">${esc(b.notes)}</div>` : ""}<div class="shot-btns"><button class="tb${b.done ? " on" : ""}" onclick="event.stopPropagation();toggle('${s.id}','${b.id}','done')">✓ Done</button><button class="xb${b.cut ? " on" : ""}" onclick="event.stopPropagation();toggle('${s.id}','${b.id}','cut')">✕ Cut</button></div></div>`;
+    h += `<div class="shot-card${b.done ? " done" : ""}${b.cut ? " cut" : ""}" id="bl-${b.id}" onclick="openBlockDetail('${s.id}','${b.id}')"><div class="shot-num">0${i + 1}</div><span class="type-pill pill-shot">${esc(b.shotName)} · ${esc(blockSeconds(b))}</span>${b.desc ? `<div style="font-size:12px;color:var(--text2);margin-top:6px;font-style:italic">${esc(b.desc)}</div>` : ""} ${spoken ? `<div class="shot-spoken-box">${spoken}</div>` : ""}${b.notes ? `<div class="block-note-preview">${esc(b.notes)}</div>` : ""}<div class="shot-btns"><button class="tb${b.done ? " on" : ""}" onclick="event.stopPropagation();toggle('${s.id}','${b.id}','done')">✓ Done</button><button class="xb${b.cut ? " on" : ""}" onclick="event.stopPropagation();toggle('${s.id}','${b.id}','cut')">✕ Cut</button></div></div>`;
   });
 
   el.innerHTML = h + "</div>";
@@ -1768,7 +1790,7 @@ function renderTransitions(s, el) {
     h += `<div style="margin-bottom:18px"><div style="font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px">${esc(name)} <span style="font-size:11px;color:var(--text3);font-weight:400">×${blocks.length}</span></div>`;
 
     blocks.forEach((b, i) => {
-      h += `<div class="block-row${b.done ? " done" : ""}${b.cut ? " cut" : ""}" id="bl-${b.id}" onclick="openBlockDetail('${s.id}','${b.id}')"><span class="type-pill pill-transition">#${i + 1}</span><div class="block-main block-desc">${esc(b.desc || "—")}${b.notes ? `<div class="block-note-preview">${esc(b.notes)}</div>` : ""}</div><button class="block-tick${b.done ? " on" : ""}" onclick="event.stopPropagation();toggle('${s.id}','${b.id}','done')" aria-label="Mark done"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1"/></svg></button><button class="block-x${b.cut ? " on" : ""}" onclick="event.stopPropagation();toggle('${s.id}','${b.id}','cut')" aria-label="Cut"><svg viewBox="0 0 12 12" fill="none"><line x1="1" y1="1" x2="11" y2="11"/><line x1="11" y1="1" x2="1" y2="11"/></svg></button></div>`;
+      h += `<div class="block-row${b.done ? " done" : ""}${b.cut ? " cut" : ""}" id="bl-${b.id}" onclick="openBlockDetail('${s.id}','${b.id}')"><span class="type-pill pill-transition">#${i + 1} · ${esc(blockSeconds(b))}</span><div class="block-main block-desc">${esc(b.desc || "—")}${b.notes ? `<div class="block-note-preview">${esc(b.notes)}</div>` : ""}</div><button class="block-tick${b.done ? " on" : ""}" onclick="event.stopPropagation();toggle('${s.id}','${b.id}','done')" aria-label="Mark done"><svg viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1"/></svg></button><button class="block-x${b.cut ? " on" : ""}" onclick="event.stopPropagation();toggle('${s.id}','${b.id}','cut')" aria-label="Cut"><svg viewBox="0 0 12 12" fill="none"><line x1="1" y1="1" x2="11" y2="11"/><line x1="11" y1="1" x2="1" y2="11"/></svg></button></div>`;
     });
 
     h += "</div>";
@@ -1778,14 +1800,20 @@ function renderTransitions(s, el) {
 }
 
 function renderSubtitles(s, el) {
-  const lines = s.blocks.filter((b) => isSpokenType(b.type));
+  const lines = s.blocks.filter((b) => isVisibleTextType(b.type));
+  const spokenCount = lines.filter((b) => isSpokenType(b.type)).length;
+  const subtitleCount = lines.filter((b) => b.type === "subtitle").length;
 
-  let h = `<div class="sec-hd"><div class="sec-title">Dialogue & subtitles (${lines.length} lines)</div></div>`;
+  let h = `<div class="sec-hd"><div class="sec-title">Dialogue & subtitles (${spokenCount} spoken lines · ${subtitleCount} subtitle blocks)</div></div>`;
 
   lines.forEach((b, i) => {
     const short =
       b.type === "voiceover" ? "VO" : b.type === "speech" ? "SP" : "SUB";
-    h += `<div class="sub-line" onclick="openBlockDetail('${s.id}','${b.id}')"><div class="sub-idx">${String(i + 1).padStart(2, "0")}</div><span class="type-pill ${typePillClass(b.type)}" style="flex-shrink:0;align-self:flex-start;margin-top:1px">${short}</span><div class="sub-text">${fp(b.spoken)}${b.notes ? `<div class="block-note-preview">${esc(b.notes)}</div>` : ""}</div></div>`;
+    const linked =
+      b.type === "subtitle" && b.sourceSpeechBlockKey
+        ? `<div class="block-note-preview">Linked speech: ${esc(b.sourceSpeechBlockKey)}</div>`
+        : "";
+    h += `<div class="sub-line" onclick="openBlockDetail('${s.id}','${b.id}')"><div class="sub-idx">${String(i + 1).padStart(2, "0")}</div><span class="type-pill ${typePillClass(b.type)}" style="flex-shrink:0;align-self:flex-start;margin-top:1px">${short} · ${esc(blockSeconds(b))}</span><div class="sub-text"><strong>${esc(blockTypeDetail(b))}</strong><br>${fp(b.spoken)}${linked}${b.notes ? `<div class="block-note-preview">${esc(b.notes)}</div>` : ""}</div></div>`;
   });
 
   el.innerHTML = h;
@@ -1796,11 +1824,9 @@ function renderTimeline(s, el) {
 
   s.blocks.forEach((b, i) => {
     b.type = normalizeClientType(b.type);
-    const label = isSpokenType(b.type)
-      ? b.spoken
-      : b.shotName + (b.desc ? " — " + b.desc : "");
+    const label = blockVisibleText(b);
 
-    h += `<div class="tl-item"><div class="tl-dot" style="background:${typeColor(b.type)}"></div><div class="tl-card" onclick="openBlockDetail('${s.id}','${b.id}')"><div class="tl-meta">${String(i + 1).padStart(2, "0")} · ${esc(typeLabel(b.type))}${b.shotName ? " · " + esc(b.shotName) : ""}</div><div class="tl-text">${fp(label)}${b.notes ? `<div class="block-note-preview">${esc(b.notes)}</div>` : ""}</div></div></div>`;
+    h += `<div class="tl-item"><div class="tl-dot" style="background:${typeColor(b.type)}"></div><div class="tl-card" onclick="openBlockDetail('${s.id}','${b.id}')"><div class="tl-meta">${String(i + 1).padStart(2, "0")} · ${esc(blockTypeDetail(b))} · ${esc(blockSeconds(b))}${b.shotName ? " · " + esc(b.shotName) : ""}${b.sourceSpeechBlockKey ? " · linked to " + esc(b.sourceSpeechBlockKey) : ""}</div><div class="tl-text">${fp(label)}${b.notes ? `<div class="block-note-preview">${esc(b.notes)}</div>` : ""}</div></div></div>`;
   });
 
   el.innerHTML = h + "</div>";
@@ -1811,7 +1837,65 @@ function renderNotes(s, el) {
 
   const cut = s.blocks.filter((b) => b.cut).length;
 
-  el.innerHTML = `<div class="sec-hd"><div class="sec-title">Notes</div></div><textarea class="notes-ta" placeholder="Notes, reminders, shoot checklist…" oninput="saveNotes('${s.id}',this.value)">${esc(s.notes || "")}</textarea><div class="divider"></div><div class="sec-hd"><div class="sec-title">Script info</div></div><div class="stat-grid"><div class="stat-card"><div class="stat-label">Total blocks</div><div class="stat-val">${s.blocks.length}</div></div><div class="stat-card"><div class="stat-label">Shots</div><div class="stat-val" style="color:#ff8a4c">${s.blocks.filter((b) => b.type === "shot").length}</div></div><div class="stat-card"><div class="stat-label">Transitions</div><div class="stat-val" style="color:var(--violet)">${s.blocks.filter((b) => b.type === "transition").length}</div></div><div class="stat-card"><div class="stat-label">Lines</div><div class="stat-val" style="color:var(--mint)">${s.blocks.filter((b) => isSpokenType(b.type)).length}</div></div><div class="stat-card"><div class="stat-label">Done</div><div class="stat-val" style="color:var(--green)">${done}</div></div><div class="stat-card"><div class="stat-label">Cut</div><div class="stat-val" style="color:var(--red)">${cut}</div></div></div>`;
+  el.innerHTML = `<div class="sec-hd"><div class="sec-title">Notes</div></div><textarea class="notes-ta" placeholder="Notes, reminders, shoot checklist…" oninput="saveNotes('${s.id}',this.value)">${esc(s.notes || "")}</textarea><div class="divider"></div><div class="sec-hd"><div class="sec-title">Script info · ${esc(ShootReady.runtimeLabel(s))}</div></div><div class="stat-grid"><div class="stat-card"><div class="stat-label">Total blocks</div><div class="stat-val">${s.blocks.length}</div></div><div class="stat-card"><div class="stat-label">Shots</div><div class="stat-val" style="color:#ff8a4c">${s.blocks.filter((b) => b.type === "shot").length}</div></div><div class="stat-card"><div class="stat-label">Transitions</div><div class="stat-val" style="color:var(--violet)">${s.blocks.filter((b) => b.type === "transition").length}</div></div><div class="stat-card"><div class="stat-label">Spoken lines</div><div class="stat-val" style="color:var(--mint)">${s.blocks.filter((b) => isSpokenType(b.type)).length}</div></div><div class="stat-card"><div class="stat-label">Subtitle blocks</div><div class="stat-val" style="color:var(--mint)">${s.blocks.filter((b) => b.type === "subtitle").length}</div></div><div class="stat-card"><div class="stat-label">Done</div><div class="stat-val" style="color:var(--green)">${done}</div></div><div class="stat-card"><div class="stat-label">Cut</div><div class="stat-val" style="color:var(--red)">${cut}</div></div></div>`;
+}
+
+function blockEditorFields(prefix, type, block = {}) {
+  const value = block.spoken || block.desc || "";
+  if (type === "speech" || type === "voiceover")
+    return `<div class="form-group"><label class="form-label" for="${prefix}-text">Exact words to say</label><textarea class="notes-ta" id="${prefix}-text" style="min-height:96px" placeholder="One independently deliverable spoken line">${esc(block.spoken || "")}</textarea></div>`;
+  if (type === "subtitle")
+    return `<div class="block-detail-grid"><div class="form-group"><label class="form-label" for="${prefix}-subtitle-kind">Subtitle subtype</label><select class="form-select" id="${prefix}-subtitle-kind"><option value="spoken_caption"${block.subtitleKind === "spoken_caption" ? " selected" : ""}>Spoken caption</option><option value="editorial_text"${block.subtitleKind === "editorial_text" ? " selected" : ""}>Editorial on-screen text</option></select></div><div class="form-group"><label class="form-label" for="${prefix}-source-key">Linked speech block key</label><input class="form-input" id="${prefix}-source-key" value="${esc(block.sourceSpeechBlockKey || "")}" placeholder="Required for a spoken caption"></div></div><div class="form-group"><label class="form-label" for="${prefix}-text">In-video subtitle text</label><textarea class="notes-ta" id="${prefix}-text" style="min-height:96px" placeholder="Visible in-video text only — never social caption copy">${esc(block.spoken || "")}</textarea></div>`;
+  const labels = {
+    shot: ["What to film", "Framing, subject, camera action, or visual beat"],
+    transition: ["Transition instruction", "One cut or transition event"],
+    direction: ["Production direction", "One non-dialogue delivery or production instruction"],
+  };
+  const [label, placeholder] = labels[type] || [
+    "Block detail",
+    "One independently filmable production event",
+  ];
+  return `<div class="form-group"><label class="form-label" for="${prefix}-text">${label}</label><textarea class="notes-ta" id="${prefix}-text" style="min-height:96px" placeholder="${placeholder}">${esc(value)}</textarea></div>`;
+}
+
+window.refreshBlockSpecificEditor = (prefix) => {
+  const type = normalizeClientType(
+    document.getElementById(`${prefix}-type`)?.value || "direction",
+  );
+  const target = document.getElementById(`${prefix}-specific-fields`);
+  if (target) target.innerHTML = blockEditorFields(prefix, type);
+};
+
+function blockTimingFields(prefix, block = {}) {
+  return `<div class="block-detail-grid"><div class="form-group"><label class="form-label" for="${prefix}-start">Start seconds</label><input class="form-input" id="${prefix}-start" type="number" min="0" step="0.1" value="${esc(block.timeRange?.startSeconds ?? "")}"></div><div class="form-group"><label class="form-label" for="${prefix}-end">End seconds</label><input class="form-input" id="${prefix}-end" type="number" min="0.1" step="0.1" value="${esc(block.timeRange?.endSeconds ?? "")}"></div></div>`;
+}
+
+function applyBlockEditor(block, prefix) {
+  const type = normalizeClientType(
+    document.getElementById(`${prefix}-type`)?.value || block.type,
+  );
+  const text = document.getElementById(`${prefix}-text`)?.value.trim() || "";
+  block.type = type;
+  block.shotName =
+    document.getElementById(`${prefix}-shot`)?.value.trim() || "";
+  block.notes = document.getElementById(`${prefix}-notes`)?.value.trim() || "";
+  block.spoken = isVisibleTextType(type) ? text : "";
+  block.desc = isVisibleTextType(type) ? "" : text;
+  if (type === "subtitle") {
+    block.subtitleKind =
+      document.getElementById(`${prefix}-subtitle-kind`)?.value ||
+      "editorial_text";
+    block.sourceSpeechBlockKey =
+      document.getElementById(`${prefix}-source-key`)?.value.trim() || "";
+  } else {
+    delete block.subtitleKind;
+    delete block.sourceSpeechBlockKey;
+  }
+  const start = Number(document.getElementById(`${prefix}-start`)?.value);
+  const end = Number(document.getElementById(`${prefix}-end`)?.value);
+  if (Number.isFinite(start) && Number.isFinite(end) && end > start) {
+    block.timeRange = { startSeconds: start, endSeconds: end };
+  }
 }
 
 window.openBlockDetail = (sid, bid) => {
@@ -1819,13 +1903,15 @@ window.openBlockDetail = (sid, bid) => {
   const b = s?.blocks.find((x) => x.id === bid);
   if (!b) return;
   b.type = normalizeClientType(b.type);
+  const managed = b.automation?.managedBy === "creator-planning-automation";
   openModal(`<div class="modal-title">Edit block</div>
     <div class="block-detail-grid">
-      <div class="form-group"><label class="form-label">Type</label><div class="type-control"><select class="form-select" id="bd-type">${blockTypeOptions(b.type)}</select><button class="btn-ghost" type="button" onclick="openCustomTypeCreator('bd-type')">Custom</button></div></div>
-      <div class="form-group"><label class="form-label">Shot label</label><input class="form-input" id="bd-shot" value="${esc(b.shotName || "")}" placeholder="Hook, Product shot, CTA"></div>
+      <div class="form-group"><label class="form-label">Type</label><div class="type-control"><select class="form-select" id="bd-type" onchange="refreshBlockSpecificEditor('bd')"${managed ? " disabled" : ""}>${blockTypeOptions(b.type)}</select>${managed ? "" : `<button class="btn-ghost" type="button" onclick="openCustomTypeCreator('bd-type')">Custom</button>`}</div>${managed ? '<span class="field-help">Automation-managed type; edit through an explicit versioned replacement.</span>' : ""}</div>
+      <div class="form-group"><label class="form-label">Block label</label><input class="form-input" id="bd-shot" value="${esc(b.shotName || "")}" placeholder="Hook, product shot, CTA"></div>
     </div>
-    <div class="form-group"><label class="form-label">Detail / direction</label><textarea class="notes-ta" id="bd-desc" style="min-height:96px" placeholder="Camera move, framing, transition, action, edit detail...">${esc(b.desc || "")}</textarea></div>
-    <div class="form-group"><label class="form-label">Spoken / on-screen text</label><textarea class="notes-ta" id="bd-spoken" style="min-height:96px" placeholder="Voiceover, subtitle, caption, hook line...">${esc(b.spoken || "")}</textarea></div>
+    ${blockTimingFields("bd", b)}
+    <div id="bd-specific-fields">${blockEditorFields("bd", b.type, b)}</div>
+    ${b.automationBlockKey ? `<div class="field-help">Automation block key: <code>${esc(b.automationBlockKey)}</code></div>` : ""}
     <div class="form-group"><label class="form-label">Notes</label><textarea class="notes-ta" id="bd-notes" style="min-height:120px" placeholder="Props, reminders, timing, retakes, extra context...">${esc(b.notes || "")}</textarea></div>
     <div class="modal-actions"><button class="btn-ghost btn-danger" onclick="deleteBlock('${sid}','${bid}')">Delete block</button><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveBlockDetail('${sid}','${bid}')">Save block</button></div>`);
 };
@@ -1833,11 +1919,11 @@ window.openBlockDetail = (sid, bid) => {
 window.openAddBlock = (sid) => {
   openModal(`<div class="modal-title">Add block</div>
     <div class="block-detail-grid">
-      <div class="form-group"><label class="form-label">Type</label><div class="type-control"><select class="form-select" id="ab-type">${blockTypeOptions()}</select><button class="btn-ghost" type="button" onclick="openCustomTypeCreator('ab-type')">Custom</button></div></div>
-      <div class="form-group"><label class="form-label">Shot label</label><input class="form-input" id="ab-shot" placeholder="Hook, Product shot, CTA"></div>
+      <div class="form-group"><label class="form-label">Type</label><div class="type-control"><select class="form-select" id="ab-type" onchange="refreshBlockSpecificEditor('ab')">${blockTypeOptions()}</select><button class="btn-ghost" type="button" onclick="openCustomTypeCreator('ab-type')">Custom</button></div></div>
+      <div class="form-group"><label class="form-label">Block label</label><input class="form-input" id="ab-shot" placeholder="Hook, product shot, CTA"></div>
     </div>
-    <div class="form-group"><label class="form-label">Detail / direction</label><textarea class="notes-ta" id="ab-desc" style="min-height:96px" placeholder="Camera move, framing, transition, action, edit detail..."></textarea></div>
-    <div class="form-group"><label class="form-label">Spoken / on-screen text</label><textarea class="notes-ta" id="ab-spoken" style="min-height:96px" placeholder="Voiceover, subtitle, caption, hook line..."></textarea></div>
+    ${blockTimingFields("ab")}
+    <div id="ab-specific-fields">${blockEditorFields("ab", "direction")}</div>
     <div class="form-group"><label class="form-label">Notes</label><textarea class="notes-ta" id="ab-notes" style="min-height:90px" placeholder="Props, reminders, timing, retakes..."></textarea></div>
     <div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="createBlock('${sid}')">Add block</button></div>`);
 };
@@ -1845,16 +1931,19 @@ window.openAddBlock = (sid) => {
 window.createBlock = (sid) => {
   const s = scr(sid);
   if (!s) return;
-  s.blocks.push({
+  const block = {
     id: uid(),
-    type: normalizeClientType(document.getElementById("ab-type").value),
-    shotName: document.getElementById("ab-shot").value.trim(),
-    desc: document.getElementById("ab-desc").value.trim(),
-    spoken: document.getElementById("ab-spoken").value.trim(),
-    notes: document.getElementById("ab-notes").value.trim(),
+    type: "direction",
+    shotName: "",
+    desc: "",
+    spoken: "",
+    notes: "",
     done: false,
     cut: false,
-  });
+    order: Math.max(-1, ...s.blocks.map((item) => Number(item.order) || 0)) + 1,
+  };
+  applyBlockEditor(block, "ab");
+  s.blocks.push(block);
   save();
   closeModal();
   showScript(sid);
@@ -1868,16 +1957,32 @@ function multipleBlockRowHtml() {
   return `<section class="multi-block-editor" data-multi-block>
     <div class="multi-block-editor-head"><strong>Block <span data-multi-block-number>${rowNumber}</span></strong><button class="multi-block-remove" type="button" onclick="removeMultipleBlockRow(this)" aria-label="Remove block">Remove</button></div>
     <div class="block-detail-grid">
-      <div class="form-group"><label class="form-label" for="${selectId}">Type</label><div class="type-control"><select class="form-select" id="${selectId}" data-field="type">${blockTypeOptions()}</select><button class="btn-ghost" type="button" onclick="openCustomTypeCreator('${selectId}')">Custom</button></div></div>
-      <div class="form-group"><label class="form-label">Shot label</label><input class="form-input" data-field="shot" placeholder="Hook, product shot, CTA"></div>
+      <div class="form-group"><label class="form-label" for="${selectId}">Type</label><div class="type-control"><select class="form-select" id="${selectId}" data-field="type" onchange="updateMultipleBlockType(this)">${blockTypeOptions()}</select><button class="btn-ghost" type="button" onclick="openCustomTypeCreator('${selectId}')">Custom</button></div></div>
+      <div class="form-group"><label class="form-label">Block label</label><input class="form-input" data-field="shot" placeholder="Hook, product shot, CTA"></div>
     </div>
-    <div class="multi-block-copy-grid">
-      <div class="form-group"><label class="form-label">Detail / direction</label><textarea class="notes-ta" data-field="desc" placeholder="Camera move, framing, transition, action..."></textarea></div>
-      <div class="form-group"><label class="form-label">Spoken / on-screen text</label><textarea class="notes-ta" data-field="spoken" placeholder="Voiceover, subtitle, caption, hook line..."></textarea></div>
-    </div>
+    <div class="form-group"><label class="form-label" data-field-label>Production direction</label><textarea class="notes-ta" data-field="text" placeholder="One non-dialogue production instruction"></textarea></div>
     <div class="form-group"><label class="form-label">Notes</label><input class="form-input" data-field="notes" placeholder="Props, timing, retakes, reminders..."></div>
   </section>`;
 }
+
+window.updateMultipleBlockType = (select) => {
+  const row = select.closest("[data-multi-block]");
+  const type = normalizeClientType(select.value);
+  const label = row?.querySelector("[data-field-label]");
+  const text = row?.querySelector('[data-field="text"]');
+  const values =
+    type === "speech" || type === "voiceover"
+      ? ["Exact words to say", "One independently deliverable spoken line"]
+      : type === "subtitle"
+        ? ["Editorial on-screen text", "In-video text only — never social caption copy"]
+        : type === "shot"
+          ? ["What to film", "One framing, camera action, or visual beat"]
+          : type === "transition"
+            ? ["Transition instruction", "One cut or transition event"]
+            : ["Production direction", "One non-dialogue production instruction"];
+  if (label) label.textContent = values[0];
+  if (text) text.placeholder = values[1];
+};
 
 window.updateMultipleBlockRows = () => {
   const rows = [...document.querySelectorAll("[data-multi-block]")];
@@ -1929,12 +2034,15 @@ window.createMultipleBlocks = (sid) => {
     .map((row) => {
       const value = (field) =>
         row.querySelector(`[data-field="${field}"]`)?.value.trim() || "";
+      const type = normalizeClientType(value("type"));
+      const text = value("text");
       return {
         id: uid(),
-        type: normalizeClientType(value("type")),
+        type,
         shotName: value("shot"),
-        desc: value("desc"),
-        spoken: value("spoken"),
+        desc: isVisibleTextType(type) ? "" : text,
+        spoken: isVisibleTextType(type) ? text : "",
+        ...(type === "subtitle" ? { subtitleKind: "editorial_text" } : {}),
         notes: value("notes"),
         done: false,
         cut: false,
@@ -1959,11 +2067,7 @@ window.saveBlockDetail = (sid, bid) => {
   const s = scr(sid);
   const b = s?.blocks.find((x) => x.id === bid);
   if (!b) return;
-  b.type = normalizeClientType(document.getElementById("bd-type").value);
-  b.shotName = document.getElementById("bd-shot").value.trim();
-  b.desc = document.getElementById("bd-desc").value.trim();
-  b.spoken = document.getElementById("bd-spoken").value.trim();
-  b.notes = document.getElementById("bd-notes").value.trim();
+  applyBlockEditor(b, "bd");
   save();
   closeModal();
   showScript(sid);

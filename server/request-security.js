@@ -3,31 +3,25 @@ const FIREBASE_API_KEY =
   process.env.FIREBASE_WEB_API_KEY ||
   "AIzaSyCaq7I65QuHhhrK3QfoaR5dbJ_M98kA6U4";
 
+const CONFIGURED_ALLOWED_ORIGINS = String(
+  process.env.SCRIPTAI_TRUSTED_ORIGINS || "",
+)
+  .split(",")
+  .map((value) => value.trim())
+  .filter(Boolean);
+
 const EXACT_ALLOWED_ORIGINS = new Set([
   "https://scriptai.space",
   "https://www.scriptai.space",
   "https://scriptmanager.vercel.app",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  ...CONFIGURED_ALLOWED_ORIGINS,
 ]);
 
 export function isAllowedOrigin(origin) {
   if (typeof origin !== "string" || !origin) return false;
-  if (EXACT_ALLOWED_ORIGINS.has(origin)) return true;
-  try {
-    const url = new URL(origin);
-    if (
-      (url.hostname === "localhost" || url.hostname === "127.0.0.1") &&
-      url.protocol === "http:"
-    ) {
-      return true;
-    }
-    return (
-      url.protocol === "https:" &&
-      url.hostname.endsWith(".vercel.app") &&
-      url.hostname.startsWith("scriptmanager")
-    );
-  } catch {
-    return false;
-  }
+  return EXACT_ALLOWED_ORIGINS.has(origin);
 }
 
 function bearerToken(header) {

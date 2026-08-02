@@ -1,14 +1,19 @@
 {
   "schemaVersion": "creator-planning-remediation/v1",
   "mode": "dry_run",
-  "generatedAt": "2026-08-01T00:00:00Z",
+  "generatedAt": "2026-08-02T00:00:00Z",
   "providerActionsTaken": false,
   "mutationPerformed": false,
   "scripts": [
     {
       "experimentId": "AUG-D02-A",
-      "scriptId": "6e568426-7ceb-4c50-a74c-a2540d94d6ac",
-      "contentId": "12d164b2-bbfa-41d1-a614-d51dbf9a6f52",
+      "contentId": "6e568426-7ceb-4c50-a74c-a2540d94d6ac",
+      "scriptId": "12d164b2-bbfa-41d1-a614-d51dbf9a6f52",
+      "expectedRecordVersion": "[READ_CURRENT_RECORD_VERSION]",
+      "name": "[PRESERVE_CURRENT_NAME]",
+      "status": "draft",
+      "dueDate": "[PRESERVE_CURRENT_DUE_DATE]",
+      "platforms": "[PRESERVE_CURRENT_SUPPORTED_PLATFORMS]",
       "preserve": [
         "scriptId",
         "contentId",
@@ -17,45 +22,128 @@
         "dueDate",
         "supportedPlatforms",
         "reciprocalLinks",
-        "userCreatedBlocks"
+        "userCreatedBlocks",
+        "doneAndCutState"
       ],
       "managedBlockPlan": [
         {
+          "automationBlockKey": "AUG-D02-A:remediation:shot:1",
           "order": 0,
-          "type": "speech",
-          "source": "exact_existing_spoken_words",
-          "requiresExactMatchedCaption": true
+          "type": "shot",
+          "label": "Opening shot",
+          "timeRange": { "startSeconds": 0, "endSeconds": 5 },
+          "shotDirection": "[READ_CURRENT_OPENING_SHOT_DIRECTION]"
         },
         {
+          "automationBlockKey": "AUG-D02-A:remediation:speech:1",
           "order": 1,
+          "type": "speech",
+          "label": "First-second hook",
+          "timeRange": { "startSeconds": 0, "endSeconds": 5 },
+          "spokenText": "[READ_EXACT_CURRENT_SPOKEN_LINE_1]"
+        },
+        {
+          "automationBlockKey": "AUG-D02-A:remediation:caption:1",
+          "order": 2,
           "type": "subtitle",
           "subtitleKind": "spoken_caption",
-          "source": "exact_existing_spoken_words",
-          "timeRangeMustMatchOrder": 0
+          "label": "Spoken caption 1",
+          "timeRange": { "startSeconds": 0, "endSeconds": 5 },
+          "text": "[READ_EXACT_CURRENT_SPOKEN_LINE_1]",
+          "sourceSpeechBlockKey": "AUG-D02-A:remediation:speech:1"
         },
         {
-          "order": 2,
-          "type": "shot",
-          "source": "existing_shot_direction_only",
-          "timeRangeMustOverlapOrder": 0
-        },
-        {
+          "automationBlockKey": "AUG-D02-A:remediation:direction:1",
           "order": 3,
           "type": "direction",
-          "source": "existing_non_dialogue_direction_only"
+          "label": "Opening delivery",
+          "timeRange": { "startSeconds": 0, "endSeconds": 1 },
+          "direction": "[READ_CURRENT_NON_DIALOGUE_DIRECTION]"
         },
         {
+          "automationBlockKey": "AUG-D02-A:remediation:shot:2",
           "order": 4,
+          "type": "shot",
+          "label": "Payoff shot",
+          "timeRange": { "startSeconds": 5, "endSeconds": 10 },
+          "shotDirection": "[READ_CURRENT_PAYOFF_SHOT_DIRECTION]"
+        },
+        {
+          "automationBlockKey": "AUG-D02-A:remediation:speech:2",
+          "order": 5,
+          "type": "speech",
+          "label": "Payoff",
+          "timeRange": { "startSeconds": 5, "endSeconds": 10 },
+          "spokenText": "[READ_EXACT_CURRENT_SPOKEN_LINE_2]"
+        },
+        {
+          "automationBlockKey": "AUG-D02-A:remediation:caption:2",
+          "order": 6,
+          "type": "subtitle",
+          "subtitleKind": "spoken_caption",
+          "label": "Spoken caption 2",
+          "timeRange": { "startSeconds": 5, "endSeconds": 10 },
+          "text": "[READ_EXACT_CURRENT_SPOKEN_LINE_2]",
+          "sourceSpeechBlockKey": "AUG-D02-A:remediation:speech:2"
+        },
+        {
+          "automationBlockKey": "AUG-D02-A:remediation:transition:1",
+          "order": 7,
           "type": "transition",
-          "source": "existing_transition_only"
+          "label": "Payoff cut",
+          "timeRange": { "startSeconds": 5, "endSeconds": 5.2 },
+          "transition": "[READ_CURRENT_TRANSITION]"
+        },
+        {
+          "automationBlockKey": "AUG-D02-A:remediation:shot:3",
+          "order": 8,
+          "type": "shot",
+          "label": "CTA shot",
+          "timeRange": { "startSeconds": 10, "endSeconds": 15 },
+          "shotDirection": "[READ_CURRENT_CTA_SHOT_DIRECTION]"
+        },
+        {
+          "automationBlockKey": "AUG-D02-A:remediation:speech:3",
+          "order": 9,
+          "type": "speech",
+          "label": "CTA or next milestone",
+          "timeRange": { "startSeconds": 10, "endSeconds": 15 },
+          "spokenText": "[READ_EXACT_CURRENT_SPOKEN_LINE_3]"
+        },
+        {
+          "automationBlockKey": "AUG-D02-A:remediation:caption:3",
+          "order": 10,
+          "type": "subtitle",
+          "subtitleKind": "spoken_caption",
+          "label": "Spoken caption 3",
+          "timeRange": { "startSeconds": 10, "endSeconds": 15 },
+          "text": "[READ_EXACT_CURRENT_SPOKEN_LINE_3]",
+          "sourceSpeechBlockKey": "AUG-D02-A:remediation:speech:3"
+        },
+        {
+          "automationBlockKey": "AUG-D02-A:remediation:transition:2",
+          "order": 11,
+          "type": "transition",
+          "label": "Closing cut",
+          "timeRange": { "startSeconds": 10, "endSeconds": 10.2 },
+          "transition": "[READ_CURRENT_CLOSING_TRANSITION]"
         }
       ],
-      "blocker": "MANUAL_EDIT_CONFLICT_UNTIL_EXACT_SOURCE_AND_RECORD_VERSION_ARE_READ"
+      "blockers": [
+        "CURRENT_SPEECH_NOT_READ",
+        "CURRENT_RECORD_VERSION_NOT_READ",
+        "MANUAL_EDIT_CONFLICT_UNTIL_EXACT_SUPPORTED_READ"
+      ]
     },
     {
       "experimentId": "AUG-D02-B",
-      "scriptId": "e7ae8488-1155-41ef-8787-c85656ca17be",
-      "contentId": "cf75794b-2410-4dfb-902a-b494c503c334",
+      "contentId": "e7ae8488-1155-41ef-8787-c85656ca17be",
+      "scriptId": "cf75794b-2410-4dfb-902a-b494c503c334",
+      "expectedRecordVersion": "[READ_CURRENT_RECORD_VERSION]",
+      "name": "[PRESERVE_CURRENT_NAME]",
+      "status": "draft",
+      "dueDate": "[PRESERVE_CURRENT_DUE_DATE]",
+      "platforms": "[PRESERVE_CURRENT_SUPPORTED_PLATFORMS]",
       "preserve": [
         "scriptId",
         "contentId",
@@ -64,40 +152,118 @@
         "dueDate",
         "supportedPlatforms",
         "reciprocalLinks",
-        "userCreatedBlocks"
+        "userCreatedBlocks",
+        "doneAndCutState"
       ],
       "managedBlockPlan": [
         {
+          "automationBlockKey": "AUG-D02-B:remediation:shot:1",
           "order": 0,
-          "type": "speech",
-          "source": "exact_existing_spoken_words",
-          "requiresExactMatchedCaption": true
+          "type": "shot",
+          "label": "Opening shot",
+          "timeRange": { "startSeconds": 0, "endSeconds": 5 },
+          "shotDirection": "[READ_CURRENT_OPENING_SHOT_DIRECTION]"
         },
         {
+          "automationBlockKey": "AUG-D02-B:remediation:speech:1",
           "order": 1,
+          "type": "speech",
+          "label": "First-second hook",
+          "timeRange": { "startSeconds": 0, "endSeconds": 5 },
+          "spokenText": "[READ_EXACT_CURRENT_SPOKEN_LINE_1]"
+        },
+        {
+          "automationBlockKey": "AUG-D02-B:remediation:caption:1",
+          "order": 2,
           "type": "subtitle",
           "subtitleKind": "spoken_caption",
-          "source": "exact_existing_spoken_words",
-          "timeRangeMustMatchOrder": 0
+          "label": "Spoken caption 1",
+          "timeRange": { "startSeconds": 0, "endSeconds": 5 },
+          "text": "[READ_EXACT_CURRENT_SPOKEN_LINE_1]",
+          "sourceSpeechBlockKey": "AUG-D02-B:remediation:speech:1"
         },
         {
-          "order": 2,
-          "type": "shot",
-          "source": "existing_shot_direction_only",
-          "timeRangeMustOverlapOrder": 0
-        },
-        {
+          "automationBlockKey": "AUG-D02-B:remediation:direction:1",
           "order": 3,
           "type": "direction",
-          "source": "existing_non_dialogue_direction_only"
+          "label": "Opening delivery",
+          "timeRange": { "startSeconds": 0, "endSeconds": 1 },
+          "direction": "[READ_CURRENT_NON_DIALOGUE_DIRECTION]"
         },
         {
+          "automationBlockKey": "AUG-D02-B:remediation:shot:2",
           "order": 4,
+          "type": "shot",
+          "label": "Payoff shot",
+          "timeRange": { "startSeconds": 5, "endSeconds": 10 },
+          "shotDirection": "[READ_CURRENT_PAYOFF_SHOT_DIRECTION]"
+        },
+        {
+          "automationBlockKey": "AUG-D02-B:remediation:speech:2",
+          "order": 5,
+          "type": "speech",
+          "label": "Payoff",
+          "timeRange": { "startSeconds": 5, "endSeconds": 10 },
+          "spokenText": "[READ_EXACT_CURRENT_SPOKEN_LINE_2]"
+        },
+        {
+          "automationBlockKey": "AUG-D02-B:remediation:caption:2",
+          "order": 6,
+          "type": "subtitle",
+          "subtitleKind": "spoken_caption",
+          "label": "Spoken caption 2",
+          "timeRange": { "startSeconds": 5, "endSeconds": 10 },
+          "text": "[READ_EXACT_CURRENT_SPOKEN_LINE_2]",
+          "sourceSpeechBlockKey": "AUG-D02-B:remediation:speech:2"
+        },
+        {
+          "automationBlockKey": "AUG-D02-B:remediation:transition:1",
+          "order": 7,
           "type": "transition",
-          "source": "existing_transition_only"
+          "label": "Payoff cut",
+          "timeRange": { "startSeconds": 5, "endSeconds": 5.2 },
+          "transition": "[READ_CURRENT_TRANSITION]"
+        },
+        {
+          "automationBlockKey": "AUG-D02-B:remediation:shot:3",
+          "order": 8,
+          "type": "shot",
+          "label": "CTA shot",
+          "timeRange": { "startSeconds": 10, "endSeconds": 15 },
+          "shotDirection": "[READ_CURRENT_CTA_SHOT_DIRECTION]"
+        },
+        {
+          "automationBlockKey": "AUG-D02-B:remediation:speech:3",
+          "order": 9,
+          "type": "speech",
+          "label": "CTA or next milestone",
+          "timeRange": { "startSeconds": 10, "endSeconds": 15 },
+          "spokenText": "[READ_EXACT_CURRENT_SPOKEN_LINE_3]"
+        },
+        {
+          "automationBlockKey": "AUG-D02-B:remediation:caption:3",
+          "order": 10,
+          "type": "subtitle",
+          "subtitleKind": "spoken_caption",
+          "label": "Spoken caption 3",
+          "timeRange": { "startSeconds": 10, "endSeconds": 15 },
+          "text": "[READ_EXACT_CURRENT_SPOKEN_LINE_3]",
+          "sourceSpeechBlockKey": "AUG-D02-B:remediation:speech:3"
+        },
+        {
+          "automationBlockKey": "AUG-D02-B:remediation:transition:2",
+          "order": 11,
+          "type": "transition",
+          "label": "Closing cut",
+          "timeRange": { "startSeconds": 10, "endSeconds": 10.2 },
+          "transition": "[READ_CURRENT_CLOSING_TRANSITION]"
         }
       ],
-      "blocker": "MANUAL_EDIT_CONFLICT_UNTIL_EXACT_SOURCE_AND_RECORD_VERSION_ARE_READ"
+      "blockers": [
+        "CURRENT_SPEECH_NOT_READ",
+        "CURRENT_RECORD_VERSION_NOT_READ",
+        "MANUAL_EDIT_CONFLICT_UNTIL_EXACT_SUPPORTED_READ"
+      ]
     }
   ]
 }

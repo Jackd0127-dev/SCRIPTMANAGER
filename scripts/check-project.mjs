@@ -22,6 +22,7 @@ const jsFiles = [
   "api/automation/v1/scripts/[scriptId]/link-status.js",
   "assets/js/launcher.js",
   "assets/js/director-auth.js",
+  "assets/js/shoot-ready-ui.cjs",
   "assets/js/director.js",
 ];
 

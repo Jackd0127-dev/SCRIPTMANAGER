@@ -27,9 +27,23 @@ function sourceHash(value) {
     .digest("hex");
 }
 
-function deterministicProjectId(scriptAutomationKey) {
+function canonicalScriptForHash(value) {
+  return {
+    ...value,
+    platforms: [...new Set(value.platforms || [])].sort(),
+    blocks: [...(value.blocks || [])].sort(
+      (left, right) =>
+        left.order - right.order ||
+        String(left.automationBlockKey).localeCompare(
+          String(right.automationBlockKey),
+        ),
+    ),
+  };
+}
+
+function deterministicProjectId() {
   return `project-auto-${createHash("sha256")
-    .update(scriptAutomationKey.split(":script")[0])
+    .update("creator-planning-project")
     .digest("hex")
     .slice(0, 32)}`;
 }
@@ -112,7 +126,12 @@ function canonicalStoredScript(script) {
     status: script.status,
     dueDate: script.due,
     targetDurationSeconds: script.targetDurationSeconds,
-    platforms: script.platforms,
+    longerRuntimeReason: script.longerRuntimeReason,
+    masterSpokenText: script.masterSpokenText,
+    firstSecondHook: script.firstSecondHook,
+    payoff: script.payoff,
+    callToActionOrNextMilestone: script.callToActionOrNextMilestone,
+    platforms: [...(script.platforms || [])].sort(),
     projectRef: script.projectRef,
     blocks: managedBlocks,
     productionNotes: script.notes,
@@ -121,6 +140,10 @@ function canonicalStoredScript(script) {
 }
 
 function publicScriptResult(script, action) {
+  const managedBlocks = (script.blocks || [])
+    .filter((block) => block.automation?.managedBy === MANAGED_BY)
+    .map(managedBlockPayload)
+    .sort((left, right) => left.order - right.order);
   return {
     action,
     scriptId: script.id,
@@ -129,6 +152,9 @@ function publicScriptResult(script, action) {
     dueDate: script.due,
     platforms: script.platforms,
     recordVersion: script.recordVersion,
+    projectId: script.projectId,
+    managedSourceHash: script.automation?.sourceHash,
+    blockDigest: sourceHash(managedBlocks),
     contentBacklink: {
       origin: script.novasFlow.origin,
       contentId: script.novasFlow.contentId,
@@ -152,7 +178,7 @@ function resolveProject(workspace, input, existing) {
     ? projects.find((project) => project.id === existing.projectId)
     : null;
   if (existingProject) return { projects, project: existingProject };
-  const id = deterministicProjectId(input.scriptAutomationKey);
+  const id = deterministicProjectId();
   const deterministic = projects.find((project) => project.id === id);
   if (deterministic) return { projects, project: deterministic };
   const project = {
@@ -229,9 +255,28 @@ export function upsertAutomatedScript(workspaceInput, rawInput, now = new Date()
       409,
     );
 
-  const incomingHash = sourceHash(input);
+  const incomingKeys = new Set(
+    input.blocks.map((block) => block.automationBlockKey),
+  );
+  const userCollision = (existing?.blocks || []).find(
+    (block) =>
+      block.automation?.managedBy !== MANAGED_BY &&
+      block.automationBlockKey &&
+      incomingKeys.has(block.automationBlockKey),
+  );
+  if (userCollision)
+    throw new AutomationError(
+      "MANUAL_EDIT_CONFLICT",
+      "A user-created block uses an incoming automation block key; it was preserved and requires review.",
+      409,
+    );
+
+  const canonicalInput = canonicalScriptForHash(input);
+  const incomingHash = sourceHash(canonicalInput);
   if (existing?.automation?.sourceHash) {
-    const currentHash = sourceHash(canonicalStoredScript(existing));
+    const currentHash = sourceHash(
+      canonicalScriptForHash(canonicalStoredScript(existing)),
+    );
     const managedWasEdited = currentHash !== existing.automation.sourceHash;
     const replacementAuthorized =
       parsed.conflictPolicy === "replace_managed_only" &&
@@ -254,7 +299,11 @@ export function upsertAutomatedScript(workspaceInput, rawInput, now = new Date()
   const { projects, project } = resolveProject(workspace, input, existing);
   const existingManaged = new Map(
     (existing?.blocks || [])
-      .filter((block) => block.automationBlockKey)
+      .filter(
+        (block) =>
+          block.automation?.managedBy === MANAGED_BY &&
+          block.automationBlockKey,
+      )
       .map((block) => [block.automationBlockKey, block]),
   );
   const managedBlocks = input.blocks
@@ -276,6 +325,11 @@ export function upsertAutomatedScript(workspaceInput, rawInput, now = new Date()
     due: input.dueDate,
     platforms: input.platforms,
     targetDurationSeconds: input.targetDurationSeconds,
+    longerRuntimeReason: input.longerRuntimeReason,
+    masterSpokenText: input.masterSpokenText,
+    firstSecondHook: input.firstSecondHook,
+    payoff: input.payoff,
+    callToActionOrNextMilestone: input.callToActionOrNextMilestone,
     notes: input.productionNotes,
     blocks: [...managedBlocks, ...userBlocks],
     scriptAutomationKey: input.scriptAutomationKey,
