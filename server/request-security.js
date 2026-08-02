@@ -24,6 +24,30 @@ export function isAllowedOrigin(origin) {
   return EXACT_ALLOWED_ORIGINS.has(origin);
 }
 
+export function isAllowedBrowserRequest(req) {
+  if (isAllowedOrigin(req.headers?.origin)) return true;
+  if (req.method !== "GET") return false;
+  if (req.headers?.["sec-fetch-site"] !== "same-origin") return false;
+  try {
+    const referer = new URL(String(req.headers?.referer || ""));
+    const forwardedHost = String(
+      req.headers?.["x-forwarded-host"] || req.headers?.host || "",
+    )
+      .split(",")[0]
+      .trim();
+    const forwardedProto = String(req.headers?.["x-forwarded-proto"] || "")
+      .split(",")[0]
+      .trim();
+    return (
+      isAllowedOrigin(referer.origin) &&
+      referer.host === forwardedHost &&
+      (!forwardedProto || referer.protocol === `${forwardedProto}:`)
+    );
+  } catch {
+    return false;
+  }
+}
+
 function bearerToken(header) {
   if (typeof header !== "string") return "";
   const match = header.match(/^Bearer ([A-Za-z0-9._-]+)$/);

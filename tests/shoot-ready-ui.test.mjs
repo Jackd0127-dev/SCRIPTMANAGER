@@ -133,3 +133,15 @@ test("production serves the browser helper as JavaScript and declares an icon", 
     ).includes("<svg"),
   );
 });
+
+test("integration token settings submit and display an exact optional expiry", () => {
+  const source = readFileSync(
+    new URL("../assets/js/director.js", import.meta.url),
+    "utf8",
+  );
+  assert.ok(source.includes('id="automationTokenExpiresAt"'));
+  assert.ok(source.includes('placeholder="2026-08-31T23:59:59Z"'));
+  assert.ok(source.includes("...(expiresAt ? { expiresAt } : {})"));
+  assert.ok(source.includes("Expires ${esc(new Date(token.expiresAt)"));
+  assert.ok(source.includes('(token.scopes || []).join(", ")'));
+});

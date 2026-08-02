@@ -6,7 +6,7 @@ import {
   parseScriptAiToken,
 } from "./automation-token.js";
 import { scriptAiAdminAuth } from "./firebase-admin.js";
-import { isAllowedOrigin } from "./request-security.js";
+import { isAllowedBrowserRequest } from "./request-security.js";
 
 function bearer(header) {
   return String(header || "").match(/^Bearer ([^\s]+)$/u)?.[1] || "";
@@ -24,7 +24,7 @@ function assertHttps(req) {
 
 export async function authorizeAutomationUserRequest(req) {
   requireAutomationFeature();
-  if (!isAllowedOrigin(req.headers?.origin))
+  if (!isAllowedBrowserRequest(req))
     throw new AutomationError(
       "INVALID_REQUEST_ORIGIN",
       "Request origin is not allowed.",

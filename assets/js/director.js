@@ -2421,7 +2421,8 @@ function renderScriptAiAutomationTokens(tokens) {
             <div class="setting-line">
               <div>
                 <strong>${esc(token.label || "Integration token")}</strong>
-                <span>Created ${esc(new Date(token.createdAt).toLocaleDateString("en-GB"))}${token.lastUsedAt ? ` · Last used ${esc(new Date(token.lastUsedAt).toLocaleDateString("en-GB"))}` : ""}</span>
+                <span>Created ${esc(new Date(token.createdAt).toLocaleDateString("en-GB"))}${token.expiresAt ? ` · Expires ${esc(new Date(token.expiresAt).toLocaleString("en-GB", { timeZone: "UTC", timeZoneName: "short" }))}` : " · No expiry"}${token.lastUsedAt ? ` · Last used ${esc(new Date(token.lastUsedAt).toLocaleDateString("en-GB"))}` : ""}</span>
+                <span>${esc((token.scopes || []).join(", "))}</span>
               </div>
               ${token.revokedAt ? '<span class="settings-chip">Revoked</span>' : `<button class="btn-ghost" type="button" onclick="revokeScriptAiAutomationToken('${esc(token.id)}')">Revoke</button>`}
             </div>`,
@@ -2455,6 +2456,9 @@ window.loadScriptAiAutomationTokens = async () => {
 
 window.generateScriptAiAutomationToken = async () => {
   const label = document.getElementById("automationTokenLabel")?.value?.trim();
+  const expiresAt = document
+    .getElementById("automationTokenExpiresAt")
+    ?.value?.trim();
   const status = document.getElementById("automationTokenStatus");
   const secret = document.getElementById("automationTokenOnce");
   if (!label) {
@@ -2467,7 +2471,7 @@ window.generateScriptAiAutomationToken = async () => {
     const response = await directorApiFetch("/api/automation/v1/tokens", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ label }),
+      body: JSON.stringify({ label, ...(expiresAt ? { expiresAt } : {}) }),
     });
     const body = await response.json().catch(() => null);
     if (!response.ok)
@@ -2595,6 +2599,9 @@ window.openSettingsPage = () => {
             <div class="form-group settings-grid-wide">
               <label class="form-label" for="automationTokenLabel">Token label</label>
               <input class="form-input" id="automationTokenLabel" value="Content Tracker creator planning" maxlength="120">
+              <label class="form-label" for="automationTokenExpiresAt">Expiry (UTC ISO)</label>
+              <input class="form-input" id="automationTokenExpiresAt" inputmode="text" placeholder="2026-08-31T23:59:59Z" maxlength="40">
+              <span class="field-help">Optional. Use an exact UTC ISO instant; invalid or past values are rejected.</span>
               <div class="mini-action-row">
                 <button class="btn" type="button" onclick="generateScriptAiAutomationToken()">Generate token</button>
                 <button class="btn-ghost" type="button" onclick="copyScriptAiAutomationToken()">Copy new token</button>

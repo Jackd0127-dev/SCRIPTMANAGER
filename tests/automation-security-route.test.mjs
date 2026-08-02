@@ -7,7 +7,10 @@ import {
   MemoryAutomationStore,
   resetMemoryAutomationStore,
 } from "../server/automation-store.js";
-import { isAllowedOrigin } from "../server/request-security.js";
+import {
+  isAllowedBrowserRequest,
+  isAllowedOrigin,
+} from "../server/request-security.js";
 import { tokenDigest } from "../server/automation-token.js";
 
 function responseRecorder() {
@@ -58,6 +61,41 @@ test("trusted origins are exact and similarly-prefixed Vercel hosts fail", () =>
   assert.equal(isAllowedOrigin("http://127.0.0.1:3000"), true);
   assert.equal(isAllowedOrigin("http://127.0.0.1:3001"), false);
   assert.equal(isAllowedOrigin("http://localhost:9999"), false);
+});
+
+test("same-origin token reads may use exact referrer evidence but writes require Origin", () => {
+  const exactRead = {
+    method: "GET",
+    headers: {
+      referer: "https://scriptai.space/scriptai.html",
+      host: "scriptai.space",
+      "x-forwarded-proto": "https",
+      "sec-fetch-site": "same-origin",
+    },
+  };
+  assert.equal(isAllowedBrowserRequest(exactRead), true);
+  assert.equal(
+    isAllowedBrowserRequest({
+      ...exactRead,
+      headers: {
+        ...exactRead.headers,
+        referer: "https://scriptmanager-attacker.vercel.app/scriptai.html",
+        host: "scriptmanager-attacker.vercel.app",
+      },
+    }),
+    false,
+  );
+  assert.equal(
+    isAllowedBrowserRequest({ ...exactRead, method: "POST" }),
+    false,
+  );
+  assert.equal(
+    isAllowedBrowserRequest({
+      method: "POST",
+      headers: { origin: "https://scriptai.space" },
+    }),
+    true,
+  );
 });
 
 test("token route returns structured 422s and reveals the raw token only once", async () => {
