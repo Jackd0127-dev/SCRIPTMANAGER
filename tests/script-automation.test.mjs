@@ -165,6 +165,37 @@ test("first upsert and identical retry converge on stable script and block IDs",
   );
 });
 
+test("reviewed missing-script recovery preserves the exact reciprocal script ID", () => {
+  const recovery = {
+    reviewConfirmed: true,
+    expectedScriptId: "12d164b2-bbfa-41d1-a614-d51dbf9a6f52",
+    expectedRecordAbsent: true,
+  };
+  const input = {
+    script: productionScript(),
+    contentId: "content-a",
+    reviewedMissingScriptRecovery: recovery,
+  };
+  const first = upsertAutomatedScript({ projects: [], scripts: [] }, input);
+  const retry = upsertAutomatedScript(first.workspace, input);
+
+  assert.equal(first.result.scriptId, recovery.expectedScriptId);
+  assert.equal(first.workspace.scripts[0].id, recovery.expectedScriptId);
+  assert.equal(retry.result.action, "unchanged");
+  assert.equal(retry.result.scriptId, recovery.expectedScriptId);
+  assert.throws(
+    () =>
+      upsertAutomatedScript(first.workspace, {
+        ...input,
+        reviewedMissingScriptRecovery: {
+          ...recovery,
+          expectedScriptId: "different-reviewed-script",
+        },
+      }),
+    (error) => error.code === "SCRIPT_LINK_CONFLICT",
+  );
+});
+
 test("A and B reuse one owner-scoped Creator Planning project", () => {
   const first = upsertAutomatedScript(
     { projects: [], scripts: [] },

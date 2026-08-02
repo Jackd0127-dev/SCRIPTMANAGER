@@ -234,6 +234,23 @@ export function upsertAutomatedScript(workspaceInput, rawInput, now = new Date()
       409,
     );
   const existing = existingByKey || linkedMatches[0] || null;
+  const reviewedRecovery = parsed.reviewedMissingScriptRecovery;
+  if (reviewedRecovery) {
+    const idCollision = workspace.scripts.find(
+      (script) =>
+        script.id === reviewedRecovery.expectedScriptId &&
+        script.id !== existing?.id,
+    );
+    if (
+      idCollision ||
+      (existing && existing.id !== reviewedRecovery.expectedScriptId)
+    )
+      throw new AutomationError(
+        "SCRIPT_LINK_CONFLICT",
+        "The reviewed ScriptAI identity is no longer absent or no longer matches this content link.",
+        409,
+      );
+  }
   if (
     existing &&
     (existing.novasFlow?.origin !== input.contentBacklink.origin ||
@@ -317,7 +334,10 @@ export function upsertAutomatedScript(workspaceInput, rawInput, now = new Date()
   );
   const next = {
     ...(existing || {}),
-    id: existing?.id || randomUUID(),
+    id:
+      existing?.id ||
+      reviewedRecovery?.expectedScriptId ||
+      randomUUID(),
     projectId: project.id,
     projectRef: input.projectRef,
     name: input.name,

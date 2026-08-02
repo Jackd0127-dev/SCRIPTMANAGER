@@ -92,6 +92,14 @@ export const scriptUpsertSchema = z
     contentId: id,
     expectedRecordVersion: z.number().int().positive().optional(),
     conflictPolicy: z.literal("replace_managed_only").optional(),
+    reviewedMissingScriptRecovery: z
+      .object({
+        reviewConfirmed: z.literal(true),
+        expectedScriptId: id,
+        expectedRecordAbsent: z.literal(true),
+      })
+      .strict()
+      .optional(),
   })
   .strict();
 
