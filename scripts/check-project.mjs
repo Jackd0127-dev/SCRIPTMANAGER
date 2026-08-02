@@ -154,6 +154,11 @@ assert(
   "Vercel security headers are missing",
 );
 assert(
+  vercelConfig.includes('"source": "/assets/js/shoot-ready-ui.cjs"') &&
+    vercelConfig.includes('"value": "application/javascript; charset=utf-8"'),
+  "The browser shoot-ready helper is not served as JavaScript",
+);
+assert(
   vercelConfig.includes("frame-ancestors 'self' https://content.novasagency.com") &&
     !vercelConfig.includes('"X-Frame-Options", "value": "DENY"'),
   "ScriptAI cannot receive trusted linked-script verification frames",

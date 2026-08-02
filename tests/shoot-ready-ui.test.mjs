@@ -107,3 +107,29 @@ test("main ScriptAI UI renders timing in every view and uses type-specific edito
   assert.ok(source.includes("In-video subtitle text"));
   assert.equal(source.includes('novasFlowBlock("subtitle", "Master caption"'), false);
 });
+
+test("production serves the browser helper as JavaScript and declares an icon", () => {
+  const vercel = JSON.parse(
+    readFileSync(new URL("../vercel.json", import.meta.url), "utf8"),
+  );
+  const browserHelperHeaders = vercel.headers.find(
+    (entry) => entry.source === "/assets/js/shoot-ready-ui.cjs",
+  );
+  assert.deepEqual(browserHelperHeaders?.headers, [
+    {
+      key: "Content-Type",
+      value: "application/javascript; charset=utf-8",
+    },
+  ]);
+  const html = readFileSync(
+    new URL("../scriptai.html", import.meta.url),
+    "utf8",
+  );
+  assert.ok(html.includes('href="assets/icons/scriptai-mark.svg"'));
+  assert.ok(
+    readFileSync(
+      new URL("../assets/icons/scriptai-mark.svg", import.meta.url),
+      "utf8",
+    ).includes("<svg"),
+  );
+});
