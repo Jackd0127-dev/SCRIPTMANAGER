@@ -1,0 +1,44 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/scriptai.html",
+      "permanent": false
+    },
+    {
+      "source": "/director",
+      "destination": "/scriptai.html",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/js/shoot-ready-ui.cjs",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'self' https://content.novasagency.com http://localhost:3000 http://127.0.0.1:3000 http://localhost:3100 http://127.0.0.1:3100"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+        }
+      ]
+    }
+  ]
+}
