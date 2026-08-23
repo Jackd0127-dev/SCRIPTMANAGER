@@ -1,5 +1,12 @@
 # Agent Instructions
 
+## Central identity boundary
+
+- Keep central identity disabled by default and behind `CENTRAL_IDENTITY_MODE`.
+- Link identities only with a recent Firebase session plus the person's separate Auth0 session. Never merge by email.
+- Preserve Firebase UID and workspace ownership. Revocation locks access without deleting scripts or projects.
+- Do not enable enforced mode, remove Firebase login or deploy identity configuration without rollback evidence and explicit production authority.
+
 These instructions apply to the whole `SCRIPTMANAGER` repository.
 
 ## Project Shape
