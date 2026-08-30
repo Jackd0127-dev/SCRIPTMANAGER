@@ -106,6 +106,7 @@ button {
 
 .lock-mark svg,
 .brand-mark svg,
+.brand-mark img,
 .card-mark svg {
   width: 20px;
   height: 20px;
@@ -233,11 +234,15 @@ button {
 .brand-mark {
   width: 40px;
   height: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 12px;
-  background: #0c0f12;
-  color: #fff;
-  box-shadow: 0 14px 30px rgba(12, 15, 18, 0.14);
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.brand-mark img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
 }
 
 .brand-title {

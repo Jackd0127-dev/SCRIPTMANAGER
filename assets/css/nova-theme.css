@@ -329,6 +329,19 @@ a,
   letter-spacing: -0.035em;
 }
 
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-logo img {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
 .auth-sub,
 .auth-copy,
 .auth-note {
@@ -391,6 +404,19 @@ a,
   font-family: inherit;
   font-weight: 650;
   letter-spacing: -0.035em;
+}
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wordmark img {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  object-fit: contain;
 }
 
 .user-avatar {
@@ -503,15 +529,13 @@ a,
 }
 
 .connection-banner-mark {
-  display: grid;
+  display: block;
   width: 30px;
   height: 30px;
   flex: 0 0 auto;
-  place-items: center;
-  border-radius: 8px;
-  background: var(--nova-primary);
-  color: var(--nova-on-primary);
-  font-weight: 700;
+  border-radius: 0;
+  background: transparent;
+  object-fit: contain;
 }
 
 .connection-banner span:last-child {
@@ -849,7 +873,6 @@ a,
   backdrop-filter: none;
 }
 
-.brand-mark,
 .lock-mark {
   background: var(--nova-primary);
   color: var(--nova-on-primary);
