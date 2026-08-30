@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { createRequire } from "node:module";
 import { readFileSync } from "node:fs";
 
@@ -125,12 +126,16 @@ test("production serves the browser helper as JavaScript and declares an icon", 
     new URL("../scriptai.html", import.meta.url),
     "utf8",
   );
-  assert.ok(html.includes('href="assets/icons/scriptai-mark.svg"'));
-  assert.ok(
-    readFileSync(
-      new URL("../assets/icons/scriptai-mark.svg", import.meta.url),
-      "utf8",
-    ).includes("<svg"),
+  assert.ok(html.includes('href="assets/icons/novas-diamond.png"'));
+  assert.equal(
+    createHash("sha256")
+      .update(
+        readFileSync(
+          new URL("../assets/icons/novas-diamond.png", import.meta.url),
+        ),
+      )
+      .digest("hex"),
+    "7b5e85264de41090d293ba6d334a3ba2c34f89ec45d57f0dfe8722821ad684da",
   );
 });
 
