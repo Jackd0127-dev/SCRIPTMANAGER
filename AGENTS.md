@@ -18,7 +18,7 @@ These instructions apply to the whole `SCRIPTMANAGER` repository.
 
 ## Commands
 
-- Run `npm run check` before committing.
+- Use the verification guidance below; do not repeat unchanged passing checks at commit time.
 - For local browser testing, serve the repository root with any static server and open `index.html` or `scriptai.html`.
 - API routes require `GEMINI_API_KEY` in the deployment environment and a verified Firebase ID token from an allowed ScriptAI origin.
 
@@ -32,6 +32,6 @@ These instructions apply to the whole `SCRIPTMANAGER` repository.
 
 ## Verification
 
-- Run syntax checks with `npm run check`.
+- Run `npm run check` for JavaScript or API changes; prose-only changes need diff/link inspection, and cosmetic changes need focused source/rendered inspection. Reuse current passing evidence.
 - For visual changes, smoke test the affected page in a browser at desktop and mobile widths.
 - For API changes, check both request validation and Gemini error handling paths.
