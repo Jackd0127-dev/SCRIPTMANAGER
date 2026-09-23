@@ -1228,13 +1228,13 @@ window.sendScriptToNovasFlow = (id) => {
 
 async function directorApiFetch(path, options = {}) {
   const token = await window.getDirectorIdToken?.();
-  if (!token) throw new Error("Sign in before using ScriptAI generation.");
+  if (!token && !window.isNovasStaffSession) throw new Error("Sign in before using ScriptAI generation.");
   return fetch(path, {
     ...options,
     credentials: "same-origin",
     headers: {
       ...(options.headers || {}),
-      Authorization: `Bearer ${token}`,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
 }

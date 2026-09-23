@@ -52,6 +52,55 @@ let saveTimeout = null;
 let unsubscribe = null;
 
 let redirectChecked = false;
+let staffPoll = null;
+let staffRevision = null;
+let staffExplicit = new URL(location.href).searchParams.get("staff") === "1" || sessionStorage.getItem("novasStaffActive") === "1";
+const staffBoot = (async () => {
+  try {
+    const config = await fetch("/api/staff-login/config", { credentials: "same-origin", cache: "no-store" });
+    if (!config.ok || !(await config.json()).enabled) return null;
+    const link = document.getElementById("novasStaffLogin"); if (link) link.hidden = false;
+    const response = await fetch("/api/staff-login/session", { credentials: "same-origin", cache: "no-store" });
+    return response.ok ? await response.json() : null;
+  } catch { return null; }
+})();
+async function staffFetch(action, options = {}) {
+  const response = await fetch(`/api/staff-login/${action}`, { credentials: "same-origin", cache: "no-store", ...options });
+  if (!response.ok) {
+    if (response.status === 401) {
+      clearTimeout(staffPoll); window.isNovasStaffSession = false; currentUser = null;
+      sessionStorage.removeItem("novasStaffActive");
+      showScreen("login"); document.getElementById("loginErr").textContent = "Your staff session ended. Sign in to Novas Access again.";
+    }
+    if (response.status === 409) window.showToast?.("Workspace changed elsewhere. Your draft is still here; refresh before saving.");
+    throw new Error("Staff service unavailable");
+  }
+  return response.json();
+}
+async function loadStaffWorkspace(staff) {
+  try {
+    const result = await staffFetch("workspace");
+    staffRevision = result.revision;
+    currentUser = { ...staff, getIdToken: async () => null };
+    window.isNovasStaffSession = true; sessionStorage.setItem("novasStaffActive", "1");
+    const url = new URL(location.href); url.searchParams.delete("staff"); history.replaceState(null, "", url.pathname + url.search + url.hash);
+    if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+    hydrateWorkspaceData(result.data, window.S || {});
+    document.getElementById("userEmail").textContent = staff.email || staff.displayName || "Staff";
+    document.getElementById("userAvatar").textContent = (staff.email || staff.displayName || "S")[0].toUpperCase();
+    window.currentProfile = { email: staff.email || "", displayName: staff.displayName || "", provider: "novas-staff" };
+    showScreen("app"); applySettings(); renderLoadedWorkspace();
+    // Check access while open; data reads/writes and generation independently recheck it.
+    clearTimeout(staffPoll);
+    const checkAccess = async () => {
+      if (!window.isNovasStaffSession) return;
+      try { await staffFetch("session"); } catch { /* Every operation still fails closed. */ }
+      if (window.isNovasStaffSession) staffPoll = setTimeout(checkAccess, 30000);
+    };
+    staffPoll = setTimeout(checkAccess, 30000);
+  } catch { showScreen("login"); document.getElementById("loginErr").textContent = "Staff access is unavailable. Retry or sign in to Novas Access."; }
+}
+
 
 function renderLoadedWorkspace() {
   if (!window.renderSb) {
@@ -257,6 +306,7 @@ function friendlyError(code, message = "") {
 }
 
 async function startProviderSignIn(provider) {
+  staffExplicit = false;
   const err = document.getElementById("loginErr");
 
   if (err) err.textContent = "";
@@ -396,6 +446,16 @@ async function loadUser(user) {
 
 onAuthStateChanged(auth, async (user) => {
   if (window.isDemoMode) return;
+  const staff = await staffBoot;
+  if (staff && (staffExplicit || !user)) { await loadStaffWorkspace(staff); return; }
+  if (staffExplicit) {
+    // Never silently switch a failed staff handoff to a remembered customer account.
+    sessionStorage.removeItem("novasStaffActive");
+    currentUser = null;
+    showScreen("login");
+    document.getElementById("loginErr").textContent = "Your staff session ended. Continue with Novas staff login or choose a customer sign-in.";
+    return;
+  }
 
   if (!user) {
     currentUser = null;
@@ -426,7 +486,7 @@ async function handleRedirectResult() {
 
     redirectChecked = true;
 
-    if (result?.user) {
+    if (result?.user && !window.isNovasStaffSession && !staffExplicit) {
       await loadUser(result.user);
 
       return;
@@ -451,6 +511,7 @@ async function handleRedirectResult() {
 handleRedirectResult();
 
 window.doLogin = async () => {
+  staffExplicit = false;
   const email = document.getElementById("loginEmail").value.trim();
 
   const pass = document.getElementById("loginPassword").value;
@@ -473,6 +534,7 @@ window.doLogin = async () => {
 };
 
 window.doSignup = async () => {
+  staffExplicit = false;
   const email = document.getElementById("signupEmail").value.trim();
 
   const pass = document.getElementById("signupPassword").value;
@@ -497,6 +559,12 @@ window.doSignup = async () => {
 };
 
 window.doSignout = async () => {
+  if (window.isNovasStaffSession) {
+    try { await staffFetch("logout", { method: "POST" }); }
+    catch { window.showToast?.("Staff sign-out failed. Please retry."); return; }
+    clearTimeout(staffPoll); sessionStorage.removeItem("novasStaffActive"); window.isNovasStaffSession = false; currentUser = null;
+    await signOut(auth); location.replace("/scriptai.html"); return;
+  }
   window.setMobileActions?.([]);
   document.body.classList.remove(
     "has-mobile-actions",
@@ -652,9 +720,13 @@ window.saveNow = async () => {
       );
     } else {
       if (!currentUser) return false;
-      await setDoc(doc(db, "users", currentUser.uid), stateForSave(), {
-        merge: true,
-      });
+      if (window.isNovasStaffSession) {
+        const patch = demoStateForSave(); delete patch.demoVersion;
+        const saved = await staffFetch("workspace", { method: "POST", headers: { "Content-Type": "application/json", "x-workspace-revision": staffRevision || "" }, body: JSON.stringify(patch) });
+        staffRevision = saved.revision;
+      } else {
+        await setDoc(doc(db, "users", currentUser.uid), stateForSave(), { merge: true });
+      }
     }
   } catch (e) {
     console.error("Workspace save failed.");
