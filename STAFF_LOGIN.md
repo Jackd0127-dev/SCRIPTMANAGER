@@ -30,3 +30,5 @@ Access owner dual-proof linking and central Firebase staff sign-in are verified 
 
 ### Existing account proof review
 The live pilot reaches the cross-domain handoff but the old provisioning placeholder is not an existing Firebase account. The signed-in account now offers Link Novas staff login. It obtains a five-minute proof only from a recent verified original Firebase identity and opens Access's explicit account review. The proof includes the signed email, travels in a fragment and is removed from the address bar by Access. No product data is moved or changed. All 34 checks pass, including signed email integrity. Actual account linking and staff workspace/logout acceptance remain pending.
+
+Hosted proof configuration is now saved: Flow and ScriptAI each have a separate sensitive RSA signing key; Access registers their fixed public issuer/JWKS endpoints. The next normal main deployment applies these settings. No private key was exported or committed, and no additional product grant was made.
