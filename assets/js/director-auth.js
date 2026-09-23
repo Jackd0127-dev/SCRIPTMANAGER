@@ -770,3 +770,15 @@ window.save = () => {
     window.isDemoMode ? 220 : 800,
   );
 };
+
+// Proof is short-lived and carried in a fragment, never a server URL/query log.
+window.linkNovasStaff = async () => {
+  if (!auth.currentUser || window.isDemoMode || window.isNovasStaffSession) { window.showToast?.("Sign in to your original ScriptAI account first."); return; }
+  try {
+    const token = await auth.currentUser.getIdToken(true);
+    const response = await fetch("/api/central-link-proof", { method: "POST", headers: { authorization: `Bearer ${token}` } });
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.error);
+    location.assign("https://access.novasagency.com/identity-link#" + new URLSearchParams({ app: "scriptai", proof: body.proof }));
+  } catch (error) { window.showToast?.(error.message || "Account linking unavailable."); }
+};

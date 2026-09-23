@@ -21,9 +21,9 @@ export function centralIdentityConfiguration() {
   };
 }
 
-export function createLegacyLinkProof({ legacyUserId, privateKey, issuer, audience, keyId, now = Math.floor(Date.now() / 1000) }) {
+export function createLegacyLinkProof({ legacyUserId, email, privateKey, issuer, audience, keyId, now = Math.floor(Date.now() / 1000) }) {
   const header = encode({ alg: "RS256", typ: "JWT", kid: keyId });
-  const payload = encode({ iss: issuer, aud: audience, sub: legacyUserId, app_key: "scriptai", legacy_user_id: legacyUserId, iat: now, exp: now + 300, jti: randomUUID() });
+  const payload = encode({ iss: issuer, aud: audience, sub: legacyUserId, app_key: "scriptai", ...(email ? { email } : {}), legacy_user_id: legacyUserId, iat: now, exp: now + 300, jti: randomUUID() });
   const unsigned = `${header}.${payload}`;
   const signature = sign("RSA-SHA256", Buffer.from(unsigned), createPrivateKey(privateKey));
   return `${unsigned}.${signature.toString("base64url")}`;

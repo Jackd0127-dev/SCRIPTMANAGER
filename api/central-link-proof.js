@@ -17,9 +17,9 @@ export default async function handler(req, res) {
   try {
     const identity = await scriptAiAdminAuth().verifyIdToken(token, true);
     const now = Math.floor(Date.now() / 1000);
-    if (!identity.auth_time || now - identity.auth_time > 15 * 60) return res.status(401).json({ error: "Sign in again before linking" });
+    if (!identity.email_verified || !identity.email || !identity.auth_time || identity.auth_time > now || now - identity.auth_time > 15 * 60) return res.status(401).json({ error: "Sign in again before linking" });
     const configuration = centralIdentityConfiguration();
-    return res.status(200).json({ appKey: "scriptai", proof: createLegacyLinkProof({ legacyUserId: identity.uid, ...configuration }), expiresIn: 300 });
+    return res.status(200).json({ appKey: "scriptai", proof: createLegacyLinkProof({ legacyUserId: identity.uid, email: identity.email, ...configuration }), expiresIn: 300 });
   } catch {
     return res.status(401).json({ error: "The ScriptAI session or linking configuration is unavailable" });
   }
