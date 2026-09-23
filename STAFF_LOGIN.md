@@ -23,3 +23,7 @@ The per-product secret is saved in production on Access and ScriptAI. Existing S
 ## Evidence
 
 `npm run check` passes 34 tests, including browser-state mismatch, exact audience/UID, disabled users, missing workspace, stale and concurrent writes, revoked generation, invalid customer authorization, and logout outage. Access passes 72 tests plus lint, typecheck, migration consistency and production build. Desktop and 390 x 844 sign-in layout and expired staff recovery were checked in a local browser with synthetic endpoint responses. This does not prove a hosted sign-in or live provider acceptance.
+
+## Owner pilot activation, 23 September 2026
+
+Access owner dual-proof linking and central Firebase staff sign-in are verified live. Existing ScriptAI admin entitlement and exact original UID proof-link are retained. Production flags `SCRIPTAI_STAFF_LOGIN_ENABLED=true` and `ACCESS_SCRIPTAI_STAFF_ENABLED=true` are saved for the next normal deployments; existing central mode is dual. The unique introspection credential is configured on both projects. No customer migration or Firebase rules change is included. Live PKCE handoff, original workspace, expiry and logout acceptance remain pending. Roll back through the disabled product and Access flags in an authorized configuration deployment.
