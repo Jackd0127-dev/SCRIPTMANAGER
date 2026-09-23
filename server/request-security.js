@@ -1,3 +1,4 @@
+import { STAFF_COOKIE, cookie, verifyStaffRequest } from "./staff-session.js";
 // Shared server code lives outside /api so Vercel does not deploy it as a route.
 const FIREBASE_API_KEY =
   process.env.FIREBASE_WEB_API_KEY ||
@@ -54,7 +55,7 @@ function bearerToken(header) {
   return match?.[1] || "";
 }
 
-export async function authorizeAiRequest(req, res) {
+export async function authorizeAiRequest(req, res, dependencies = {}) {
   if (!isAllowedOrigin(req.headers?.origin)) {
     res.status(403).json({ error: "Request origin is not allowed." });
     return null;
@@ -64,6 +65,14 @@ export async function authorizeAiRequest(req, res) {
     return null;
   }
   const idToken = bearerToken(req.headers?.authorization);
+  if (!req.headers?.authorization && cookie(req, STAFF_COOKIE)) {
+    try {
+      const staff = await (dependencies.verifyStaff || verifyStaffRequest)(req);
+      if (staff) return { uid: staff.uid };
+      res.status(401).json({ error: "Your Novas staff session has expired." });
+    } catch { res.status(503).json({ error: "Staff verification unavailable." }); }
+    return null;
+  }
   if (!idToken) {
     res.status(401).json({ error: "Sign in to use ScriptAI generation." });
     return null;

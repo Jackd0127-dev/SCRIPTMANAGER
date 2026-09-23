@@ -3,6 +3,9 @@ import { spawnSync } from "node:child_process";
 
 const htmlFiles = ["index.html", "scriptai.html"];
 const jsFiles = [
+  "api/staff-login/[action].js",
+  "server/staff-session.js",
+  "server/staff-handler.js",
   "api/generate-script.js",
   "api/sort-script.js",
   "server/gemini.js",
