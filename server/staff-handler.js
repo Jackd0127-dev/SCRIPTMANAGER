@@ -1,3 +1,4 @@
+import { workspaceReportSummary } from "../assets/js/workspace-report-summary.js";
 import { FieldValue } from "firebase-admin/firestore";
 import { scriptAiAdminFirestore } from "./firebase-admin.js";
 import { isAllowedBrowserRequest, isAllowedOrigin } from "./request-security.js";
@@ -5,7 +6,7 @@ import { STAFF_COOKIE, HANDOFF_COOKIE, staffEnabled, cookie, setCookie, createHa
 const SAVE_FIELDS = new Set(["projects", "scripts", "settings", "apid", "asid", "view"]);
 export function workspacePatch(body) {
   if (!body || typeof body !== "object" || Array.isArray(body) || Object.keys(body).some(key => !SAVE_FIELDS.has(key)) || Buffer.byteLength(JSON.stringify(body)) > 900000 || !Array.isArray(body.projects) || !Array.isArray(body.scripts) || !body.settings || typeof body.settings !== "object" || Array.isArray(body.settings) || ![body.apid, body.asid].every(value => value === null || typeof value === "string") || typeof body.view !== "string") throw new Error("Invalid workspace");
-  return { ...body, apid: body.apid ?? FieldValue.delete(), asid: body.asid ?? FieldValue.delete() };
+  return { ...body, reportSummary: workspaceReportSummary(body), reportUpdatedAt: FieldValue.serverTimestamp(), apid: body.apid ?? FieldValue.delete(), asid: body.asid ?? FieldValue.delete() };
 }
 export async function handleStaff(req, res, dependencies = {}) {
   const deps = { verify: verifyStaffRequest, central: centralRequest, revoke: revokeStaff, database: scriptAiAdminFirestore, ...dependencies };

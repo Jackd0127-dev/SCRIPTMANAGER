@@ -1,3 +1,5 @@
+import { FieldValue } from "firebase-admin/firestore";
+import { workspaceReportSummary } from "../assets/js/workspace-report-summary.js";
 // Shared server code lives outside /api so Vercel does not deploy it as a route.
 import { randomUUID } from "node:crypto";
 
@@ -64,6 +66,8 @@ export class FirestoreAutomationStore {
           projects: result.workspace.projects,
           scripts: result.workspace.scripts,
           automationUpdatedAt: result.updatedAt,
+          reportSummary: workspaceReportSummary(result.workspace),
+          reportUpdatedAt: FieldValue.serverTimestamp(),
         },
         { merge: true },
       );
