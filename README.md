@@ -43,3 +43,7 @@ Browser API requests accept only exact trusted origins. The canonical ScriptAI o
 A signed-in owner creates or revokes a one-time token in Settings → Integrations and may supply an exact UTC ISO expiry. Only its SHA-256 digest is stored. Content Tracker uses that token server-side to upsert draft scripts transactionally. Stable automation/block keys, source hashes, record versions, and exact backlinks make retries converge and surface manual-edit or link conflicts. User-created blocks and unrelated workspace fields are preserved. A missing legacy script can be recovered under its exact pre-existing reciprocal ID only when Content Tracker sends the strict `reviewedMissingScriptRecovery` attestation (`reviewConfirmed=true`, the exact expected ID, and `expectedRecordAbsent=true`); an ID collision or a different existing script/link fails with `SCRIPT_LINK_CONFLICT`.
 
 The flag-off rollback is non-destructive: revoke tokens and disable the flag; do not delete existing scripts or links. The coordinated Content Tracker documentation covers setup, rotation, dry-run remediation, and production verification.
+
+## Recoverable script history (local repair)
+
+See [script revision behaviour, coverage, verification and release blockers](docs/script-revision-history.md). The change uses existing Firestore transactions and owner authentication. It is not a production release; older direct writers and the Content Tracker caller's expected-version compatibility must be addressed before enabling production use.

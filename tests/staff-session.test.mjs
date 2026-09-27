@@ -1,3 +1,4 @@
+import { TransactionDatabase } from "./helpers/transaction-database.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { FieldValue } from "firebase-admin/firestore";
@@ -31,12 +32,14 @@ test("workspace endpoints recheck access, bind UID and reject cross-account or s
   assert.throws(()=>workspacePatch({...patch,uid:"another-user"}));assert.throws(()=>workspacePatch({...patch,scripts:"invalid"}));
   assert.throws(()=>workspacePatch({...patch,reportSummary:{version:1,projects:999,scripts:999}}));
   assert.throws(()=>workspacePatch({...patch,reportUpdatedAt:"forged"}));
-  let valid=true,writes=0;const revision="1790035200:123456789",time={seconds:1790035200,nanoseconds:123456789};
-  const deps={verify:async()=>valid?{uid:"existing-owner",data:{scripts:[]},revision,updateTime:time}:null,database:()=>({collection:()=>({doc:uid=>{assert.equal(uid,"existing-owner");return {update:async(body,precondition)=>{writes++;assert.equal(precondition.lastUpdateTime,time);assert.deepEqual(body.scripts,[]);assert.deepEqual(body.reportSummary,{version:1,projects:0,scripts:0});assert.ok(body.reportUpdatedAt.isEqual(FieldValue.serverTimestamp()));return {writeTime:time};}};}})})};
-  let res=response();await handleStaff(request("workspace","POST",{body:patch}),res,deps);assert.equal(res.code,409);assert.equal(writes,0);
-  res=response();await handleStaff(request("workspace","POST",{body:patch,headers:{origin:"https://scriptai.space","content-type":"application/json","x-workspace-revision":revision}}),res,deps);assert.equal(res.code,200);assert.equal(res.body.revision,revision);assert.equal(writes,1);
+  let valid=true;const db=new TransactionDatabase();db.seed("existing-owner",{scripts:[],projects:[]});
+  const revision="1:0",time={seconds:1,nanoseconds:0};
+  const deps={verify:async()=>valid?{uid:"existing-owner",data:{scripts:[]},revision,updateTime:time}:null,database:()=>db};
+  let res=response();await handleStaff(request("workspace","POST",{body:patch}),res,deps);assert.equal(res.code,409);assert.equal(db.writes,0);
+  res=response();await handleStaff(request("workspace","POST",{body:patch,headers:{origin:"https://scriptai.space","content-type":"application/json","x-workspace-revision":revision}}),res,deps);assert.equal(res.code,200);assert.equal(res.body.revision,"2:0");assert.equal(db.writes,1);
+  assert.deepEqual(db.documents.get("users/existing-owner").reportSummary,{version:1,projects:0,scripts:0});
   valid=false;res=response();await handleStaff(request("workspace","GET"),res,deps);assert.equal(res.code,401);
-  res=response();await handleStaff(request("workspace","POST",{headers:{origin:"https://attacker.example"},body:patch}),res,deps);assert.equal(res.code,403);assert.equal(writes,1);
+  res=response();await handleStaff(request("workspace","POST",{headers:{origin:"https://attacker.example"},body:patch}),res,deps);assert.equal(res.code,403);assert.equal(db.writes,1);
  }finally{restore();}
 });
 test("logout does not claim success or clear the cookie when central revocation fails",async()=>{
@@ -61,7 +64,7 @@ test("a concurrent Firestore update preserves the draft and returns a conflict",
   const res=response(),patch={projects:[],scripts:[],settings:{},apid:null,asid:null,view:"full"};
   await handleStaff(request("workspace","POST",{body:patch,headers:{origin:"https://scriptai.space","content-type":"application/json","x-workspace-revision":"1:2"}}),res,{
    verify:async()=>({uid:"existing-owner",revision:"1:2",updateTime:{seconds:1,nanoseconds:2}}),
-   database:()=>({collection:()=>({doc:()=>({update:async()=>{throw Object.assign(new Error("changed"),{code:9});}})})})
+   database:()=>({collection:()=>({doc:()=>({})}),runTransaction:async()=>{throw Object.assign(new Error("changed"),{code:9});}})
   });assert.equal(res.code,409);
  }finally{restore();}
 });
@@ -73,4 +76,28 @@ test("generation rechecks staff access and never falls back from an invalid cust
  res=response();assert.equal(await authorizeAiRequest({...req,headers:{...req.headers,authorization:"invalid"}},res,deps),null);assert.equal(res.code,401);assert.equal(checks,1);
  res=response();assert.equal(await authorizeAiRequest(req,res,{verifyStaff:async()=>null}),null);assert.equal(res.code,401);
  res=response();assert.equal(await authorizeAiRequest(req,res,{verifyStaff:async()=>{throw new Error("offline");}}),null);assert.equal(res.code,503);
+});
+
+test("legacy staff workspace writes cannot retarget a retained script relationship",async()=>{
+ enable();try {
+  const {TransactionDatabase}=await import('./helpers/transaction-database.mjs');
+  const db=new TransactionDatabase();
+  const patch={projects:[],scripts:[{id:'demo',blocks:[],novasFlow:{contentId:'original'}}],settings:{},apid:null,asid:null,view:'full'};
+  db.seed('existing-owner',patch);
+  const revision='1:0',res=response();
+  const body=structuredClone(patch);body.scripts[0].novasFlow.contentId='retargeted';
+  await handleStaff(request('workspace','POST',{body,headers:{origin:'https://scriptai.space','content-type':'application/json','x-workspace-revision':revision}}),res,{verify:async()=>({uid:'existing-owner',revision,updateTime:{seconds:1,nanoseconds:0}}),database:()=>db});
+  assert.equal(res.code,409);assert.equal(db.writes,0);
+  assert.deepEqual(db.documents.get('users/existing-owner'),patch);
+ }finally{restore();}
+});
+test("staff acknowledgement never attaches a newer revision to the older submitted body",async()=>{
+ enable();try {
+  const {TransactionDatabase}=await import('./helpers/transaction-database.mjs');const db=new TransactionDatabase();
+  const patch={projects:[],scripts:[{id:'demo',name:'v1',blocks:[]}],settings:{},apid:null,asid:null,view:'full'};db.seed('existing-owner',patch);
+  const doc=db.doc.bind(db);db.doc=path=>({...doc(path),get:async()=>{const data=db.documents.get(path);if(path==='users/existing-owner'&&db.writes){data.scripts[0].name='Intervening newer edit';data.scripts[0].recordVersion=3;data.scriptWriteVersion++;db.version++;}return db.snapshot(path);}});
+  const body=structuredClone(patch);body.scripts[0].name='Submitted v2';const res=response();
+  await handleStaff(request('workspace','POST',{body,headers:{origin:'https://scriptai.space','content-type':'application/json','x-workspace-revision':'1:0'}}),res,{verify:async()=>({uid:'existing-owner',revision:'1:0',updateTime:{seconds:1,nanoseconds:0}}),database:()=>db});
+  assert.equal(res.code,409);assert.equal(res.body.revision,undefined);assert.equal(db.documents.get('users/existing-owner').scripts[0].name,'Intervening newer edit');
+ }finally{restore();}
 });

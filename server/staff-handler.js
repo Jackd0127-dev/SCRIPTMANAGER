@@ -1,3 +1,5 @@
+import { assertScriptRelationships, fingerprint, conflict } from "./script-revisions.js";
+import { commitWorkspace } from "./revision-store.js";
 import { workspaceReportSummary } from "../assets/js/workspace-report-summary.js";
 import { FieldValue } from "firebase-admin/firestore";
 import { scriptAiAdminFirestore } from "./firebase-admin.js";
@@ -42,10 +44,14 @@ export async function handleStaff(req, res, dependencies = {}) {
     let patch; try { patch = workspacePatch(req.body); } catch { return res.status(400).json({ error: "Invalid workspace" }); }
     // Existing UID is server-derived; caller cannot select another account or create one.
     if (!staff.updateTime || req.headers["x-workspace-revision"] !== staff.revision) return res.status(409).json({ error: "Workspace changed. Keep your draft and refresh before saving." });
-    const result = await deps.database().collection("users").doc(staff.uid).update(patch, { lastUpdateTime: staff.updateTime });
-    return res.status(200).json({ saved: true, revision: `${result.writeTime.seconds}:${result.writeTime.nanoseconds}` });
+    const committed = await commitWorkspace(deps.database(), staff.uid, current => { assertScriptRelationships(current, req.body); return { workspace: { ...current, ...req.body, reportSummary: patch.reportSummary }, updateReport:true }; }, { expectedUpdateTime: staff.revision });
+    const saved = await deps.database().collection("users").doc(staff.uid).get();
+    // A newer write between commit and readback must not rebase an old client's body.
+    const current = saved.data();
+    if (current?.scriptWriteVersion !== committed.workspaceVersion || [...SAVE_FIELDS].some(key => fingerprint(current?.[key] ?? null) !== fingerprint(committed.workspace[key] ?? null))) conflict();
+    return res.status(200).json({ saved: true, revision: `${saved.updateTime.seconds}:${saved.updateTime.nanoseconds}` });
   } catch (error) {
-    if (error?.code === 9 || error?.code === "failed-precondition") return res.status(409).json({ error: "Workspace changed. Keep your draft and refresh before saving." });
+    if (error?.code === "REVISION_CONFLICT" || error?.code === 9 || error?.code === "failed-precondition") return res.status(409).json({ error: "Workspace changed. Keep your draft and refresh before saving." });
     return res.status(503).json({ error: "Staff service unavailable. Retry without changing accounts." });
   }
 }

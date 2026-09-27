@@ -13,5 +13,9 @@
   },
   "engines": {
     "node": ">=20 <25"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "5.0.0",
+    "firebase": "12.16.0"
   }
 }

@@ -50,6 +50,26 @@ const db = getFirestore(app);
 let currentUser = null;
 
 let saveTimeout = null;
+let workspaceWriteVersion = 0;
+let hydratedOwner = null;
+let saveInFlight = null;
+let editSequence = 0;
+let pendingSaveRequest = null;
+window.hasUnsavedScriptChanges = false;
+window.scriptHistoryRequest = async (body) => {
+  const requestOwner = currentUser?.uid;
+  const headers = { "Content-Type": "application/json" };
+  if (!window.isNovasStaffSession) {
+    const token = await window.getDirectorIdToken();
+    if (!token) throw new Error("Sign in before saving or reading history.");
+    headers.authorization = `Bearer ${token}`;
+  }
+  if (requestOwner !== currentUser?.uid) throw new Error("Account changed. Reopen the workspace before saving.");
+  const response = await fetch("/api/script-history", { method: "POST", credentials: "same-origin", headers, body: JSON.stringify(body) });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || "Script history request failed.");
+  return result;
+};
 
 let unsubscribe = null;
 
@@ -207,6 +227,16 @@ function renderSidebarFallback() {
 }
 
 function hydrateWorkspaceData(data, previous = window.S || {}) {
+  const ownerChanged = hydratedOwner !== currentUser?.uid;
+  if (ownerChanged) {
+    hydratedOwner = currentUser?.uid;
+    window.hasUnsavedScriptChanges = false;
+    pendingSaveRequest = null;
+  }
+  // A remote snapshot must not silently discard an in-progress local draft.
+  const editingForm = document.body.classList.contains("modal-open") || window.S?.view === "settings";
+  if (!ownerChanged && (window.hasUnsavedScriptChanges || saveInFlight || editingForm)) return;
+  workspaceWriteVersion = data.scriptWriteVersion || 0;
   window.S = { ...data };
 
   window.S.projects = Array.isArray(data.projects) ? data.projects : [];
@@ -713,49 +743,70 @@ function demoStateForSave() {
 }
 
 window.saveNow = async () => {
+  if (saveInFlight) {
+    const saved = await saveInFlight;
+    if (!saved) return false;
+    // Explicit callers (including reconnect/settings) may edit without calling save().
+    return window.hasUnsavedScriptChanges ? window.saveNow() : true;
+  }
+  const sequence = editSequence;
+  const savingOwner = currentUser?.uid;
   const ind = document.getElementById("savingIndicator");
   clearTimeout(saveTimeout);
   ind.classList.remove("error", "unsaved");
   ind.classList.add("show");
   ind.textContent = "Saving…";
-  try {
-    if (window.isDemoMode) {
-      localStorage.setItem(
-        "directorDemoWorkspace",
-        JSON.stringify(demoStateForSave()),
-      );
-    } else {
-      if (!currentUser) return false;
-      if (window.isNovasStaffSession) {
-        const patch = demoStateForSave(); delete patch.demoVersion;
-        const saved = await staffFetch("workspace", { method: "POST", headers: { "Content-Type": "application/json", "x-workspace-revision": staffRevision || "" }, body: JSON.stringify(patch) });
-        staffRevision = saved.revision;
+  saveInFlight = Promise.resolve().then(async () => {
+    let savedPayload = null;
+    let saveSucceeded = false;
+    try {
+      if (window.isDemoMode) {
+        localStorage.setItem("directorDemoWorkspace", JSON.stringify(demoStateForSave()));
       } else {
-        await setDoc(doc(db, "users", currentUser.uid), stateForSave(), { merge: true });
+        if (!currentUser) return false;
+        const patch = JSON.parse(JSON.stringify(demoStateForSave())); delete patch.demoVersion;
+        const payload = JSON.stringify(patch);
+        if (!pendingSaveRequest || pendingSaveRequest.payload !== payload) {
+          pendingSaveRequest = { payload, body: { action: "save", operationId: crypto.randomUUID(), expectedWorkspaceVersion: workspaceWriteVersion, workspace: JSON.parse(payload) } };
+        }
+        const saved = await window.scriptHistoryRequest(pendingSaveRequest.body);
+        if (savingOwner !== currentUser?.uid) throw new Error("Account changed. Reopen the workspace before saving.");
+        workspaceWriteVersion = saved.workspaceVersion;
+        for (const script of window.S.scripts || []) {
+          if (saved.scriptVersions?.[script.id]) script.recordVersion = saved.scriptVersions[script.id];
+        }
+        for (const script of patch.scripts || []) {
+          if (saved.scriptVersions?.[script.id]) script.recordVersion = saved.scriptVersions[script.id];
+        }
+        savedPayload = JSON.stringify(patch);
+        pendingSaveRequest = null;
+      }
+      const currentPatch = demoStateForSave(); delete currentPatch.demoVersion;
+      window.hasUnsavedScriptChanges = editSequence !== sequence || (savedPayload !== null && JSON.stringify(currentPatch) !== savedPayload);
+      saveSucceeded = true;
+      ind.textContent = window.hasUnsavedScriptChanges ? "Save changes" : "Saved";
+      ind.classList.toggle("show", window.hasUnsavedScriptChanges);
+      return true;
+    } catch (error) {
+      if (savingOwner !== currentUser?.uid) return false;
+      ind.textContent = "Save failed";
+      ind.classList.add("error");
+      window.hasUnsavedScriptChanges = true;
+      window.showToast?.(error.message || "Could not save. Your draft is still here.");
+      return false;
+    } finally {
+      saveInFlight = null;
+      if (saveSucceeded && savingOwner === currentUser?.uid && window.hasUnsavedScriptChanges && window.S?.settings?.autosave !== false) {
+        saveTimeout = setTimeout(() => { void window.saveNow(); }, 800);
       }
     }
-  } catch (e) {
-    console.error("Workspace save failed.");
-    ind.textContent = "Save failed";
-    ind.classList.add("error");
-    window.showToast?.(
-      "ScriptAI could not save. Check your connection and try again.",
-    );
-    setTimeout(() => {
-      ind.classList.remove("show", "error");
-      ind.textContent = "Saving…";
-    }, 2400);
-    return false;
-  }
-  ind.textContent = "Saved";
-  ind.classList.remove("show");
-  setTimeout(() => {
-    ind.textContent = "Saving…";
-  }, 400);
-  return true;
+  });
+  return saveInFlight;
 };
 
 window.save = () => {
+  editSequence++;
+  window.hasUnsavedScriptChanges = true;
   const ind = document.getElementById("savingIndicator");
   if (window.S?.settings?.autosave === false) {
     clearTimeout(saveTimeout);

@@ -1,3 +1,4 @@
+import { versionOf } from "./script-revisions.js";
 // Shared server code lives outside /api so Vercel does not deploy it as a route.
 import { createHash, randomUUID } from "node:crypto";
 
@@ -311,6 +312,9 @@ export function upsertAutomatedScript(workspaceInput, rawInput, now = new Date()
         updatedAt: now.toISOString(),
       };
   }
+
+  if (existing && parsed.expectedRecordVersion !== versionOf(existing))
+    throw new AutomationError("REVISION_CONFLICT", "Script changed or expectedRecordVersion is missing. Read the current script before updating.", 409);
 
   const syncedAt = now.toISOString();
   const { projects, project } = resolveProject(workspace, input, existing);

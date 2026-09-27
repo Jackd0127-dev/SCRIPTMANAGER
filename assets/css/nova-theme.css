@@ -1068,3 +1068,5 @@ a,
 /* Keep the staff entry separate from the existing admin destination. */
 .auth-staff-links { margin-top: 18px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
 .auth-staff-links a { color: inherit; }
+
+.revision-preview { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 45vh; overflow: auto; font-size: 12px; }
