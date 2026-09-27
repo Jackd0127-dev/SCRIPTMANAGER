@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { FieldValue } from "firebase-admin/firestore";
 import { STAFF_COOKIE, HANDOFF_COOKIE, createHandoff, readHandoff, verifyStaffRequest, opaque } from "../server/staff-session.js";
 import { authorizeAiRequest } from "../server/request-security.js";
 import { handleStaff, workspacePatch } from "../server/staff-handler.js";
@@ -28,8 +29,10 @@ test("workspace endpoints recheck access, bind UID and reject cross-account or s
  enable();try {
   const patch={projects:[],scripts:[],settings:{},apid:null,asid:null,view:"full"};
   assert.throws(()=>workspacePatch({...patch,uid:"another-user"}));assert.throws(()=>workspacePatch({...patch,scripts:"invalid"}));
+  assert.throws(()=>workspacePatch({...patch,reportSummary:{version:1,projects:999,scripts:999}}));
+  assert.throws(()=>workspacePatch({...patch,reportUpdatedAt:"forged"}));
   let valid=true,writes=0;const revision="1790035200:123456789",time={seconds:1790035200,nanoseconds:123456789};
-  const deps={verify:async()=>valid?{uid:"existing-owner",data:{scripts:[]},revision,updateTime:time}:null,database:()=>({collection:()=>({doc:uid=>{assert.equal(uid,"existing-owner");return {update:async(body,precondition)=>{writes++;assert.equal(precondition.lastUpdateTime,time);assert.deepEqual(body.scripts,[]);return {writeTime:time};}};}})})};
+  const deps={verify:async()=>valid?{uid:"existing-owner",data:{scripts:[]},revision,updateTime:time}:null,database:()=>({collection:()=>({doc:uid=>{assert.equal(uid,"existing-owner");return {update:async(body,precondition)=>{writes++;assert.equal(precondition.lastUpdateTime,time);assert.deepEqual(body.scripts,[]);assert.deepEqual(body.reportSummary,{version:1,projects:0,scripts:0});assert.ok(body.reportUpdatedAt.isEqual(FieldValue.serverTimestamp()));return {writeTime:time};}};}})})};
   let res=response();await handleStaff(request("workspace","POST",{body:patch}),res,deps);assert.equal(res.code,409);assert.equal(writes,0);
   res=response();await handleStaff(request("workspace","POST",{body:patch,headers:{origin:"https://scriptai.space","content-type":"application/json","x-workspace-revision":revision}}),res,deps);assert.equal(res.code,200);assert.equal(res.body.revision,revision);assert.equal(writes,1);
   valid=false;res=response();await handleStaff(request("workspace","GET"),res,deps);assert.equal(res.code,401);

@@ -1,3 +1,4 @@
+import { workspaceReportSummary } from "./workspace-report-summary.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
 import {
@@ -23,6 +24,7 @@ import {
   getDoc,
   onSnapshot,
   deleteField,
+  serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -376,6 +378,8 @@ async function loadUser(user) {
         settings: window.DEFAULT_SETTINGS || {},
 
         createdAt: new Date().toISOString(),
+        reportSummary: workspaceReportSummary({ projects: [], scripts: [] }),
+        reportUpdatedAt: serverTimestamp(),
       });
     } else {
       hydrateWorkspaceData(userSnap.data(), window.S || {});
@@ -691,6 +695,8 @@ function stateForSave() {
       ? scriptProject.id
       : deleteField();
 
+  data.reportSummary = workspaceReportSummary(data);
+  data.reportUpdatedAt = serverTimestamp();
   return data;
 }
 
