@@ -1631,7 +1631,7 @@ function showScript(id) {
   const contentAction = linkedContentActionHtml(s);
   document.getElementById("topbarRight").innerHTML = connectionMode
     ? connectionActionHtml(s)
-    : `<button class="btn-ghost" onclick="openAddBlock('${id}')">Add block</button><button class="btn-ghost" onclick="openAddMultipleBlocks('${id}')">Add multiple</button><button class="btn-ghost" onclick="downloadScriptText('${id}')">Export</button>${contentAction}${deleteIconButton("Delete script", `deleteScript('${jsArg(id)}')`)}<button class="btn-ghost edit-script-btn" onclick="openEditScriptModal('${id}')">Edit</button>`;
+    : `<button class="btn-ghost" onclick="openAddBlock('${id}')">Add block</button><button class="btn-ghost" onclick="openAddMultipleBlocks('${id}')">Add multiple</button><button class="btn-ghost" onclick="downloadScriptText('${id}')">Export</button>${contentAction}<button class="btn-ghost" onclick="openScriptHistory('${jsArg(id)}')">History</button>${deleteIconButton("Delete script", `deleteScript('${jsArg(id)}')`)}<button class="btn-ghost edit-script-btn" onclick="openEditScriptModal('${id}')">Edit</button>`;
 
   const TABS = [
     { id: "full", label: "Full script" },
@@ -3658,4 +3658,33 @@ window.deleteScript = (id) => {
   closeModal();
   renderSb();
   selProject(pid);
+};
+
+// History is read-only until an explicit restore; never restore a whole workspace.
+let inspectedScriptHistory = null;
+window.openScriptHistory = async (id) => {
+  if (window.isDemoMode) { showToast("Revision history needs a saved account workspace."); return; }
+  if (window.hasUnsavedScriptChanges) { showToast("Save your draft before opening revision history."); return; }
+  try {
+    const history = await window.scriptHistoryRequest({ action: "history", scriptId: id });
+    inspectedScriptHistory = { ...history, operationId: crypto.randomUUID() };
+    openModal(`<div class="modal-title">Script history</div><p>Current revision ${history.currentVersion}. Restore keeps the content link and production status.</p><p>History starts with the first protected save. Previously overwritten versions are unavailable.</p><div id="revisionChoices">${history.revisions.map(r => `<button class="btn-ghost" onclick="previewScriptRevision(${r.version})">Revision ${r.version}${r.baseline ? " · starting baseline" : ""}</button>`).join("") || "No retained revisions yet."}</div><pre id="revisionPreview" class="revision-preview"></pre><div class="modal-actions"><button class="btn-ghost" onclick="closeModal()">Close</button><button id="restoreScriptRevision" class="btn" disabled onclick="restoreInspectedScriptRevision()">Restore as new revision</button></div>`);
+  } catch (error) { showToast(error.message); }
+};
+window.previewScriptRevision = (version) => {
+  const revision = inspectedScriptHistory?.revisions.find(r => r.version === version);
+  if (!revision) return;
+  inspectedScriptHistory.selected = version;
+  inspectedScriptHistory.operationId = crypto.randomUUID();
+  document.getElementById("revisionPreview").textContent = JSON.stringify({ name: revision.script.name, notes: revision.script.notes, blocks: revision.script.blocks }, null, 2);
+  document.getElementById("restoreScriptRevision").disabled = version === inspectedScriptHistory.currentVersion;
+};
+window.restoreInspectedScriptRevision = async () => {
+  const selected = inspectedScriptHistory;
+  if (!selected?.selected || window.hasUnsavedScriptChanges) { showToast("Keep your draft; save or reopen history before restoring."); return; }
+  const button = document.getElementById("restoreScriptRevision"); button.disabled = true;
+  try {
+    await window.scriptHistoryRequest({ action: "restore", scriptId: selected.scriptId, version: selected.selected, expectedRecordVersion: selected.currentVersion, operationId: selected.operationId });
+    location.reload();
+  } catch (error) { button.disabled = false; showToast(error.message); }
 };

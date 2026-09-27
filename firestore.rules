@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function ownsWorkspace(ownerId) {
+      return request.auth != null && request.auth.uid == ownerId;
+    }
+    match /users/{ownerId} {
+      allow read: if ownsWorkspace(ownerId);
+      // Existing signup creates only an empty workspace. Script creation and every
+      // later script mutation must use the authorised transactional server route.
+      allow create: if ownsWorkspace(ownerId)
+        && request.resource.data.keys().hasOnly([
+          'email', 'displayName', 'projects', 'scripts', 'view', 'settings',
+          'createdAt', 'reportSummary', 'reportUpdatedAt'
+        ])
+        && request.resource.data.scripts == []
+        && request.resource.data.projects == [];
+      allow update: if ownsWorkspace(ownerId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'email', 'displayName', 'projects', 'settings', 'apid', 'asid',
+          'view', 'reportSummary', 'reportUpdatedAt'
+        ]);
+      // Deleting and recreating a workspace would discard the concurrency guard.
+      allow delete: if false;
+      match /scriptRevisions/{revisionId} {
+        allow read: if ownsWorkspace(ownerId);
+        allow write: if false;
+      }
+      // Receipts are server implementation details, not editable history.
+      match /scriptWriteReceipts/{operationId} {
+        allow read, write: if false;
+      }
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

@@ -1,6 +1,8 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { workspaceReportSummary } from "../assets/js/workspace-report-summary.js";
 // Shared server code lives outside /api so Vercel does not deploy it as a route.
+import { commitWorkspace } from "./revision-store.js";
+import { retainRevisions } from "./script-revisions.js";
 import { randomUUID } from "node:crypto";
 
 import { AutomationError } from "./automation-errors.js";
@@ -54,25 +56,7 @@ export class FirestoreAutomationStore {
   }
 
   async updateWorkspace(ownerId, updater) {
-    const reference = scriptAiAdminFirestore().collection("users").doc(ownerId);
-    let result;
-    await scriptAiAdminFirestore().runTransaction(async (transaction) => {
-      const snapshot = await transaction.get(reference);
-      const workspace = snapshot.exists ? snapshot.data() : { projects: [], scripts: [] };
-      result = updater(workspace);
-      transaction.set(
-        reference,
-        {
-          projects: result.workspace.projects,
-          scripts: result.workspace.scripts,
-          automationUpdatedAt: result.updatedAt,
-          reportSummary: workspaceReportSummary(result.workspace),
-          reportUpdatedAt: FieldValue.serverTimestamp(),
-        },
-        { merge: true },
-      );
-    });
-    return result;
+    return commitWorkspace(scriptAiAdminFirestore(), ownerId, updater);
   }
 }
 
@@ -80,6 +64,7 @@ const memoryState = globalThis.__scriptAiAutomationMemory || {
   tokens: new Map(),
   workspaces: new Map(),
   audit: [],
+  revisions: new Map(),
 };
 globalThis.__scriptAiAutomationMemory = memoryState;
 
@@ -113,6 +98,10 @@ export class MemoryAutomationStore {
       memoryState.workspaces.get(ownerId) || { projects: [], scripts: [] },
     );
     const result = updater(current);
+    const retained=memoryState.revisions.get(ownerId)||[];
+    const transition=retainRevisions(current,result.workspace,retained);
+    result.workspace=transition.workspace;
+    memoryState.revisions.set(ownerId,[...retained,...transition.revisions]);
     memoryState.workspaces.set(ownerId, structuredClone(result.workspace));
     return structuredClone(result);
   }
@@ -122,6 +111,7 @@ export function resetMemoryAutomationStore() {
   memoryState.tokens.clear();
   memoryState.workspaces.clear();
   memoryState.audit.length = 0;
+  memoryState.revisions.clear();
 }
 
 let cachedStore;
