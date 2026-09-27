@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { authorizeAiRequest } from './request-security.js';
-import { scriptAiAdminFirestore } from './firebase-admin.js';
+import { scriptAiAdminAuth, scriptAiAdminFirestore } from './firebase-admin.js';
 import { sendAutomationError, AutomationError } from './automation-errors.js';
 import { commitWorkspace, readHistory } from './revision-store.js';
 import { restoreScript, fingerprint, assertScriptRelationships } from './script-revisions.js';
@@ -13,7 +13,21 @@ const schema=z.discriminatedUnion('action',[
  z.object({action:z.literal('restore'),operationId:id,scriptId:id,version:z.number().int().positive(),expectedRecordVersion:z.number().int().positive()}).strict(),
 ]);
 export function createHistoryHandler(dependencies={}) {
- const authorize=dependencies.authorize||authorizeAiRequest, database=dependencies.database||scriptAiAdminFirestore;
+ // Use the existing Admin app for server verification. The web API key is
+ // browser-restricted; shared request, staff and account checks remain in force.
+ const authorize=dependencies.authorize||((req,res)=>authorizeAiRequest(req,res,{
+  lookupAccount:async token=>{
+   try {
+    const auth=(dependencies.auth||scriptAiAdminAuth)();
+    const decoded=await auth.verifyIdToken(token,true);
+    const user=await auth.getUser(decoded.uid);
+    return {ok:true,json:async()=>({users:[{localId:user.uid,emailVerified:user.emailVerified,providerUserInfo:user.providerData}]})};
+   } catch(error) {
+    if(['auth/argument-error','auth/id-token-expired','auth/id-token-revoked','auth/invalid-id-token','auth/user-disabled','auth/user-not-found'].includes(error?.code))return {ok:false,json:async()=>({})};
+    throw error;
+   }
+  },
+ })), database=dependencies.database||scriptAiAdminFirestore;
  return async (req,res)=>{
   res.setHeader('Cache-Control','private, no-store');
   if(req.method!=='POST') return res.status(405).json({error:'Method not allowed'});
