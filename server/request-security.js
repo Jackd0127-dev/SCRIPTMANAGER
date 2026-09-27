@@ -79,7 +79,9 @@ export async function authorizeAiRequest(req, res, dependencies = {}) {
   }
 
   try {
-    const response = await fetch(
+    const response = dependencies.lookupAccount
+      ? await dependencies.lookupAccount(idToken)
+      : await fetch(
       `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_API_KEY}`,
       {
         method: "POST",
