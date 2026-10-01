@@ -154,3 +154,11 @@ ScriptAI original repair retained: `server/script-revisions.js`, `server/revisio
 This close-out adds `firestore.rules`, `firebase.json`, `tests/revision-rules.test.mjs`, exact test-only Firebase client/rules-unit-testing dependencies in `package.json`/lock, a shared relationship guard in `server/script-revisions.js` reused by both history/staff persistence, and focused staff/client tests. Auth/session/provider logic is unchanged. Evidence files contain disposable test results and the read-only rules snapshot.
 
 Content Flo: `src/lib/creator-planning/contract.ts`, `src/lib/creator-planning/service.ts`, `src/lib/domain/schemas.ts`, both `schemas/creator-planning-package.v1.json` and `.v2.json`, `tests/creator-planning.integration.test.ts`, `tests/creator-planning-mcp.test.ts`, `tests/script-revisions-emulator.test.ts`, `docs/CREATOR_PLANNING_AUTOMATION.md`, local evidence. No Content Flo auth, UI styling, provider or job-setting files changed.
+
+## Dashboard count repair, 1 October 2026
+
+The revision transaction's caller-dependent reporting flag left automation writes carrying older `reportSummary` and `reportUpdatedAt` values. A fresh count-only projection found one stale summary and three legacy workspaces without summaries; the deployed Dashboard correctly displayed unknown counts rather than using them.
+
+The shared transaction now derives count-only reporting metadata for every changed workspace, including automation saves, alongside the saved body and immutable history. Identical retries still do not write. No private content is imported into Dashboard, no legacy backfill is performed, and existing authorization, rules and conflict checks are unchanged.
+
+In isolated `codex/automation-report-counts` from main `fea64da8c00271b19d4120dabb3206b6c17362ec`, Node 22 project checks pass: 59 tests pass and two opt-in suites are skipped. The separately enabled Firestore emulator test passes with actual server timestamps inside Dashboard's one-second freshness tolerance, reopen/restore checks and commit-failure rollback. Two new transaction regressions cover automation count refresh and failure consistency. Release approval and production verification remain outstanding.

@@ -1,6 +1,7 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { fingerprint, revisionKey, versionOf, retainRevisions, conflict } from './script-revisions.js';
 import { AutomationError } from './automation-errors.js';
+import { workspaceReportSummary } from '../assets/js/workspace-report-summary.js';
 
 // Current workspace, immutable snapshots and retry receipt share one Firestore transaction.
 export async function commitWorkspace(database, ownerId, updater, options={}) {
@@ -31,12 +32,14 @@ export async function commitWorkspace(database, ownerId, updater, options={}) {
     if(transition.revisions.length>400) throw new AutomationError('INVALID_REQUEST','Too many changed scripts in one save.',422);
     const changed=fingerprint(before)!==fingerprint(transition.workspace);
     const workspace=changed?{...transition.workspace,scriptWriteVersion:(before.scriptWriteVersion||0)+1}:before;
+    // Every changed save, including automation, refreshes counts in the same transaction.
+    if(changed) workspace.reportSummary=workspaceReportSummary(workspace);
     if(changed && output.updatedAt) workspace.automationUpdatedAt=output.updatedAt;
     const result={...output,workspace};
     const scriptId=output.result?.scriptId || output.result?.id;
     if(scriptId) result.result={...output.result,recordVersion:workspace.scripts.find(s=>s.id===scriptId)?.recordVersion};
     for(const revision of transition.revisions) tx.create(ref.collection('scriptRevisions').doc(revisionKey(revision.scriptId,revision.version)),revision);
-    if(changed) tx.set(ref,output.updateReport ? {...workspace,reportUpdatedAt:FieldValue.serverTimestamp()} : workspace);
+    if(changed) tx.set(ref,{...workspace,reportUpdatedAt:FieldValue.serverTimestamp()});
     // Receipts contain only the returned IDs/versions, not another editable script copy.
     const publicResult={result:result.result||null,workspaceVersion:workspace.scriptWriteVersion||0,scriptVersions:Object.fromEntries((workspace.scripts||[]).map(s=>[s.id,s.recordVersion||1]))};
     if(receipt) tx.create(receipt,{requestHash:options.requestHash,result:publicResult});
