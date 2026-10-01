@@ -24,11 +24,16 @@ test('Firestore emulator: transactional API history, reopen, restore, stale writ
  // Reopen through a new store, rather than using the transition's returned object.
  const reopened=await new FirestoreAutomationStore().getWorkspace(owner);
  assert.equal(reopened.scripts.find(s=>s.id===scriptId).name,'NON-PUBLIC TEST v2');
+ assert.deepEqual(reopened.reportSummary,{version:1,projects:reopened.projects.length,scripts:reopened.scripts.length});
+ const projected=await ref.get();
+ assert.equal(reopened.reportUpdatedAt.toMillis() <= projected.updateTime.toMillis(),true);
+ assert.equal(projected.updateTime.toMillis()-reopened.reportUpdatedAt.toMillis() <= 1000,true,'Automation reporting timestamp must satisfy Dashboard freshness checks');
  const history=await readHistory(db,owner,scriptId);assert.deepEqual(history.revisions.map(r=>r.version),[2,1]);
  const options={operationId:'restore-v1',requestHash:'same-request'};
  const restore=()=>commitWorkspace(db,owner,async(w,get)=>({workspace:restoreScript(w,await get(scriptId,1),2),result:{id:scriptId}}),options);
  await restore();await restore();
  const current=await store.getWorkspace(owner);assert.equal(current.scripts.find(s=>s.id===scriptId).recordVersion,3);
+ assert.deepEqual(current.reportSummary,{version:1,projects:current.projects.length,scripts:current.scripts.length});
  assert.equal(current.scripts.find(s=>s.id===scriptId).name,'NON-PUBLIC TEST v1');
  assert.equal(scriptLinkStatus(current,scriptId,contentFixture.id).matches,true);
  assert.equal(contentFixture.scriptConnection.scriptId,scriptId);
