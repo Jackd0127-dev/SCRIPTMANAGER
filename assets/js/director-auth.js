@@ -1,3 +1,4 @@
+import { requestVerificationEmail } from "./verification-email.js";
 import { workspaceReportSummary } from "./workspace-report-summary.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
@@ -7,7 +8,6 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  sendEmailVerification,
   reload,
   GoogleAuthProvider,
   OAuthProvider,
@@ -584,7 +584,7 @@ window.doSignup = async () => {
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
 
-    await sendEmailVerification(cred.user);
+    await requestVerificationEmail(cred.user);
   } catch (e) {
     err.textContent = friendlyError(e.code, e.message);
     btn.disabled = false;
@@ -673,7 +673,7 @@ window.checkVerification = async () => {
 
 window.resendVerification = async () => {
   try {
-    await sendEmailVerification(auth.currentUser);
+    await requestVerificationEmail(auth.currentUser);
 
     const status = document.getElementById("verifyStatus");
 
