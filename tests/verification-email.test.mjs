@@ -104,3 +104,19 @@ test("signup and resend client requests use the same server contract and respect
   assert.equal(requests[0].headers.Authorization, "Bearer synthetic-token");
   await assert.rejects(requestVerificationEmail(user, async () => ({ ok: false, status: 429 })), { code: "auth/too-many-requests" });
 });
+
+
+test("verification failures identify the failed step without exposing provider details", async () => {
+  for (const stage of ["rate-limit", "firebase-link", "delivery"]) {
+    const f = fixture(), res = response(), reports = [];
+    const failure = Object.assign(new Error("private@example.com secret-token oobCode=private"), { code: "auth/insufficient-permission" });
+    const fail = async () => { throw failure; };
+    if (stage === "rate-limit") f.db.runTransaction = fail;
+    if (stage === "firebase-link") f.auth.generateEmailVerificationLink = fail;
+    const handler = createVerificationEmailHandler({ getAuth: () => f.auth, getDb: () => f.db, getApiKey: () => "synthetic", send: stage === "delivery" ? fail : async () => {}, reportFailure: report => reports.push(report) });
+    await handler(f.req, res);
+    assert.equal(res.statusCode, 502);
+    assert.deepEqual(reports, [{ stage, category: "permission-denied" }]);
+    assert.equal(JSON.stringify({ reports, body: res.body }).includes("private"), false);
+  }
+});

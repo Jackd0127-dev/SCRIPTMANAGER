@@ -48,7 +48,7 @@ export async function deliverVerificationTemplate({ apiKey, email, actionUrl, fe
   if (!response.ok) throw new Error("Email provider rejected the request.");
 }
 
-export function createVerificationEmailHandler({ getAuth, getDb, getApiKey, send = deliverVerificationTemplate }) {
+export function createVerificationEmailHandler({ getAuth, getDb, getApiKey, send = deliverVerificationTemplate, reportFailure = details => console.error("ScriptAI verification failure", details) }) {
   return async function handler(req, res) {
     res.setHeader("Cache-Control", "no-store");
     if (req.method !== "POST") { res.setHeader("Allow", "POST"); return res.status(405).json({ error: "Use POST." }); }
@@ -79,14 +79,22 @@ export function createVerificationEmailHandler({ getAuth, getDb, getApiKey, send
     } catch { return res.status(401).json({ error: "Your session is not valid." }); }
     const email = user.email?.trim().toLowerCase();
     if (!email || user.emailVerified) return res.status(400).json({ error: "Verification is not available for this account." });
+    let stage = "rate-limit";
     try {
       const ip = String(req.headers?.["x-forwarded-for"] || req.headers?.["x-real-ip"] || "unknown").split(",")[0].trim();
       const allowance = await reserveVerificationAllowance(getDb(), { uid: user.uid, email, ip });
       if (!allowance.allowed) { res.setHeader("Retry-After", String(allowance.retryAfterSeconds)); return res.status(429).json({ error: "Wait before requesting another verification email." }); }
       // Preserve the existing Firebase-hosted handler and default continuation.
+      stage = "firebase-link";
       const actionUrl = await auth.generateEmailVerificationLink(email);
+      stage = "delivery";
       await send({ apiKey, email, actionUrl });
       return res.status(200).json({ ok: true });
-    } catch { return res.status(502).json({ error: "Verification email could not be sent." }); }
+    } catch (error) {
+      // Log fixed categories only; provider messages can contain private action links or identities.
+      const permissionDenied = error?.code === "auth/insufficient-permission" || error?.code === 7;
+      try { reportFailure({ stage, category: permissionDenied ? "permission-denied" : "unavailable" }); } catch {}
+      return res.status(502).json({ error: "Verification email could not be sent." });
+    }
   };
 }
