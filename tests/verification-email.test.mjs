@@ -51,6 +51,18 @@ test("revoked, disabled, mismatched and already verified identities do not send"
   }
 });
 
+test("tenant identities cannot resolve a colliding primary user or generate a link", async () => {
+  const f = fixture(), res = response();
+  let primaryLookups = 0;
+  f.auth.verifyIdToken = async () => ({ uid: "owner", firebase: { tenant: "another-workspace" } });
+  f.auth.getUser = async uid => { primaryLookups++; return { uid, email: "owner@example.com", emailVerified: false }; };
+  await f.handler(f.req, res);
+  assert.equal(res.statusCode, 401);
+  assert.equal(primaryLookups, 0);
+  assert.equal(f.calls.some(c => c[0] === "link" || c[0] === "send"), false);
+  assert.equal(f.db.documents.size, 0);
+});
+
 test("repeated verification requests retain a durable budget", async () => {
   const f = fixture();
   for (let index = 0; index < 5; index++) { const res = response(); await f.handler(f.req, res); assert.equal(res.statusCode, 200); }

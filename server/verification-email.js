@@ -72,6 +72,8 @@ export function createVerificationEmailHandler({ getAuth, getDb, getApiKey, send
     try {
       auth = getAuth();
       const decoded = await auth.verifyIdToken(token, true);
+      // This app uses the project's primary identity namespace only.
+      if (decoded.firebase?.tenant) throw new Error("Unsupported identity tenant.");
       user = await auth.getUser(decoded.uid);
       if (!user.uid || user.uid !== decoded.uid || user.disabled) throw new Error("Unavailable account.");
     } catch { return res.status(401).json({ error: "Your session is not valid." }); }
