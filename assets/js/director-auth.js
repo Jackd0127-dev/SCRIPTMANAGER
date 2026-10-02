@@ -675,6 +675,8 @@ window.resendVerification = async () => {
   try {
     await requestVerificationEmail(auth.currentUser);
 
+    document.getElementById("verifyErr").textContent = "";
+
     const status = document.getElementById("verifyStatus");
 
     status.style.display = "block";
